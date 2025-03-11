@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.kSwerve;
 import frc.robot.Constants.kSwerve.kModule;
 import frc.robot.utilities.MAXSwerve;
@@ -56,14 +57,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
   SwerveDriveOdometry SwerveOdometry = new SwerveDriveOdometry(
     kSwerve.kinematics,
-    navX.getRotation2d(),
+    getRotation2d(),
     modulePositions);
         
   Pose2d pose2d = new Pose2d();
 
   SwerveDrivePoseEstimator swervePoseEstimator =
       new SwerveDrivePoseEstimator(
-          kSwerve.kinematics, navX.getRotation2d(), modulePositions, pose2d);
+          kSwerve.kinematics, getRotation2d(), modulePositions, pose2d);
 
   public SwerveSubsystem() {
     new Thread(
@@ -93,7 +94,11 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(getHeading());
+    if (Robot.isReal()) {
+      return navX.getRotation2d();
+    } else {
+      return new Rotation2d(Math.toRadians(navX.getAngle()));
+    }
   }
 
   @Override
