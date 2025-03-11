@@ -38,6 +38,7 @@ public class IntakeCoralCmd extends Command {
       // m_ledSubsystem.setPatternForDuration(m_ledSubsystem.coralPickup, 2);
       new Thread(() -> {
         m_ledSubsystem.secretPattern(!m_coral.getBackCoralSensor());
+        Thread.currentThread().interrupt();
       }).start();
     }
   }
