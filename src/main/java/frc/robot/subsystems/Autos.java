@@ -194,8 +194,9 @@ public class Autos extends SubsystemBase {
       InstantCommand(() -> setStartPose(paths.get("M-H test")))
       .andThen(followPath(paths.get("M-H test")))
       .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(3)
-      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator));
-  }
+      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator))
+      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem));
+      }
 
   private Command L_L4_I() {
     return new 
