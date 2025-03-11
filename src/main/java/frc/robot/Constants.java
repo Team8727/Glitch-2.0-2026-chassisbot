@@ -298,19 +298,19 @@ public final class Constants {
     //  4  6.625 19.5
     public static final Transform3d camera1Position = // Right Rear
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(7), Units.inchesToMeters(7), Units.inchesToMeters(22)), 
+        new Translation3d(Units.inchesToMeters(7), Units.inchesToMeters(8), Units.inchesToMeters(22)), 
         new Rotation3d(0, Math.toRadians(20), Math.toRadians(20)));
     public static final Transform3d camera2Position = // Upper
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(7), Units.inchesToMeters(-7), Units.inchesToMeters(22)),
+        new Translation3d(Units.inchesToMeters(7), Units.inchesToMeters(-8), Units.inchesToMeters(22)),
         new Rotation3d(0, Math.toRadians(20), Math.toRadians(-20)));
     public static final Transform3d camera3Position = // Left Rear
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(6.625), Units.inchesToMeters(-7), Units.inchesToMeters(19.5)),
+        new Translation3d(Units.inchesToMeters(6.625), Units.inchesToMeters(-8), Units.inchesToMeters(19.5)),
         new Rotation3d(0, Math.toRadians(25), Math.toRadians(30)));
     public static final Transform3d camera4Position = // Front
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(6.625), Units.inchesToMeters(7), Units.inchesToMeters(19.5)),
+        new Translation3d(Units.inchesToMeters(6.625), Units.inchesToMeters(8), Units.inchesToMeters(19.5)),
         new Rotation3d(0, Math.toRadians(25), Math.toRadians(-30)));
 
     public static final Matrix<N3, N1> stateStdDevs =

@@ -80,6 +80,9 @@ public class PoseEstimatior extends SubsystemBase {
       cameraSimBackUp = new PhotonCameraSim(camera4, cameraProp);
 
       cameraSimBackLeft.enableDrawWireframe(true);
+      cameraSimBackRight.enableDrawWireframe(true);
+      cameraSimFront.enableDrawWireframe(true);
+      cameraSimBackUp.enableDrawWireframe(true);
 
       visionSim.addCamera(cameraSimBackRight, kVision.camera1Position);
       visionSim.addCamera(cameraSimBackLeft, kVision.camera2Position);
