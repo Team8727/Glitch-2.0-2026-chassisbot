@@ -180,6 +180,11 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (m_elevator.getElevatorSetPosition() != kElevator.ElevatorPosition.L1) {
+      setPattern(elevatorProgress);
+    } else if (currentPattern == elevatorProgress) {
+      setPattern(green);
+    }
     if (currentPattern != null) {
       if (triggerSecretPattern) {
         currentPattern.atBrightness(Percent.of(40)).applyTo(leftSide);
