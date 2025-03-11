@@ -135,9 +135,18 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
    */
   public void setPatternForDuration(LEDPattern pattern, double seconds) {
     //Command Composition for duration pattern
-    new RunCommand(
-      () -> currentPattern = pattern)
-    .withTimeout(seconds);
+    LEDPattern savedPattern = currentPattern;
+    currentPattern = pattern;
+    new Thread() {
+      public void run() {
+        try {
+          Thread.sleep((long) (seconds * 1000));
+          currentPattern = savedPattern;
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    }.start();
 
     //Notify of duration pattern
     //System.out.println("Pattern was set to: " + pattern + " for " + seconds + " seconds");

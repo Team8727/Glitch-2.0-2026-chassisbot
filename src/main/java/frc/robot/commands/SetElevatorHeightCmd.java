@@ -55,20 +55,11 @@ public class SetElevatorHeightCmd extends Command {
           new WaitUntilCommand(() -> m_elevator.getCurrentDrawAmps() > 55),
           new InstantCommand(() -> m_elevator.resetElevatorEncoders()),
           new InstantCommand(() -> m_elevator.isHoming = false)).schedule();
-    }
-      this.cancel();
+      }
     } else {
       System.out.println("hey driver, are you trying to kill the elevator or something? please move the coral out of the way");
     }
-      if (m_scoreLevel == ElevatorPosition.L1) {
-        new SequentialCommandGroup(
-          new WaitUntilCommand(() -> Math.abs(m_elevator.getElevatorHeight() - m_scoreLevel.getOutputRotations()) < 0.5),
-          new InstantCommand(() -> m_elevator.isHoming = true),
-          new InstantCommand(() -> m_elevator.setDutyCycle(-0.1)),
-          new WaitUntilCommand(() -> m_elevator.getCurrentDrawAmps() > 20),
-          new InstantCommand(() -> m_elevator.resetElevatorEncoders()),
-          new InstantCommand(() -> m_elevator.isHoming = false)).schedule();
-      }
+    this.cancel();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
