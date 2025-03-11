@@ -1,4 +1,9 @@
 {
+  "System Joysticks": {
+    "window": {
+      "enabled": false
+    }
+  },
   "keyboardJoysticks": [
     {
       "axisConfig": [
@@ -7,6 +12,7 @@
           "incKey": 68
         },
         {
+          "decKey": 87,
           "incKey": 83
         },
         {
