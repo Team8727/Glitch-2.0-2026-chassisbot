@@ -26,6 +26,7 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   private AddressableLEDBuffer stripBuffer;
   private AddressableLEDBufferView leftSide;
   private AddressableLEDBufferView rightSide;
+  private AddressableLEDBufferView secretBuffer;
   private LEDPattern currentPattern;
 
   private Elevator m_elevator;
@@ -38,6 +39,8 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   private Color m_orange = new Color(255, 0, 165);
   private Color m_yellow = new Color(255, 0, 255);
   private Color m_pink = new Color(255, 203, 192);
+
+  public boolean triggerSecretPattern = false;
   // Define LED Patterns
 
   // Blinking red pattern
@@ -106,8 +109,9 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
     // LED setup and port configuration
     lightStrip = new AddressableLED(5); // Correct PWM port
     stripBuffer = new AddressableLEDBuffer(114); // Correct LED count
-    leftSide = new AddressableLEDBufferView(stripBuffer, 0, 57);
-    rightSide = new AddressableLEDBufferView(stripBuffer, 57, 113).reversed();
+    leftSide = new AddressableLEDBufferView(stripBuffer, 0, 46);
+    rightSide = new AddressableLEDBufferView(stripBuffer, 64, 113).reversed();
+    secretBuffer = new AddressableLEDBufferView(stripBuffer, 46, 64);
 
     lightStrip.setLength(stripBuffer.getLength());
 
@@ -144,6 +148,16 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
     //System.out.println("Pattern set to: " + LEDPattern.solid(Color.kBlack));
   }
 
+  public void secretPattern(Boolean trigger) {
+    triggerSecretPattern = true;
+    while (trigger) {
+      new RunCommand(() -> green.blink(
+        Second.of(0.1))
+        .applyTo(secretBuffer));
+    }
+    triggerSecretPattern = false;
+  }
+
   public void combinePatterns(LEDPattern leftPattern, LEDPattern rightPattern) {
     leftPattern.applyTo(leftSide);
     rightPattern.applyTo(rightSide);
@@ -167,9 +181,16 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   public void periodic() {
     // This method will be called once per scheduler run
     if (currentPattern != null) {
-      currentPattern.atBrightness(Percent.of(40)).applyTo(leftSide);
-      currentPattern.atBrightness(Percent.of(40)).applyTo(rightSide);
-      lightStrip.setData(stripBuffer);
+      if (triggerSecretPattern) {
+        currentPattern.atBrightness(Percent.of(40)).applyTo(leftSide);
+        currentPattern.atBrightness(Percent.of(40)).applyTo(rightSide);
+        lightStrip.setData(stripBuffer);
+      } else {
+        currentPattern.atBrightness(Percent.of(40)).applyTo(leftSide);
+        currentPattern.atBrightness(Percent.of(40)).applyTo(rightSide);
+        currentPattern.atBrightness(Percent.of(40)).applyTo(secretBuffer);
+        lightStrip.setData(stripBuffer);
+      }
     }
   }
 }
