@@ -79,10 +79,11 @@ public class PoseEstimatior extends SubsystemBase {
       cameraSimFront = new PhotonCameraSim(camera3, cameraProp);
       cameraSimBackUp = new PhotonCameraSim(camera4, cameraProp);
 
-      cameraSimBackLeft.enableDrawWireframe(true);
-      cameraSimBackRight.enableDrawWireframe(true);
-      cameraSimFront.enableDrawWireframe(true);
-      cameraSimBackUp.enableDrawWireframe(true);
+      // this slows down loop time a lot
+      // cameraSimBackLeft.enableDrawWireframe(true);
+      // cameraSimBackRight.enableDrawWireframe(true);
+      // cameraSimFront.enableDrawWireframe(true);
+      // cameraSimBackUp.enableDrawWireframe(true);
 
       visionSim.addCamera(cameraSimBackRight, kVision.camera1Position);
       visionSim.addCamera(cameraSimBackLeft, kVision.camera2Position);
@@ -167,12 +168,18 @@ public class PoseEstimatior extends SubsystemBase {
       // camera 4 pose estimation
       List<PhotonPipelineResult> cameraRes = camera.getAllUnreadResults();
       PhotonPipelineResult cameraLatestRes = cameraRes.get(cameraRes.size() - 1);
-
       List<PhotonTrackedTarget> targets = cameraLatestRes.getTargets();
       for (PhotonTrackedTarget target : targets) {
         double ambiguity = target.getPoseAmbiguity();
+        double distance = (
+          Math.sqrt(
+            Math.pow(target.getBestCameraToTarget().getX(), 2) 
+            + 
+            Math.pow(target.getBestCameraToTarget().getY(), 2) 
+            +
+            Math.pow(target.getBestCameraToTarget().getZ(), 2)));
 
-        if (ambiguity <= 0.2 && ambiguity != -1) {
+        if (ambiguity <= 0.2 && ambiguity != -1 && distance < 3.5) {
           Optional<EstimatedRobotPose> cameraPose =
             getEstimatedGlobalPose(
                 m_SwervePoseEstimator.getEstimatedPosition(),
@@ -209,18 +216,10 @@ public class PoseEstimatior extends SubsystemBase {
     // addVisionMeasurement(camera4, PoseEstimator4);
 
     // gyro update
-    if (Robot.isReal()) {
-      m_SwervePoseEstimator.updateWithTime(
-        Timer.getFPGATimestamp(), 
-        m_SwerveSubsystem.navX.getRotation2d(), 
-        m_SwerveSubsystem.modulePositions);
-    } else {
-      m_SwervePoseEstimator.updateWithTime(
-        Timer.getFPGATimestamp(),
-        new Rotation2d(Math.toRadians(m_SwerveSubsystem.navX.getAngle())), 
-        m_SwerveSubsystem.modulePositions);
-    }
-
+    m_SwervePoseEstimator.updateWithTime(
+      Timer.getFPGATimestamp(), 
+      m_SwerveSubsystem.getRotation2d(), 
+      m_SwerveSubsystem.modulePositions);
     // Update Field2d with pose to display the robot's visual position on the field to the dashboard
     field2d.setRobotPose(get2dPose());
 
