@@ -76,6 +76,8 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
             Percent.per(Second).of(15));
 
   public LEDPattern green = LEDPattern.solid(m_green);
+
+  public LEDPattern blinkyGreen = LEDPattern.solid(m_green).blink(Second.of(0.1));
   // Elevator progress bar pattern
   public LEDPattern elevatorProgressBase = LEDPattern.gradient(
     GradientType.kDiscontinuous, 
@@ -142,6 +144,7 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
         try {
           Thread.sleep((long) (seconds * 1000));
           currentPattern = savedPattern;
+          Thread.currentThread().interrupt();
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
@@ -157,12 +160,10 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
     //System.out.println("Pattern set to: " + LEDPattern.solid(Color.kBlack));
   }
 
-  public void secretPattern(Boolean trigger) {
+  public void activateSecretPattern(Boolean trigger) {
     triggerSecretPattern = true;
     while (trigger) {
-      new RunCommand(() -> green.blink(
-        Second.of(0.1))
-        .applyTo(secretBuffer));
+      // Perform secret pattern actions
     }
     triggerSecretPattern = false;
   }
@@ -198,6 +199,7 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
       if (triggerSecretPattern) {
         currentPattern.atBrightness(Percent.of(40)).applyTo(leftSide);
         currentPattern.atBrightness(Percent.of(40)).applyTo(rightSide);
+        blinkyGreen.atBrightness(Percent.of(70)).applyTo(secretBuffer);
         lightStrip.setData(stripBuffer);
       } else {
         currentPattern.atBrightness(Percent.of(40)).applyTo(leftSide);
