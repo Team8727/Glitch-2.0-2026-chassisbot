@@ -142,6 +142,7 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
         try {
           Thread.sleep((long) (seconds * 1000));
           currentPattern = savedPattern;
+          Thread.currentThread().interrupt();
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
