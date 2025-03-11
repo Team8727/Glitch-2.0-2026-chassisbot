@@ -179,11 +179,11 @@ public class Elevator extends SubsystemBase {
     targetRotations = height_chosen.getOutputRotations();
     m_goal = new TrapezoidProfile.State(targetRotations, 0);
     m_setpoint = new TrapezoidProfile.State(elevatorMotorR.getEncoder().getPosition(), elevatorMotorR.getEncoder().getVelocity());
-    if (height_chosen == kElevator.ElevatorPosition.L1 && previousHeight == kElevator.ElevatorPosition.L4) {
-      m_intermediate = new TrapezoidProfile.State(6, 20);
-    } else {
-      m_intermediate = new TrapezoidProfile.State(targetRotations, 0);
-    }
+    // if (height_chosen == kElevator.ElevatorPosition.L1 && previousHeight == kElevator.ElevatorPosition.L4) {
+    //   m_intermediate = new TrapezoidProfile.State(6, 20);
+    // } else {
+    //   m_intermediate = new TrapezoidProfile.State(targetRotations, 0);
+    // }
   }
 
   public kElevator.ElevatorPosition getElevatorSetPosition() {
