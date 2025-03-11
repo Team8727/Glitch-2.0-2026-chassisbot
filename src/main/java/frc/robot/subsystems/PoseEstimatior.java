@@ -202,6 +202,7 @@ public class PoseEstimatior extends SubsystemBase {
     networkTableLogger.logPose3d("cam front", visionSim.getCameraPose(cameraSimFront).orElse(new Pose3d()));
     networkTableLogger.logPose3d("cam back up", visionSim.getCameraPose(cameraSimBackUp).orElse(new Pose3d()));
     m_SwervePoseEstimator.addVisionMeasurement(visionSim.getRobotPose().toPose2d(), RobotController.getFPGATime());
+    networkTableLogger.logField2d("simField", simField2d);
   }
 
   @Override
@@ -228,7 +229,6 @@ public class PoseEstimatior extends SubsystemBase {
     // Log the robot's 2d position on the field to the dashboard using the NetworkTableLogger
     // Utility
     networkTableLogger.logField2d("Field2d", field2d);
-    networkTableLogger.logField2d("simField", simField2d);
     networkTableLogger.logPose2d("Robot 2d Pose", get2dPose());
   }
 }

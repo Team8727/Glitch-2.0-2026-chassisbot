@@ -101,7 +101,7 @@ public final class Constants {
   // Swerve subsystem constants (module constants included)
   public static class kSwerve {
     // Chassis dimensions from wheel center to center (meters)
-    public static double width = Units.inchesToMeters(23);
+    public static double width = Units.inchesToMeters(22.52);
     public static double length = width;
 
     // Speed & accel limits (m/s, rad/s, m/s^2 & rad/s^2)
@@ -419,7 +419,7 @@ public final class Constants {
 
     public enum ElevatorPosition {
       HOME(0), // TODO: SET WITH ACTUAL VALUES
-      L1(0.3848), // TODO: SET WITH ACTUAL VALUES
+      L1(0.7848), // TODO: SET WITH ACTUAL VALUES
       L2(8.23663),// TODO: SET WITH ACTUAL VALUES
       L3(20.43877), // TODO: SET WITH ACTUAL VALUES
       L4(39.53888), // TODO: SET WITH ACTUAL VALUES

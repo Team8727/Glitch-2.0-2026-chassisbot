@@ -36,14 +36,15 @@ public class IntakeCoralCmd extends Command {
       // m_ledSubsystem.setPatternForDuration(m_ledSubsystem.green, 2);
       // Timer.delay(2);
       // m_ledSubsystem.setPatternForDuration(m_ledSubsystem.coralPickup, 2);
-      m_ledSubsystem.secretPattern(!m_coral.getBackCoralSensor());
+      new Thread(() -> {
+          m_ledSubsystem.setPatternForDuration(m_ledSubsystem.coralPickup, 2);
+      }).start();
     }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     if (m_coral.getBackCoralSensor() && sensedCoral == false) {
       m_coral.setIntakeSpeedDuty(.1);
       m_coral.setOuttakeSpeedDuty(.1);
