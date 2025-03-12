@@ -137,7 +137,7 @@ public class PoseEstimatior extends SubsystemBase {
   }
 
   public void resetPoseToPose2d(Pose2d pose2d) {
-    m_SwerveSubsystem.navX.setAngleAdjustment(pose2d.getRotation().getDegrees());
+    // m_SwerveSubsystem.navX.setAngleAdjustment(pose2d.getRotation().getDegrees());
     m_SwervePoseEstimator.resetPose(pose2d);
   }
 

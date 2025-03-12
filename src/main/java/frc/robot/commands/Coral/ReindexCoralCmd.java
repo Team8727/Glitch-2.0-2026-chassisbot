@@ -5,16 +5,22 @@
 package frc.robot.commands.Coral;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.Coral.Coral;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ReindexCoralCmd extends Command {
   private final Coral m_coral;
+  private final Elevator m_Elevator;
+  private final LEDSubsystem m_LedSubsystem;
 
   /** Creates a new ReindexCoralCmd. */
-  public ReindexCoralCmd(Coral coral) {
+  public ReindexCoralCmd(Coral coral, Elevator elevator, LEDSubsystem ledSubsystem) {
     m_coral = coral;
-    addRequirements(coral);
+    m_Elevator = elevator;
+    m_LedSubsystem = ledSubsystem;
+    addRequirements(coral, elevator);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -38,7 +44,7 @@ public class ReindexCoralCmd extends Command {
           e.printStackTrace();
         }
       }
-      m_coral.setIntakeSpeedDuty(0);
+      new IntakeCoralCmd(m_coral, m_Elevator, m_LedSubsystem).schedule();
       this.cancel();
       Thread.currentThread().interrupt();
     }).start();

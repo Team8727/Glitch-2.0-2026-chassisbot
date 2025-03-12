@@ -58,7 +58,7 @@ public class Driver2DefaultBindings implements ControllerBindings {
         // intake coral
         // controller.leftTrigger().toggleOnTrue(new IntakeCoralCmd(m_coral, m_elevator, m_ledSubsytem));
         // reindex coral
-        controller.povRight().onTrue(new ReindexCoralCmd(m_coral));
+        controller.povRight().onTrue(new ReindexCoralCmd(m_coral, m_elevator, m_ledSubsytem));
         controller.povLeft().onTrue(new RejectCoralCmd(m_coral));
         //deploy coral
         // controller.leftBumper().onTrue(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator));

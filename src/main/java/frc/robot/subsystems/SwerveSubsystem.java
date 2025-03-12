@@ -84,7 +84,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void zeroHeading() {
     navX.reset();
-    navX.setAngleAdjustment(0);
+    // navX.setAngleAdjustment(0);
     swervePoseEstimator.resetRotation(pose2d.getRotation());
   }
 
@@ -94,17 +94,16 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getRotation2d() {
-    if (Robot.isReal()) {
-      return navX.getRotation2d();
-    } else {
-      return new Rotation2d(Math.toRadians(navX.getAngle()));
-    }
+    // if (Robot.isReal()) {
+    return navX.getRotation2d();
+    // } else {
+    //   return new Rotation2d(Math.toRadians(navX.getAngle()));
+    // }
   }
 
   @Override 
   public void simulationPeriodic() {
     networkTableLogger.logDouble("sim agnel", navX.getAngle());
-
   }
   @Override
   public void periodic() {

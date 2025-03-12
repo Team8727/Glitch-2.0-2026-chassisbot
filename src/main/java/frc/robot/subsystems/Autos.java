@@ -167,20 +167,13 @@ public class Autos extends SubsystemBase {
   }
 
   private void setStartPose(PathPlannerPath path) {
-    Pose2d startPose = path.getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
+    Pose2d startPose;
     if (DriverStation.getAlliance().get() ==  Alliance.Red) {
-      Pose2d startPoseOffset = new Pose2d(
-        (17.55 - startPose.getX()),
-        (8.05 - startPose.getY()),
-        new Rotation2d(Math.toRadians(0)));
-      m_PoseEstimatior.resetPoseToPose2d(startPoseOffset);
+      startPose = path.flipPath().getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
     } else {
-      Pose2d startPoseOffset = new Pose2d(
-        startPose.getX(),
-        startPose.getY(),
-        new Rotation2d(Math.toRadians(180)));
-        m_PoseEstimatior.resetPoseToPose2d(startPoseOffset);
+      startPose = path.getStartingHolonomicPose().orElse(path.getStartingDifferentialPose()).rotateBy(new Rotation2d(Math.toRadians(180)));
     }
+    m_PoseEstimatior.resetPoseToPose2d(startPose);
   }
 
   

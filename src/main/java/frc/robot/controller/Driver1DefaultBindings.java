@@ -79,7 +79,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
     controller.leftBumper().onTrue(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator));
 
     // reindex coral
-    controller.povRight().onTrue(new ReindexCoralCmd(m_coral));
+    controller.povRight().onTrue(new ReindexCoralCmd(m_coral, m_elevator, m_ledSubsytem));
     // reject coral
     controller.povLeft().onTrue(new RejectCoralCmd(m_coral));
 
