@@ -84,7 +84,7 @@ public class SwerveJoystickCmd extends Command {
     }
 
     if (RobotBase.isSimulation()) { 
-      double adjustedAngle = m_SwerveSubsystem.navX.getAngle() + ((turningSpeed * 360) / (2 * Math.PI)) * 0.02;
+      double adjustedAngle = m_SwerveSubsystem.getHeading() + ((turningSpeed * 360) / (2 * Math.PI)) * 0.02;
       m_SwerveSubsystem.navX.setAngleAdjustment(adjustedAngle);
     }
     

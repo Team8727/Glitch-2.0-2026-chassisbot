@@ -64,6 +64,7 @@ public class SetElevatorHeightCmd extends Command {
       }
     }
     lastHeight = m_scoreLevel;
+    new WaitUntilCommand(() -> Math.abs(m_scoreLevel.getOutputRotations() - m_elevator.getElevatorHeight()) < 0.1).withTimeout(1);
     this.cancel();
   }
 

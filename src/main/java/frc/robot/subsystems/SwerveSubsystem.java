@@ -101,6 +101,11 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
+  @Override 
+  public void simulationPeriodic() {
+    networkTableLogger.logDouble("sim agnel", navX.getAngle());
+
+  }
   @Override
   public void periodic() {
     networkTableLogger.logDouble("robotHeading", getHeading());
@@ -125,10 +130,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void setModuleStates(SwerveModuleState[] desiredState) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, kModule.maxWheelSpeed);
+    networkTableLogger.logSwerveModuleState("desiredModuleStates", desiredState);
     frontLeftModule.setTargetState(desiredState[0], true, true);
     frontRightModule.setTargetState(desiredState[1], true, true);
     backLeftModule.setTargetState(desiredState[2], true, true);
     backRightModule.setTargetState(desiredState[3], true, true);
-    
   }
 }

@@ -72,6 +72,7 @@ public class Autos extends SubsystemBase {
   private void loadPaths() {
     try {
     paths.put("M-H test", PathPlannerPath.fromPathFile("M-H test"));
+    paths.put("L-I", PathPlannerPath.fromPathFile("L-I"));
     paths.put("M-L4-H", PathPlannerPath.fromChoreoTrajectory("M-L4-H"));
     // paths.put("Red-M-L4-H", PathPlannerPath.fromChoreoTrajectory("M-L4-H").flipPath());
     // paths.put("H-PC", PathPlannerPath.fromChoreoTrajectory("H-PC"));
@@ -193,36 +194,36 @@ public class Autos extends SubsystemBase {
     return new 
       InstantCommand(() -> setStartPose(paths.get("M-H test")))
       .andThen(followPath(paths.get("M-H test")))
-      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(3)
-      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator))
-      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem));
+      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(5)
+      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator));
       }
 
   private Command L_L4_I() {
     return new 
-      InstantCommand(() -> setStartPose(paths.get("CL-L4-I")))
-      .andThen(alignToPath(paths.get("CL-L4-I"))
-      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(2)
-      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)));
+      InstantCommand(() -> setStartPose(paths.get("L-I")))
+      // .andThen(followPath(paths.get("L-I"))
+      // .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem))
+      // .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)));
+      ;
   }
 
   private Command R_L4_F() {
     return new InstantCommand(() -> setStartPose(paths.get("CR-L4-F")))
-      .andThen(alignToPath(paths.get("CR-L4-F")))
+      .andThen(followPath(paths.get("CR-L4-F")))
       .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(2)
       .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator));
   }
 
   private Command MR_L4_F() {
     return new InstantCommand(() -> setStartPose(paths.get("MR-L4-F")))
-      .andThen(alignToPath(paths.get("MR-L4-F"))//TODO: add correct path
+      .andThen(followPath(paths.get("MR-L4-F"))//TODO: add correct path
       .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(2)
       .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)));
   }
 
   private Command ML_L4_I() {
     return new InstantCommand(() -> setStartPose(paths.get("ML-L4-I")))
-      .andThen(alignToPath(paths.get("ML-L4-I"))//TODO: add correct path
+      .andThen(followPath(paths.get("ML-L4-I"))//TODO: add correct path
       .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(2)
       .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)));
   }
