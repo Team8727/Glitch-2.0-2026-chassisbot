@@ -177,7 +177,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_ledSubsytem.setPattern(m_ledSubsytem.red);
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -200,6 +202,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
+    m_ledSubsytem.setPattern(m_ledSubsytem.green);
     // m_ledSubsytem.setPattern(m_ledSubsytem.elevatorProgress);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

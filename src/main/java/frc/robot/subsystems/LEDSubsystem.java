@@ -45,9 +45,8 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   // Define LED Patterns
 
   // Blinking red pattern
-  public LEDPattern red = LEDPattern.solid(Color.kRed)
-  .blink(Second.of(0.5));
-
+  public LEDPattern red = LEDPattern.solid(Color.kRed);
+  
   // Rainbow pattern with a scrolling mask
   public LEDPattern rainbow = LEDPattern.rainbow(
     256, 
@@ -176,6 +175,14 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
 
     //Notify of duration pattern
     //System.out.println("Pattern was set to: " + pattern1.combine(pattern2) + " for " + seconds + " seconds");
+  }
+
+  public void activateSecretPattern() {
+    triggerSecretPattern = true;
+  }
+
+  public void deactivateSecretPattern() {
+    triggerSecretPattern = false;
   }
 
   @Override
