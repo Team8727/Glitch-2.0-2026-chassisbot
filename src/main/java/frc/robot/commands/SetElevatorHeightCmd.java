@@ -18,9 +18,11 @@ import frc.robot.Constants.kElevator.ElevatorPosition;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SetElevatorHeightCmd extends Command {
   private final Elevator m_elevator;
-  private ElevatorPosition m_scoreLevel;
+  private final ElevatorPosition m_scoreLevel;
   private final LEDSubsystem m_ledSubsystem;
   private final Coral m_coral;
+  private ElevatorPosition lastHeight = ElevatorPosition.L1;
+  private boolean run = true;
 
 
   /** Creates a new SetEvevatorHeightCmd. */
@@ -46,19 +48,22 @@ public class SetElevatorHeightCmd extends Command {
     if (!m_coral.getBackCoralSensor()) {
       System.out.println("Setting elevator height to " + m_scoreLevel);
       m_elevator.setElevatorHeightMotionProfile(m_scoreLevel);
-      if (m_scoreLevel == ElevatorPosition.L1) {
+      if (m_scoreLevel == ElevatorPosition.L1 && lastHeight != ElevatorPosition.L1) {
         new SequentialCommandGroup(
           new WaitUntilCommand(() -> Math.abs(m_elevator.getElevatorHeight() - m_scoreLevel.getOutputRotations()) < 0.1),
           new InstantCommand(() -> m_elevator.isHoming = true),
+          new WaitCommand(.2),
           new InstantCommand(() -> m_elevator.setDutyCycle(-0.1)),
-          new WaitCommand(0.1),
-          new WaitUntilCommand(() -> m_elevator.getCurrentDrawAmps() > 55),
+          new WaitCommand(0.5),
+          new WaitUntilCommand(() -> m_elevator.getCurrentDrawAmps() > 35),
           new InstantCommand(() -> m_elevator.resetElevatorEncoders()),
           new InstantCommand(() -> m_elevator.isHoming = false)).schedule();
+      } else if (m_scoreLevel == ElevatorPosition.L1 && lastHeight == ElevatorPosition.L1) {
+      } else {
+        System.out.println("hey driver, are you trying to kill the elevator or something? please move the coral out of the way");
       }
-    } else {
-      System.out.println("hey driver, are you trying to kill the elevator or something? please move the coral out of the way");
     }
+    lastHeight = m_scoreLevel;
     this.cancel();
   }
 
