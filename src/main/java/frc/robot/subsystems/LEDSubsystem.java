@@ -46,6 +46,8 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
 
   // Blinking red pattern
   public LEDPattern red = LEDPattern.solid(Color.kRed);
+
+  public LEDPattern purple = LEDPattern.solid(m_purple);
   
   // Rainbow pattern with a scrolling mask
   public LEDPattern rainbow = LEDPattern.rainbow(
