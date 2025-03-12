@@ -16,6 +16,9 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import frc.robot.Constants.kElevator;
 import frc.robot.subsystems.Elevator.Elevator;
@@ -41,6 +44,8 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   private Color m_pink = new Color(255, 203, 192);
 
   public boolean triggerSecretPattern = false;
+  private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
   // Define LED Patterns
 
   // Blinking red pattern
@@ -161,12 +166,19 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   }
 
   public void activateSecretPattern(Boolean trigger) {
-    triggerSecretPattern = true;
-    while (trigger) {
-      // Perform secret pattern actions
+    if (trigger) {
+      triggerSecretPattern = true;
+      scheduler.scheduleAtFixedRate(() -> {
+          if (!triggerSecretPattern) {
+              return;
+          }
+            // Perform secret pattern actions
+      }, 0, 100, TimeUnit.MILLISECONDS); // Adjust the period as needed
+    } else {
+      triggerSecretPattern = false;
+      scheduler.shutdownNow();
     }
-    triggerSecretPattern = false;
-  }
+}
 
   public void combinePatterns(LEDPattern leftPattern, LEDPattern rightPattern) {
     leftPattern.applyTo(leftSide);
