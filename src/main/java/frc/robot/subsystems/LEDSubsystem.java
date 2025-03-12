@@ -138,20 +138,18 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
    */
   public void setPatternForDuration(LEDPattern pattern, double seconds) {
     //Command Composition for duration pattern
-    LEDPattern savedPattern = currentPattern;
     currentPattern = pattern;
     new Thread() {
       public void run() {
         try {
           Thread.sleep((long) (seconds * 1000));
-          currentPattern = savedPattern;
+          currentPattern = green;
           Thread.currentThread().interrupt();
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
       }
     }.start();
-
     //Notify of duration pattern
     //System.out.println("Pattern was set to: " + pattern + " for " + seconds + " seconds");
   }
@@ -161,24 +159,24 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
     //System.out.println("Pattern set to: " + LEDPattern.solid(Color.kBlack));
   }
 
-  public void combinePatterns(LEDPattern leftPattern, LEDPattern rightPattern) {
-    leftPattern.applyTo(leftSide);
-    rightPattern.applyTo(rightSide);
-    //System.out.println("Pattern set to: " + pattern1.combine(pattern2));
-  }
+  // public void combinePatterns(LEDPattern leftPattern, LEDPattern rightPattern) {
+  //   leftPattern.applyTo(leftSide);
+  //   rightPattern.applyTo(rightSide);
+  //   //System.out.println("Pattern set to: " + pattern1.combine(pattern2));
+  // }
 
-  public void combinePatternsForDuration(LEDPattern leftPattern, LEDPattern rightPattern, double seconds) {
-    //Command Composition for duration pattern
-    new RunCommand(
-      () -> {
-        leftPattern.applyTo(leftSide);
-        rightPattern.applyTo(rightSide);
-      })
-    .withTimeout(seconds);
+  // public void combinePatternsForDuration(LEDPattern leftPattern, LEDPattern rightPattern, double seconds) {
+  //   //Command Composition for duration pattern
+  //   new RunCommand(
+  //     () -> {
+  //       leftPattern.applyTo(leftSide);
+  //       rightPattern.applyTo(rightSide);
+  //     })
+  //   .withTimeout(seconds);
 
-    //Notify of duration pattern
-    //System.out.println("Pattern was set to: " + pattern1.combine(pattern2) + " for " + seconds + " seconds");
-  }
+  //   //Notify of duration pattern
+  //   //System.out.println("Pattern was set to: " + pattern1.combine(pattern2) + " for " + seconds + " seconds");
+  // }
 
   @Override
   public void periodic() {
