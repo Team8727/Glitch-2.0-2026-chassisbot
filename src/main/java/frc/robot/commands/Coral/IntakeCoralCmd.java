@@ -40,6 +40,7 @@ public class IntakeCoralCmd extends Command {
       //   // m_ledSubsystem.activateSecretPattern(!m_coral.getBackCoralSensor());
       //   // Thread.currentThread().interrupt();
       // }).start();
+      m_ledSubsystem.triggerSecretPattern = true;
     }
   }
 
