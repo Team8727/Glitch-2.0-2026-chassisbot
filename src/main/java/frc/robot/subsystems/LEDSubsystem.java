@@ -41,6 +41,7 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   private Color m_pink = new Color(255, 203, 192);
 
   public boolean triggerSecretPattern = false;
+
   // Define LED Patterns
 
   // Blinking red pattern
@@ -158,14 +159,6 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   public void turnLEDsOff() {
     currentPattern = LEDPattern.solid(Color.kBlack);
     //System.out.println("Pattern set to: " + LEDPattern.solid(Color.kBlack));
-  }
-
-  public void activateSecretPattern(Boolean trigger) {
-    triggerSecretPattern = true;
-    while (trigger) {
-      // Perform secret pattern actions
-    }
-    triggerSecretPattern = false;
   }
 
   public void combinePatterns(LEDPattern leftPattern, LEDPattern rightPattern) {
