@@ -8,6 +8,8 @@ import frc.robot.commands.SetElevatorHeightCmd;
 import frc.robot.commands.AlgaeIntake.IntakeAlgaeCmd;
 import frc.robot.commands.AlgaeIntake.ScoreAlgaeCmd;
 import frc.robot.commands.Coral.DeployCoralCmd;
+import frc.robot.commands.Coral.ReindexCoralCmd;
+import frc.robot.commands.Coral.RejectCoralCmd;
 import frc.robot.commands.Coral.IntakeCoralCmd;
 import frc.robot.commands.DriveCommands.SwerveJoystickCmd;
 import frc.robot.subsystems.LEDSubsystem;
@@ -76,10 +78,10 @@ public class Driver1DefaultBindings implements ControllerBindings {
     // deploy coral
     controller.leftBumper().onTrue(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator));
 
-    // // reindex coral
-    // controller.povRight().onTrue(new ReindexCoralCmd(m_coral));
-    // // reject coral
-    // controller.povLeft().onTrue(new RejectCoralCmd(m_coral));
+    // reindex coral
+    controller.povRight().onTrue(new ReindexCoralCmd(m_coral));
+    // reject coral
+    controller.povLeft().onTrue(new RejectCoralCmd(m_coral));
 
     //              Elevator Commands
     // elevator L1
