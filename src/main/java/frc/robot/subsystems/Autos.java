@@ -30,6 +30,7 @@ import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.Coral.Coral;
 import frc.robot.utilities.NetworkTableLogger;
 import frc.robot.commands.SetElevatorHeightCmd;
+import frc.robot.commands.ZeroElevator;
 
 public class Autos extends SubsystemBase {
   private final LEDSubsystem m_ledSubsytem;
@@ -146,7 +147,7 @@ public class Autos extends SubsystemBase {
       e.printStackTrace();
     }
   }
-  
+
   public Command align(Pose2d goal) {
     return AutoBuilder.pathfindToPose(
         goal,
@@ -226,15 +227,17 @@ public class Autos extends SubsystemBase {
 
   private Command ML_L4_I() {
     return new InstantCommand(() -> setStartPose(paths.get("ML-I")))
-      .andThen(followPath(paths.get("ML-I"))
-      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(4)
-      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator))).withTimeout(5)
-      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem)).withTimeout(6)
-      .andThen(followPath(paths.get("I-CPR"))).withTimeout(13)
-      .andThen(new IntakeCoralCmd(m_coral, m_elevator, m_ledSubsytem)).withTimeout(14)
-      .andThen(followPath(paths.get("CPR-J"))).withTimeout(20)
-      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(21)
-      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)).withTimeout(23);
+      .andThen(followPath(paths.get("ML-I")))
+      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem))
+      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator))
+      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem))
+      // .andThen(new SetElevatorHeightCmdAuto(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem)).withTimeout(6)
+      // .andThen(followPath(paths.get("I-CPR"))).withTimeout(13)
+      // .andThen(new IntakeCoralCmd(m_coral, m_elevator, m_ledSubsytem)).withTimeout(14)
+      // .andThen(followPath(paths.get("CPR-J"))).withTimeout(20)
+      // .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(21)
+      // .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)).withTimeout(23);
+      ;
   }
 
   // private Command path_M_L4_H() {

@@ -201,11 +201,6 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
         currentPattern.atBrightness(Percent.of(40)).applyTo(rightSide);
         blinkyGreen.atBrightness(Percent.of(70)).applyTo(secretBuffer);
         lightStrip.setData(stripBuffer);
-      } else {
-        currentPattern.atBrightness(Percent.of(40)).applyTo(leftSide);
-        currentPattern.atBrightness(Percent.of(40)).applyTo(rightSide);
-        currentPattern.atBrightness(Percent.of(40)).applyTo(secretBuffer);
-        lightStrip.setData(stripBuffer);
       }
     }
   }

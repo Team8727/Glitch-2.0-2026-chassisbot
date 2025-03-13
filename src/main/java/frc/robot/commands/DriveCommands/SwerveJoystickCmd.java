@@ -60,12 +60,12 @@ public class SwerveJoystickCmd extends Command {
 
       // get elevator height for anti-tipping
       double elevatorHeight = m_Elevator.getElevatorHeight();
-      xSpeed = xSpeed * kSwerve.maxTransSpeed
-       * ((kElevator.ElevatorPosition.L4.getOutputRotations() - (elevatorHeight - 4)) / kElevator.ElevatorPosition.L4.getOutputRotations()); // * kSwerve.DriveSpeedScaling.minDriveSpeed; // Scaling to elevator height
-      ySpeed = ySpeed * kSwerve.maxTransSpeed
-       * ((kElevator.ElevatorPosition.L4.getOutputRotations() - (elevatorHeight - 4)) / kElevator.ElevatorPosition.L4.getOutputRotations()); // * kSwerve.DriveSpeedScaling.minDriveSpeed; // Scaling to elevator height
-      turningSpeed = turningSpeed * kSwerve.maxAngSpeed
-       * ((kElevator.ElevatorPosition.L4.getOutputRotations() - (elevatorHeight - 4)) / kElevator.ElevatorPosition.L4.getOutputRotations()); // * kSwerve.DriveSpeedScaling.minDriveSpeed; // Scaling to elevator height
+      xSpeed = -(xSpeed * kSwerve.maxTransSpeed
+       * ((kElevator.ElevatorPosition.L4.getOutputRotations() - (elevatorHeight - 4)) / kElevator.ElevatorPosition.L4.getOutputRotations())); // * kSwerve.DriveSpeedScaling.minDriveSpeed; // Scaling to elevator height
+      ySpeed = -(ySpeed * kSwerve.maxTransSpeed
+       * ((kElevator.ElevatorPosition.L4.getOutputRotations() - (elevatorHeight - 4)) / kElevator.ElevatorPosition.L4.getOutputRotations())); // * kSwerve.DriveSpeedScaling.minDriveSpeed; // Scaling to elevator height
+      turningSpeed = -(turningSpeed * kSwerve.maxAngSpeed
+       * ((kElevator.ElevatorPosition.L4.getOutputRotations() - (elevatorHeight - 4)) / kElevator.ElevatorPosition.L4.getOutputRotations())); // * kSwerve.DriveSpeedScaling.minDriveSpeed; // Scaling to elevator height
     
     } else {
       xSpeed *= kSwerve.maxTransSpeed;

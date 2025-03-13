@@ -16,6 +16,7 @@ public class DeployCoralCmd extends Command {
   private final Coral m_coral;
   private final LEDSubsystem m_ledSubsytem;
   private ElevatorPosition m_elevatorPosition;
+  private boolean isFinished = false;
 
   /** Creates a new coralDeployer. */
   public DeployCoralCmd(Coral coral, LEDSubsystem ledSubsystem, Elevator elevator) {
@@ -41,18 +42,22 @@ public class DeployCoralCmd extends Command {
     if (!m_coral.getFrontCoralSensor()) {
       m_coral.stopDeployer();
       m_coral.elevatorUp = false;
+      isFinished = true;
       this.cancel();
+
       // m_coral.setOutakePos(m_coral.frontMotor.getEncoder().getPosition()+1);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    isFinished = false;
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return isFinished;
   }
 }

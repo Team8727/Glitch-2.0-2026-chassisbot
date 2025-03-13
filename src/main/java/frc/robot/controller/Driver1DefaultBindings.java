@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.kElevator.ElevatorPosition;
 import frc.robot.commands.RemoveAlgaeCmd;
 import frc.robot.commands.SetElevatorHeightCmd;
+import frc.robot.commands.ZeroElevator;
 import frc.robot.commands.AlgaeIntake.IntakeAlgaeCmd;
 import frc.robot.commands.AlgaeIntake.ScoreAlgaeCmd;
 import frc.robot.commands.Coral.DeployCoralCmd;
@@ -94,7 +95,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
     controller.y().onTrue(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem));
 
     // zero elevator
-    // controller.leftStick().and(controller.rightStick()).onTrue(new InstantCommand(() -> m_elevator.resetElevatorEncoders()));
+    controller.rightTrigger().and(controller.rightBumper()).onTrue(new ZeroElevator(m_elevator));
     
     //                Algae Commands
     // Intake algae
