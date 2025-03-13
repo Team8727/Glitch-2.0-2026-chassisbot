@@ -6,10 +6,8 @@ package frc.robot.subsystems;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.NoSuchElementException;
 
 import org.json.simple.parser.ParseException;
-import org.opencv.core.Mat;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -20,16 +18,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.kSwerve;
 import frc.robot.Constants.kElevator.ElevatorPosition;
 import frc.robot.commands.Coral.DeployCoralCmd;
+import frc.robot.commands.Coral.IntakeCoralCmd;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.Coral.Coral;
 import frc.robot.utilities.NetworkTableLogger;
@@ -72,6 +69,11 @@ public class Autos extends SubsystemBase {
   private void loadPaths() {
     try {
     paths.put("M-H test", PathPlannerPath.fromPathFile("M-H test"));
+
+    loadPath("ML-I");
+    loadPath("I-CPR");
+    loadPath("CPR-J");
+    
     paths.put("L-I", PathPlannerPath.fromPathFile("L-I"));
     paths.put("M-L4-H", PathPlannerPath.fromChoreoTrajectory("M-L4-H"));
     // paths.put("Red-M-L4-H", PathPlannerPath.fromChoreoTrajectory("M-L4-H").flipPath());
@@ -92,8 +94,8 @@ public class Autos extends SubsystemBase {
     // loadPath("ML-L4-I");
     // loadPath("MR-L4-F");
     // loadPath("bareminimum");
-    loadPath("MR-L4-F");
-    loadPath("ML-L4-I");
+    loadPathChoreo("MR-L4-F");
+    loadPathChoreo("ML-L4-I");
     // loadPath("M-M+");
     } catch (IOException | ParseException e) {
       e.printStackTrace();
@@ -130,9 +132,17 @@ public class Autos extends SubsystemBase {
     return autoChooser;
   }
 
-  private void loadPath(String pathName) {
+  private void loadPathChoreo(String pathName) {
     try {
     paths.put(pathName, PathPlannerPath.fromChoreoTrajectory(pathName));
+    } catch (IOException | ParseException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void loadPath(String pathName) {
+    try {
+    paths.put(pathName, PathPlannerPath.fromPathFile(pathName));
     } catch (IOException | ParseException e) {
       e.printStackTrace();
     }
@@ -171,7 +181,7 @@ public class Autos extends SubsystemBase {
     if (DriverStation.getAlliance().get() ==  Alliance.Red) {
       startPose = path.flipPath().getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
     } else {
-      startPose = path.getStartingHolonomicPose().orElse(path.getStartingDifferentialPose()).rotateBy(new Rotation2d(Math.toRadians(180)));
+      startPose = path.getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
     }
     m_PoseEstimatior.resetPoseToPose2d(startPose);
   }
@@ -215,10 +225,16 @@ public class Autos extends SubsystemBase {
   }
 
   private Command ML_L4_I() {
-    return new InstantCommand(() -> setStartPose(paths.get("ML-L4-I")))
-      .andThen(followPath(paths.get("ML-L4-I"))//TODO: add correct path
-      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(2)
-      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)));
+    return new InstantCommand(() -> setStartPose(paths.get("ML-I")))
+      .andThen(followPath(paths.get("ML-I"))
+      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(4)
+      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator))).withTimeout(5)
+      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem)).withTimeout(6)
+      .andThen(followPath(paths.get("I-CPR"))).withTimeout(13)
+      .andThen(new IntakeCoralCmd(m_coral, m_elevator, m_ledSubsytem)).withTimeout(14)
+      .andThen(followPath(paths.get("CPR-J"))).withTimeout(20)
+      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(21)
+      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)).withTimeout(23);
   }
 
   // private Command path_M_L4_H() {
