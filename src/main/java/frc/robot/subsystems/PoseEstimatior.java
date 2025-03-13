@@ -139,6 +139,7 @@ public class PoseEstimatior extends SubsystemBase {
   public void resetPoseToPose2d(Pose2d pose2d) {
     // m_SwerveSubsystem.navX.setAngleAdjustment(pose2d.getRotation().getDegrees());
     m_SwervePoseEstimator.resetPose(pose2d);
+    // System.out.println(m_SwervePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
   }
 
   public void resetStartPose() {
@@ -217,10 +218,17 @@ public class PoseEstimatior extends SubsystemBase {
     // addVisionMeasurement(camera4, PoseEstimator4);
 
     // gyro update
-    m_SwervePoseEstimator.updateWithTime(
-      Timer.getFPGATimestamp(), 
-      m_SwerveSubsystem.getRotation2d(), 
-      m_SwerveSubsystem.modulePositions);
+    // if (Robot.isReal()) {
+      m_SwervePoseEstimator.updateWithTime(
+        Timer.getFPGATimestamp(), 
+        m_SwerveSubsystem.getRotation2d(), 
+        m_SwerveSubsystem.modulePositions);
+    // } else {
+    //   m_SwervePoseEstimator.updateWithTime(
+    //     Timer.getFPGATimestamp(), 
+    //     m_SwerveSubsystem.getRotation2d(), 
+    //     m_SwerveSubsystem.modulePositions);
+    // }
     // Update Field2d with pose to display the robot's visual position on the field to the dashboard
     field2d.setRobotPose(get2dPose());
 

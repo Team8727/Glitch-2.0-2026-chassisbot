@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Robot;
 import frc.robot.Constants.kElevator;
 import frc.robot.Constants.kOI;
 import frc.robot.Constants.kSwerve;
@@ -82,10 +83,10 @@ public class SwerveJoystickCmd extends Command {
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
     }
 
-    // if (RobotBase.isSimulation()) { 
-    //   double adjustedAngle = m_SwerveSubsystem.getHeading() + ((turningSpeed * 360) / (2 * Math.PI)) * 0.02;
-    //   m_SwerveSubsystem.navX.setAngleAdjustment(adjustedAngle);
-    // }
+    if (Robot.isSimulation()) { 
+      double adjustedAngle = m_SwerveSubsystem.navX.getAngle() + ((turningSpeed * 360) / (2 * Math.PI)) * 0.02;
+      m_SwerveSubsystem.navX.setAngleAdjustment(adjustedAngle);
+    }
     
     // Set the swerve module states
     SwerveModuleState[] moduleStates = kSwerve.kinematics.toSwerveModuleStates(chassisSpeeds);

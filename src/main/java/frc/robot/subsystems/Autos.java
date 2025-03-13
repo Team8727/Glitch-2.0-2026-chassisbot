@@ -146,6 +146,7 @@ public class Autos extends SubsystemBase {
       e.printStackTrace();
     }
   }
+  
   public Command align(Pose2d goal) {
     return AutoBuilder.pathfindToPose(
         goal,

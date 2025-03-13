@@ -78,25 +78,25 @@ public class Robot extends TimedRobot {
           //         new TrajectoryConfig(10, 5))); //TODO: get this from pathplanner somehow
           // });
           logger.logChassisSpeeds("speeds", chassisSpeeds);
-          // if (DriverStation.getAlliance().get() == Alliance.Blue) {
-          //   chassisSpeeds = new ChassisSpeeds(
-          //     chassisSpeeds.vxMetersPerSecond, 
-          //     chassisSpeeds.vyMetersPerSecond, 
-          //     chassisSpeeds.omegaRadiansPerSecond);
-          // }
+          if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            chassisSpeeds = new ChassisSpeeds(
+              -chassisSpeeds.vxMetersPerSecond, 
+              -chassisSpeeds.vyMetersPerSecond, 
+              -chassisSpeeds.omegaRadiansPerSecond);
+          }
           // Set the swerve module states
           SwerveModuleState[] moduleStates = kSwerve.autoKinematics.toSwerveModuleStates(
               ChassisSpeeds.fromRobotRelativeSpeeds(
               new ChassisSpeeds(
-                chassisSpeeds.vxMetersPerSecond, 
-                chassisSpeeds.vyMetersPerSecond, 
-                chassisSpeeds.omegaRadiansPerSecond), 
+                -chassisSpeeds.vxMetersPerSecond, 
+                -chassisSpeeds.vyMetersPerSecond, 
+                -chassisSpeeds.omegaRadiansPerSecond), 
               m_SwerveSubsystem.getRotation2d()));
 
-          // if (Robot.isSimulation()) { 
-          //   double adjustedAngle = m_SwerveSubsystem.getHeading() + ((chassisSpeeds.omegaRadiansPerSecond * 360) / (2 * Math.PI)) * 0.02;
-          //   m_SwerveSubsystem.navX.setAngleAdjustment(adjustedAngle);
-          // }
+          if (Robot.isSimulation()) { 
+            double adjustedAngle = m_SwerveSubsystem.navX.getAngle() + ((chassisSpeeds.omegaRadiansPerSecond * 360) / (2 * Math.PI)) * 0.02;
+            m_SwerveSubsystem.navX.setAngleAdjustment(adjustedAngle);
+          }
       
           logger.logSwerveModuleState("states", moduleStates);
           m_SwerveSubsystem.setModuleStates(moduleStates);

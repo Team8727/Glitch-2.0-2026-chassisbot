@@ -12,8 +12,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.kSwerve;
 import frc.robot.Constants.kSwerve.kModule;
+import frc.robot.Constants.kSwerve.kModule.kSteer;
 import frc.robot.utilities.MAXSwerve;
 import frc.robot.utilities.NetworkTableLogger;
 
@@ -93,11 +95,11 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getRotation2d() {
-    // if (Robot.isReal()) {
-    return navX.getRotation2d();
-    // } else {
-    //   return new Rotation2d(Math.toRadians(navX.getAngle()));
-    // }
+    if (Robot.isReal()) {
+      return navX.getRotation2d();
+    } else {
+      return new Rotation2d(Math.toRadians(navX.getAngle()));
+    }
   }
 
   @Override 
