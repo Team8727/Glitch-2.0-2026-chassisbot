@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
           //     chassisSpeeds.omegaRadiansPerSecond);
           // }
           // Set the swerve module states
-          SwerveModuleState[] moduleStates = kSwerve.kinematics.toSwerveModuleStates(
+          SwerveModuleState[] moduleStates = kSwerve.autoKinematics.toSwerveModuleStates(
               ChassisSpeeds.fromRobotRelativeSpeeds(
               new ChassisSpeeds(
                 chassisSpeeds.vxMetersPerSecond, 
