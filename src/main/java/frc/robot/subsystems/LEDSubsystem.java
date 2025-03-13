@@ -115,7 +115,7 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
     stripBuffer = new AddressableLEDBuffer(114); // Correct LED count
     leftSide = new AddressableLEDBufferView(stripBuffer, 0, 46);
     rightSide = new AddressableLEDBufferView(stripBuffer, 64, 113).reversed();
-    secretBuffer = new AddressableLEDBufferView(stripBuffer, 46, 64);
+    secretBuffer = new AddressableLEDBufferView(stripBuffer, 47, 63);
 
     lightStrip.setLength(stripBuffer.getLength());
 
