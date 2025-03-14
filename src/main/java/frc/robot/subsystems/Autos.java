@@ -234,14 +234,14 @@ public class Autos extends SubsystemBase {
       new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem),
       new WaitCommand(.5),
       new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator),
-      new SetElevatorHeightCmd(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem),
+      new SetElevatorHeightCmd(ElevatorPosition.L3, m_elevator, m_coral, m_ledSubsytem),
       new WaitCommand(.5),
-      followPath(paths.get("I-CPR")),
-      new IntakeCoralCmd(m_coral, m_elevator, m_ledSubsytem).withTimeout(1.5),
-      followPath(paths.get("CPR-J")),
-      new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem),
-      new WaitCommand(.5),
-      new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)
+      // followPath(paths.get("I-CPR")),
+      // new IntakeCoralCmd(m_coral, m_elevator, m_ledSubsytem).withTimeout(1.5),
+      // followPath(paths.get("CPR-J")),
+      // new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem),
+      // new WaitCommand(.5),
+      // new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)
     );
   }
 
