@@ -54,7 +54,7 @@ public class Elevator extends SubsystemBase {
 
   // Create a motion profile with the given maximum velocity and maximum
   // acceleration constraints for the next setpoint.
-  private final TrapezoidProfile m_profile =               //in/s
+  public final TrapezoidProfile m_profile =               //in/s
       new TrapezoidProfile(new TrapezoidProfile.Constraints(103.33, 307.85)); //TODO: SET THESE
   private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
   public TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
@@ -178,7 +178,7 @@ public class Elevator extends SubsystemBase {
     logger.logString("elevator level", targetHeight.toString());
     targetRotations = height_chosen.getOutputRotations();
     m_goal = new TrapezoidProfile.State(targetRotations, 0);
-    m_setpoint = new TrapezoidProfile.State(elevatorMotorR.getEncoder().getPosition(), elevatorMotorR.getEncoder().getVelocity());
+    m_setpoint = new TrapezoidProfile.State(elevatorMotorR.getEncoder().getPosition(), 0);
     // if (height_chosen == kElevator.ElevatorPosition.L1 && previousHeight == kElevator.ElevatorPosition.L4) {
     //   m_intermediate = new TrapezoidProfile.State(6, 20);
     // } else {
@@ -227,6 +227,7 @@ public class Elevator extends SubsystemBase {
     logger.logDouble("TrapezoidProfile", m_setpoint.position);
     logger.logDouble("simPosition", elevatorSim.getPositionMeters());
     logger.logDouble("actualPos", elevatorMotorR.getEncoder().getPosition());
+    logger.logDouble("goal", m_goal.position);
         
     //-=-=-=-=-=-=-=- Trapezoid Profile -=-=-=-=-=-=-=-
 
