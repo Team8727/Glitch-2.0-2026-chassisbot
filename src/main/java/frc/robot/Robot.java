@@ -93,10 +93,10 @@ public class Robot extends TimedRobot {
                 chassisSpeeds.omegaRadiansPerSecond), 
               m_SwerveSubsystem.getRotation2d()));
 
-          if (Robot.isSimulation()) { 
-            double adjustedAngle = m_SwerveSubsystem.navX.getAngle() + ((chassisSpeeds.omegaRadiansPerSecond * 360) / (2 * Math.PI)) * 0.02;
-            m_SwerveSubsystem.navX.setAngleAdjustment(adjustedAngle);
-          }
+          // if (Robot.isSimulation()) { 
+          //   double adjustedAngle = m_SwerveSubsystem.navX.getAngle() + ((chassisSpeeds.omegaRadiansPerSecond * 360) / (2 * Math.PI)) * 0.02;
+          //   m_SwerveSubsystem.navX.setAngleAdjustment(adjustedAngle);
+          // }
       
           logger.logSwerveModuleState("states", moduleStates);
           m_SwerveSubsystem.setModuleStates(moduleStates);

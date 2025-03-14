@@ -62,6 +62,4 @@ public class SetElevatorHeightCmd extends Command {
     // return false;
     return endCmd;
   }
-
-
 }
