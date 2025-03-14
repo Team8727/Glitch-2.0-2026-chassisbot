@@ -57,7 +57,7 @@ public class Elevator extends SubsystemBase {
   private final TrapezoidProfile m_profile =               //in/s
       new TrapezoidProfile(new TrapezoidProfile.Constraints(103.33, 307.85)); //TODO: SET THESE
   private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
-  private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+  public TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
   private TrapezoidProfile.State m_intermediate = new TrapezoidProfile.State();
 
