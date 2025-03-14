@@ -42,6 +42,8 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
 
   public boolean triggerSecretPattern = false;
 
+  private LEDPattern storedPattern;
+
   // Define LED Patterns
 
   // Blinking red pattern
@@ -89,7 +91,7 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
     Color.kRed);
   public LEDPattern elevatorProgressMap = LEDPattern.progressMaskLayer(
     () -> m_elevator.getElevatorHeight() / kElevator.ElevatorPosition.L4.getOutputRotations());
-  public LEDPattern elevatorProgress = elevatorProgressBase.mask(elevatorProgressMap);
+  public LEDPattern elevatorProgress = elevatorProgressBase.mask(elevatorProgressMap).mask(elevatorProgressMap.reversed());
   // Coral pickup pattern
   public LEDPattern coralPickup = LEDPattern.gradient(
     GradientType.kDiscontinuous, 
@@ -112,10 +114,10 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
   public LEDSubsystem(Elevator elevator) {
     // LED setup and port configuration
     lightStrip = new AddressableLED(5); // Correct PWM port
-    stripBuffer = new AddressableLEDBuffer(114); // Correct LED count
-    leftSide = new AddressableLEDBufferView(stripBuffer, 0, 46);
-    rightSide = new AddressableLEDBufferView(stripBuffer, 113, 64);
-    secretBuffer = new AddressableLEDBufferView(stripBuffer, 47, 63);
+    stripBuffer = new AddressableLEDBuffer(108); // Correct LED count
+    leftSide = new AddressableLEDBufferView(stripBuffer, 0, 41);
+    rightSide = new AddressableLEDBufferView(stripBuffer, 107, 60);
+    secretBuffer = new AddressableLEDBufferView(stripBuffer, 42, 59);
 
     lightStrip.setLength(stripBuffer.getLength());
 
@@ -196,13 +198,22 @@ public class LEDSubsystem extends SubsystemBase { // Fixed class name
       setPattern(green);
     }
     if (currentPattern != null) {
+      if (currentPattern != storedPattern && triggerSecretPattern) {
+        blinkyGreen.atBrightness(Percent.of(70)).applyTo(secretBuffer);
+        currentPattern = storedPattern;
+      } else if (currentPattern == storedPattern && triggerSecretPattern) {
+        blinkyGreen.atBrightness(Percent.of(70)).applyTo(secretBuffer);
+        currentPattern.mask(LEDPattern.steps(Map.of(0.0, Color.kWhite, 0.39, Color.kBlack, 0.55, Color.kWhite)));
+      } else {
+        storedPattern = currentPattern;
+      }
+    } else {
+      currentPattern.atBrightness(Percent.of(40)).applyTo(secretBuffer);
+    }
       currentPattern.atBrightness(Percent.of(40)).applyTo(leftSide);
       currentPattern.atBrightness(Percent.of(40)).applyTo(rightSide);
       if (triggerSecretPattern) {
-        blinkyGreen.atBrightness(Percent.of(70)).applyTo(secretBuffer);
-      } else {
-        currentPattern.atBrightness(Percent.of(40)).applyTo(secretBuffer);
-      }
+
       lightStrip.setData(stripBuffer);
     }
   }
