@@ -9,32 +9,22 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.LEDSubsystem;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Elevator.Elevator;
-import frc.robot.subsystems.Elevator.Coral.Coral;
 import frc.robot.Constants.kElevator.ElevatorPosition;
 
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SetElevatorHeightCmd extends Command {
+public class ZeroElevator extends Command {
   private final Elevator m_elevator;
-  private final ElevatorPosition m_scoreLevel;
-  private final LEDSubsystem m_ledSubsystem;
-  private final Coral m_coral;
-  private ElevatorPosition lastHeight = ElevatorPosition.L1;
-  private boolean run = true;
-  private boolean zero = false;
 
 
   /** Creates a new SetEvevatorHeightCmd. */
-  public SetElevatorHeightCmd(ElevatorPosition scoreLevel, Elevator elevator, Coral coral, LEDSubsystem ledSubsystem) {
+  public ZeroElevator(Elevator elevator) {
 
-    m_scoreLevel = scoreLevel;
     m_elevator = elevator;
-    m_ledSubsystem = ledSubsystem;
-    m_coral = coral;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator, coral, ledSubsystem);
+    addRequirements(elevator);
 
     // this.beforeStarting(() -> {
     //   m_coral.elevatorUp = true;
@@ -46,25 +36,29 @@ public class SetElevatorHeightCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (!m_coral.getBackCoralSensor()) {
-      System.out.println("Setting elevator height to " + m_scoreLevel);
-      m_elevator.setElevatorHeightMotionProfile(m_scoreLevel);
-    } else {
-      System.out.println("hey driver, are you trying to kill the elevator or something? please move the coral out of the way");
-    }
-    lastHeight = m_scoreLevel;
-    new WaitUntilCommand(() -> Math.abs(m_scoreLevel.getOutputRotations() - m_elevator.getElevatorHeight()) < 0.2).withTimeout(1);
-    this.cancel();
+    new SequentialCommandGroup(
+      new InstantCommand(() -> m_elevator.isHoming = true),
+      new WaitCommand(.1),
+      new InstantCommand(() -> m_elevator.setDutyCycle(-0.1)),
+      new WaitCommand(0.3),
+      new WaitUntilCommand(() -> m_elevator.getCurrentDrawAmps() > 35),
+      new InstantCommand(() -> m_elevator.resetElevatorEncoders()),
+      new InstantCommand(() -> m_elevator.isHoming = false),
+      new RunCommand(() -> this.cancel())).schedule();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {}
 
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {}
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     // return false;
-    return Math.abs(m_scoreLevel.getOutputRotations() - m_elevator.getElevatorHeight()) < 0.2;
+    return false;
   }
 }
