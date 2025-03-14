@@ -17,6 +17,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -225,19 +227,20 @@ public class Autos extends SubsystemBase {
       .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)));
   }
 
-  private Command ML_L4_I() {
-    return new InstantCommand(() -> setStartPose(paths.get("ML-I")))
-      .andThen(followPath(paths.get("ML-I")))
-      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem))
-      .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator))
-      .andThen(new SetElevatorHeightCmd(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem))
+  private SequentialCommandGroup ML_L4_I() {
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> setStartPose(paths.get("ML-I"))),
+      followPath(paths.get("ML-I")),
+      new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem).withTimeout(.5),
+      new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator),
+      new SetElevatorHeightCmd(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem).withTimeout(.5)
       // .andThen(new SetElevatorHeightCmdAuto(ElevatorPosition.L1, m_elevator, m_coral, m_ledSubsytem)).withTimeout(6)
       // .andThen(followPath(paths.get("I-CPR"))).withTimeout(13)
       // .andThen(new IntakeCoralCmd(m_coral, m_elevator, m_ledSubsytem)).withTimeout(14)
       // .andThen(followPath(paths.get("CPR-J"))).withTimeout(20)
       // .andThen(new SetElevatorHeightCmd(ElevatorPosition.L4, m_elevator, m_coral, m_ledSubsytem)).withTimeout(21)
       // .andThen(new DeployCoralCmd(m_coral, m_ledSubsytem, m_elevator)).withTimeout(23);
-      ;
+    );
   }
 
   // private Command path_M_L4_H() {

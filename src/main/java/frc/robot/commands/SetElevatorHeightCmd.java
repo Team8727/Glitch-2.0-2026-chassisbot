@@ -5,10 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.Coral.Coral;
@@ -21,10 +18,7 @@ public class SetElevatorHeightCmd extends Command {
   private final ElevatorPosition m_scoreLevel;
   private final LEDSubsystem m_ledSubsystem;
   private final Coral m_coral;
-  private ElevatorPosition lastHeight = ElevatorPosition.L1;
-  private boolean run = true;
-  private boolean zero = false;
-
+  private boolean endCmd = false; // flag to indicate when the command should end
 
   /** Creates a new SetEvevatorHeightCmd. */
   public SetElevatorHeightCmd(ElevatorPosition scoreLevel, Elevator elevator, Coral coral, LEDSubsystem ledSubsystem) {
@@ -35,12 +29,6 @@ public class SetElevatorHeightCmd extends Command {
     m_coral = coral;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator, coral, ledSubsystem);
-
-    // this.beforeStarting(() -> {
-    //   m_coral.elevatorUp = true;
-    //   new IntakeCoralCmd(m_coral, m_elevator, m_ledSubsystem);
-    // }, m_coral);
-
   }
 
   // Called when the command is initially scheduled.
@@ -52,19 +40,28 @@ public class SetElevatorHeightCmd extends Command {
     } else {
       System.out.println("hey driver, are you trying to kill the elevator or something? please move the coral out of the way");
     }
-    lastHeight = m_scoreLevel;
-    new WaitUntilCommand(() -> Math.abs(m_scoreLevel.getOutputRotations() - m_elevator.getElevatorHeight()) < 0.2).withTimeout(1);
-    this.cancel();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if (m_elevator.m_setpoint.position == m_scoreLevel.getOutputRotations()) {
+      endCmd = true; // set the endCmd to true when the elevator reaches the desired height
+    }
+  }
+
+  @Override 
+  public void end(boolean interrupted) {
+    System.out.println("SetElevatorHeightCmd ended");
+    endCmd = false; // reset the endCmd flag when the command ends
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     // return false;
-    return Math.abs(m_scoreLevel.getOutputRotations() - m_elevator.getElevatorHeight()) < 0.2;
+    return endCmd;
   }
+
+
 }
