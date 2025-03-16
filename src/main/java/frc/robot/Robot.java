@@ -83,10 +83,10 @@ public class Robot extends TimedRobot {
             SwerveModuleState[] moduleStates = kSwerve.autoKinematics.toSwerveModuleStates(
               ChassisSpeeds.fromRobotRelativeSpeeds(
               new ChassisSpeeds(
-                -chassisSpeeds.vxMetersPerSecond, 
-                -chassisSpeeds.vyMetersPerSecond, 
-                -chassisSpeeds.omegaRadiansPerSecond), 
-              m_SwerveSubsystem.getRotation2d().plus(new Rotation2d(Math.toDegrees(180)))));
+                chassisSpeeds.vxMetersPerSecond, 
+                chassisSpeeds.vyMetersPerSecond, 
+                chassisSpeeds.omegaRadiansPerSecond), 
+              m_SwerveSubsystem.getRotation2d()));
             logger.logSwerveModuleState("states", moduleStates);
             m_SwerveSubsystem.setModuleStates(moduleStates);
           } else {
@@ -94,10 +94,10 @@ public class Robot extends TimedRobot {
             SwerveModuleState[] moduleStates = kSwerve.autoKinematics.toSwerveModuleStates(
               ChassisSpeeds.fromRobotRelativeSpeeds(
               new ChassisSpeeds(
-                -chassisSpeeds.vxMetersPerSecond, 
-                -chassisSpeeds.vyMetersPerSecond, 
-                -chassisSpeeds.omegaRadiansPerSecond), 
-              m_SwerveSubsystem.getRotation2d().plus(new Rotation2d(Math.toDegrees(180)))));
+                chassisSpeeds.vxMetersPerSecond, 
+                chassisSpeeds.vyMetersPerSecond, 
+                chassisSpeeds.omegaRadiansPerSecond), 
+              m_SwerveSubsystem.getRotation2d()));
             logger.logSwerveModuleState("states", moduleStates);
             m_SwerveSubsystem.setModuleStates(moduleStates);      
           }
