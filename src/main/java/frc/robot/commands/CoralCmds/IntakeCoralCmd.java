@@ -43,7 +43,7 @@ public class IntakeCoralCmd extends Command {
       //   // m_ledSubsystem.activateSecretPattern(!m_coral.getBackCoralSensor());
       //   // Thread.currentThread().interrupt();
       // }).start();
-      m_ledSubsystem.setPattern(LEDPatterns.blinkyGreen);;
+      m_ledSubsystem.setPattern(LEDPatterns.blinkyGreen);
     }
   }
 
@@ -70,8 +70,7 @@ public class IntakeCoralCmd extends Command {
   public void end(boolean interrupted) {
     m_coral.setIntakeSpeedDuty(0);
     m_coral.setOuttakeSpeedDuty(0);
-    m_ledSubsystem.setPattern(LEDSubsystem.defaultPattern);
-    end = false;
+    m_ledSubsystem.setPatternForDuration(LEDSubsystem.defaultPattern, 0.5);
   }
 
   // Returns true when the command should end.
