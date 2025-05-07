@@ -20,10 +20,11 @@ public class LEDSubsystem extends SubsystemBase {
   private AddressableLEDBuffer fakeBuffer;
   private boolean altLogic = false;
   private boolean noiseLogic = false;
-  private LEDPattern firePattern;
+  private LEDPattern firePattern = LEDPatterns.theCoolerGreen;
   private LEDPattern noisePattern;
   private boolean fireViews;
   private boolean skipUpdate = false;
+  private AddressableLEDBuffer fakeBuffer;
 
 
   // HACK: Flip blue and green channels on real robot until we figure out 
