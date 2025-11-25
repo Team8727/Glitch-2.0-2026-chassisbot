@@ -139,13 +139,13 @@ public class Driver1DefaultBindings implements ControllerBindings {
       controller.povRight().onTrue(new ScoreCoralGroundCmd(groundIntakePivot, groundIntakeRollers, ledSubsystem));
     // -=-=-=-=-=-=- Elevator Commands -=-=-=-=-=-=-
       // Elevator L1
-      controller.x().onTrue(new SetElevatorHeightCmd(Elevator.ElevatorPosition.L1, elevator, frontCoralRoller, ledSubsystem, ledPatterns).andThen(new PrintCommand("hihih")));
+      controller.x().onTrue(new SetElevatorHeightCmd(Elevator.ElevatorPosition.L1, elevator, frontCoralRoller, ledSubsystem).andThen(new PrintCommand("hihih")));
       // Elevator L2
-      controller.a().onTrue(new SetElevatorHeightCmd(Elevator.ElevatorPosition.L2, elevator, frontCoralRoller, ledSubsystem, ledPatterns));
+      controller.a().onTrue(new SetElevatorHeightCmd(Elevator.ElevatorPosition.L2, elevator, frontCoralRoller, ledSubsystem));
       // Elevator L3
-      controller.b().onTrue(new SetElevatorHeightCmd(Elevator.ElevatorPosition.L3, elevator, frontCoralRoller, ledSubsystem, ledPatterns));
+      controller.b().onTrue(new SetElevatorHeightCmd(Elevator.ElevatorPosition.L3, elevator, frontCoralRoller, ledSubsystem));
       // Elevator L4
-      controller.y().onTrue(new SetElevatorHeightCmd(Elevator.ElevatorPosition.L4, elevator, frontCoralRoller, ledSubsystem, ledPatterns));
+      controller.y().onTrue(new SetElevatorHeightCmd(Elevator.ElevatorPosition.L4, elevator, frontCoralRoller, ledSubsystem));
 
       // Zero elevator (back button is the left small button on the controller near the top)
       controller.back().onTrue(new ZeroElevator(elevator));
