@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Autos;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator.AlgaeRemover.AlgaeRemoverPivot;
 import frc.robot.subsystems.Elevator.AlgaeRemover.AlgaeRemoverRollers;
 import frc.robot.subsystems.Elevator.Coral.BackCoralRoller;
@@ -48,8 +49,8 @@ public class Robot extends TimedRobot {
   private final Vision m_Vision = new Vision();
   private final PoseEstimator m_PoseEstimator = new PoseEstimator(m_SwerveSubsystem, m_Vision);
   private final Elevator m_elevator = new Elevator();
-  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem(m_elevator);
-  private final LEDPatterns m_ledPatterns = new LEDPatterns(m_elevator);
+  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
+  private final LEDPatterns m_ledPatterns = new LEDPatterns();
   private final NetworkTableLogger logger = new NetworkTableLogger("SHOW UPPPP");
   private final AlgaeRemoverRollers m_AlgeaRemoverRollers = new AlgaeRemoverRollers();
   private final AlgaeRemoverPivot m_AlgaeRemoverPivot = new AlgaeRemoverPivot();
@@ -179,7 +180,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
 
-    m_ledSubsystem.fireAnimation(LEDPatterns.theCoolerGreen, true);
+    m_ledSubsystem.setPatternForDuration(LEDPatterns.theCoolerGreen, 0);
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
