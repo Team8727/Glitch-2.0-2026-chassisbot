@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Autos;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator.AlgaeRemover.AlgaeRemoverPivot;
 import frc.robot.subsystems.Elevator.AlgaeRemover.AlgaeRemoverRollers;
 import frc.robot.subsystems.Elevator.Coral.BackCoralRoller;
@@ -27,7 +26,7 @@ import frc.robot.subsystems.Elevator.Coral.FrontCoralRoller;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.GroundIntake.GroundIntakePivot;
 import frc.robot.subsystems.GroundIntake.GroundIntakeRollers;
-import frc.robot.subsystems.LEDs.LEDPatterns;
+import frc.robot.subsystems.LEDs.GlitchLEDPatterns;
 import frc.robot.subsystems.LEDs.LEDSubsystem;
 import frc.robot.pose.PoseEstimator;
 import frc.robot.vision.Vision;
@@ -49,8 +48,8 @@ public class Robot extends TimedRobot {
   private final Vision m_Vision = new Vision();
   private final PoseEstimator m_PoseEstimator = new PoseEstimator(m_SwerveSubsystem, m_Vision);
   private final Elevator m_elevator = new Elevator();
-  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
-  private final LEDPatterns m_ledPatterns = new LEDPatterns();
+  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
+  private final GlitchLEDPatterns m_ledPatterns = new GlitchLEDPatterns();
   private final NetworkTableLogger logger = new NetworkTableLogger("SHOW UPPPP");
   private final AlgaeRemoverRollers m_AlgeaRemoverRollers = new AlgaeRemoverRollers();
   private final AlgaeRemoverPivot m_AlgaeRemoverPivot = new AlgaeRemoverPivot();
@@ -153,7 +152,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    m_ledSubsystem.setPattern(LEDPatterns.purple);
+    m_ledSubsystem.setPattern(GlitchLEDPatterns.purple);
   }
 
   /** This function is called periodically during disabled. */
@@ -165,7 +164,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
     m_robotContainer.autonomousInit();
-    m_ledSubsystem.setPattern(LEDPatterns.rainbow);
+    m_ledSubsystem.setPattern(GlitchLEDPatterns.rainbow);
 
     m_Autos.selectAuto(); //Only enable this if you want the robot to do stuff during autonomous
 
@@ -180,8 +179,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
 
-    m_ledSubsystem.setPatternForDuration(LEDPatterns.theCoolerGreen, 0);
-
+    m_ledSubsystem.setPattern(GlitchLEDPatterns.fire(LEDSubsystem.defaultPattern));
+    
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
