@@ -22,7 +22,6 @@ import frc.robot.subsystems.Elevator.Coral.FrontCoralRoller;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.GroundIntake.GroundIntakePivot;
 import frc.robot.subsystems.GroundIntake.GroundIntakeRollers;
-import frc.robot.subsystems.LEDs.LEDPatterns;
 import frc.robot.subsystems.LEDs.LEDSubsystem;
 import frc.robot.pose.PoseEstimator; // updated package
 import Glitch.Lib.Swerve.RevSwerve;
@@ -38,7 +37,6 @@ public class Driver1DefaultBindings implements ControllerBindings {
   private final FrontCoralRoller frontCoralRoller;
   private final Elevator elevator;
   private final LEDSubsystem ledSubsystem;
-  private final LEDPatterns ledPatterns;
   private final AlgaeRemoverPivot algaeRemoverPivot;
   private final AlgaeRemoverRollers algaeRemoverRollers;
   private final Autos autos;
@@ -52,7 +50,6 @@ public class Driver1DefaultBindings implements ControllerBindings {
       FrontCoralRoller frontCoralRoller,
       Elevator elevator,
       LEDSubsystem ledSubsystem,
-      LEDPatterns ledPatterns,
       AlgaeRemoverPivot algaeRemoverPivot,
       AlgaeRemoverRollers algaeRemoverRollers,
       Autos autos,
@@ -64,7 +61,6 @@ public class Driver1DefaultBindings implements ControllerBindings {
     this.backCoralRoller = backCoralRoller;
     this.elevator = elevator;
     this.ledSubsystem = ledSubsystem;
-    this.ledPatterns = ledPatterns;
     this.algaeRemoverPivot = algaeRemoverPivot;
     this.algaeRemoverRollers = algaeRemoverRollers;
     this.autos = autos;
@@ -83,7 +79,6 @@ public class Driver1DefaultBindings implements ControllerBindings {
       BackCoralRoller backCoralRoller,
       Elevator elevator,
       LEDSubsystem ledSubsystem,
-      LEDPatterns ledPatterns,
       AlgaeRemoverPivot algaeRemoverPivot,
       AlgaeRemoverRollers algaeRemoverRollers,
       Autos autos,
@@ -95,7 +90,6 @@ public class Driver1DefaultBindings implements ControllerBindings {
     this.backCoralRoller = backCoralRoller;
     this.elevator = elevator;
     this.ledSubsystem = ledSubsystem;
-    this.ledPatterns = ledPatterns;
     this.algaeRemoverPivot = algaeRemoverPivot;
     this.algaeRemoverRollers = algaeRemoverRollers;
     this.autos = autos;
