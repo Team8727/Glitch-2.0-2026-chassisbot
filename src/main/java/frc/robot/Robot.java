@@ -18,7 +18,9 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Autos;
+import frc.robot.subsystems.CTRESwerveDrivetrain;
 import frc.robot.subsystems.Elevator.AlgaeRemover.AlgaeRemoverPivot;
 import frc.robot.subsystems.Elevator.AlgaeRemover.AlgaeRemoverRollers;
 import frc.robot.subsystems.Elevator.Coral.BackCoralRoller;
@@ -43,10 +45,10 @@ import java.io.IOException;
 public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
-//  private final CommandSwerveDrivetrain CTREdrivetrain = TunerConstants.createDrivetrain();
-  private final RevSwerve m_SwerveSubsystem = new RevSwerveSubsystem();
+  private final CTRESwerveDrivetrain CTREdrivetrain = TunerConstants.createDrivetrain();
+//  private final RevSwerve m_SwerveSubsystem = new RevSwerveSubsystem();
   private final Vision m_Vision = new Vision();
-  private final PoseEstimator m_PoseEstimator = new PoseEstimator(m_SwerveSubsystem, m_Vision);
+//  private final PoseEstimator m_PoseEstimator = new PoseEstimator(m_SwerveSubsystem, m_Vision);
   private final Elevator m_elevator = new Elevator();
   private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
   private final GlitchLEDPatterns m_ledPatterns = new GlitchLEDPatterns();
@@ -57,7 +59,7 @@ public class Robot extends TimedRobot {
   private final BackCoralRoller backCoralRoller = new BackCoralRoller();
   private final GroundIntakePivot groundIntakePivot = new GroundIntakePivot();
   private final GroundIntakeRollers groundIntakeRollers = new GroundIntakeRollers();
-  private final Autos m_Autos = new Autos(m_ledSubsystem, frontCoralRoller, backCoralRoller, m_elevator, m_PoseEstimator);
+//  private final Autos m_Autos = new Autos(m_ledSubsystem, frontCoralRoller, backCoralRoller, m_elevator, m_PoseEstimator);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -65,43 +67,42 @@ public class Robot extends TimedRobot {
    */
   public Robot() {
     // Configure PathPlanner's AutoBuilder
-    try {
-      AutoBuilder.configure(
-          m_PoseEstimator::get2dPose,
-          m_PoseEstimator::resetPoseToPose2d,
-          m_SwerveSubsystem::getChassisSpeeds,
-          (chassisSpeeds, driveff) -> { // drive command
-            // INVERT IF THINGS ARE GOING BACKWARDS
-            // if (Robot.isRedAlliance()) {
-            //   chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond, -chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
-            // }
-            m_SwerveSubsystem.setChassisSpeeds(chassisSpeeds);
-          },
-          new PPHolonomicDriveController(
-            new PIDConstants(
-              8,
-              0,
-              0),
-            new PIDConstants(
-              4,
-              0,
-              0)),
-        RobotConfig.fromGUISettings(),
-        Robot::isRedAlliance,
-        // requirements
-        m_SwerveSubsystem,
-        m_PoseEstimator);
-    } catch (IOException | ParseException e) {
-      System.out.println("ERROR: Could not process pathplanner config");
-      throw new RuntimeException(e);
-    }
+//    try {
+//      AutoBuilder.configure(
+//          m_PoseEstimator::get2dPose,
+//          m_PoseEstimator::resetPoseToPose2d,
+//          m_SwerveSubsystem::getChassisSpeeds,
+//          (chassisSpeeds, driveff) -> { // drive command
+//            // INVERT IF THINGS ARE GOING BACKWARDS
+//            // if (Robot.isRedAlliance()) {
+//            //   chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond, -chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
+//            // }
+//            m_SwerveSubsystem.setChassisSpeeds(chassisSpeeds);
+//          },
+//          new PPHolonomicDriveController(
+//            new PIDConstants(
+//              8,
+//              0,
+//              0),
+//            new PIDConstants(
+//              4,
+//              0,
+//              0)),
+//        RobotConfig.fromGUISettings(),
+//        Robot::isRedAlliance,
+//        // requirements
+//        m_SwerveSubsystem,
+//        m_PoseEstimator);
+//    } catch (IOException | ParseException e) {
+//      System.out.println("ERROR: Could not process pathplanner config");
+//      throw new RuntimeException(e);
+//    }
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer =
         new RobotContainer(
-          m_SwerveSubsystem,
-          m_PoseEstimator,
+          CTREdrivetrain,
           groundIntakePivot,
           groundIntakeRollers,
           m_AlgaeRemoverPivot,
@@ -109,13 +110,13 @@ public class Robot extends TimedRobot {
           frontCoralRoller,
           backCoralRoller,
           m_elevator,
-          m_ledSubsystem,
-          m_Autos
+          m_ledSubsystem
+//          m_Autos
             );
     
     // Load autos into chooser and use SmartDashboard to publish
-    m_Autos.setupAutoChooser();
-    SmartDashboard.putData("Auto choices", m_Autos.getAutoChooser());
+//    m_Autos.setupAutoChooser();
+//    SmartDashboard.putData("Auto choices", m_Autos.getAutoChooser());
 
     // Set Up PathPlanner to "warm up" the pathplanning system
     PathfindingCommand.warmupCommand().schedule();
@@ -165,7 +166,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.autonomousInit();
     m_ledSubsystem.setPattern(GlitchLEDPatterns.rainbow);
 
-    m_Autos.selectAuto(); //Only enable this if you want the robot to do stuff during autonomous
+//    m_Autos.selectAuto(); //Only enable this if you want the robot to do stuff during autonomous
 
   }
 

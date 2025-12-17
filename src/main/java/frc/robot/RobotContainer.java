@@ -27,8 +27,8 @@ import frc.robot.subsystems.CTRESwerveDrivetrain;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final CTRESwerveDrivetrain drivetrain; // Command-based CTRE swerve drivetrain subsystem
-  private final RevSwerve m_SwerveSubsystem; // Swerve subsystem
-  private final PoseEstimator m_PoseEstimator; // Pose estimation subsystem
+//  private final RevSwerve m_SwerveSubsystem; // Swerve subsystem
+//  private final PoseEstimator m_PoseEstimator; // Pose estimation subsystem
   private final GroundIntakePivot groundIntakePivot; // Ground intake pivot subsystem
   private final GroundIntakeRollers groundIntakeRollers; // Ground intake rollers subsystem
   private final AlgaeRemoverPivot m_AlgaeRemoverPivot; // Algae remover pivot subsystem
@@ -37,7 +37,7 @@ public class RobotContainer {
   private final BackCoralRoller backCoralRoller; // back coral roller subsystem
   private final Elevator m_elevator; // Elevator subsystem
   private final LEDSubsystem m_ledSubsystem; // LED subsystem
-  private final Autos m_Autos; // Autonomous routines subsystem
+//  private final Autos m_Autos; // Autonomous routines subsystem
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
 
@@ -68,8 +68,8 @@ public class RobotContainer {
     Autos autos
   ) {
     this.drivetrain = null;
-    m_SwerveSubsystem = swerveSubsystem;
-    m_PoseEstimator = poseEstimator;
+//    m_SwerveSubsystem = swerveSubsystem;
+//    m_PoseEstimator = poseEstimator;
     this.groundIntakePivot = groundIntakePivot;
     this.groundIntakeRollers = groundIntakeRollers;
     this.frontCoralRoller = frontCoralRoller;
@@ -78,10 +78,10 @@ public class RobotContainer {
     m_AlgaeRemoverRollers = AlgaeRemoverRollers;
     m_elevator = elevator;
     m_ledSubsystem = ledSubsystem;
-    m_Autos = autos;
+//    m_Autos = autos;
 
     // Setup the autonomous chooser
-    m_Autos.setupAutoChooser();
+//    m_Autos.setupAutoChooser();
   }
 
   /**
@@ -94,7 +94,6 @@ public class RobotContainer {
    * @param AlgaeRemoverRollers The algae remover rollers subsystem
    * @param elevator The elevator subsystem
    * @param ledSubsystem The LED subsystem
-   * @param autos The autonomous routines subsystem
    */
   public RobotContainer(
     CTRESwerveDrivetrain drivetrain,
@@ -105,12 +104,12 @@ public class RobotContainer {
     FrontCoralRoller frontCoralRoller,
     BackCoralRoller backCoralRoller,
     Elevator elevator,
-    LEDSubsystem ledSubsystem,
-    Autos autos
+    LEDSubsystem ledSubsystem
+//    Autos autos
   ) {
     this.drivetrain = drivetrain;
-    m_SwerveSubsystem = null;
-    m_PoseEstimator = null;
+//    m_SwerveSubsystem = null;
+//    m_PoseEstimator = null;
     this.groundIntakePivot = groundIntakePivot;
     this.groundIntakeRollers = groundIntakeRollers;
     this.frontCoralRoller = frontCoralRoller;
@@ -119,10 +118,10 @@ public class RobotContainer {
     m_AlgaeRemoverRollers = AlgaeRemoverRollers;
     m_elevator = elevator;
     m_ledSubsystem = ledSubsystem;
-    m_Autos = autos;
+//    m_Autos = autos;
 
     // Setup the autonomous chooser
-    m_Autos.setupAutoChooser();
+//    m_Autos.setupAutoChooser();
   }
 
   /**
@@ -132,19 +131,17 @@ public class RobotContainer {
   public void teleopInit() {
     m_mainController.applyBindings(
       new Driver1DefaultBindings(
-        m_SwerveSubsystem,
-        m_PoseEstimator,
-        groundIntakePivot,
-        groundIntakeRollers,
-        frontCoralRoller,
+              drivetrain,
+              groundIntakePivot,
+              groundIntakeRollers,
         backCoralRoller,
-        m_elevator,
-        m_ledSubsystem,
-        m_AlgaeRemoverPivot,
-        m_AlgaeRemoverRollers,
-        m_Autos,
-        m_mainController.getController()
-      )
+        frontCoralRoller,
+              m_elevator,
+              m_ledSubsystem,
+              m_AlgaeRemoverPivot,
+              m_AlgaeRemoverRollers,
+              m_mainController.getController()
+            )
     );
     // Uncomment the following block to apply bindings for the assist controller
     /*

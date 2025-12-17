@@ -30,7 +30,7 @@ import Glitch.Lib.Swerve.RevSwerve;
  * Default teleop controller bindings for the robot.
  */
 public class Driver1DefaultBindings implements ControllerBindings {
-  private final PoseEstimator poseEstimator;
+//  private final PoseEstimator poseEstimator;
   private final GroundIntakePivot groundIntakePivot;
   private final GroundIntakeRollers groundIntakeRollers;
   private final BackCoralRoller backCoralRoller;
@@ -39,11 +39,11 @@ public class Driver1DefaultBindings implements ControllerBindings {
   private final LEDSubsystem ledSubsystem;
   private final AlgaeRemoverPivot algaeRemoverPivot;
   private final AlgaeRemoverRollers algaeRemoverRollers;
-  private final Autos autos;
+//  private final Autos autos;
 
   public Driver1DefaultBindings(
       CTRESwerveDrivetrain drivetrain,
-      PoseEstimator poseEstimator,
+//      PoseEstimator poseEstimator,
       GroundIntakePivot groundIntakePivot,
       GroundIntakeRollers groundIntakeRollers,
       BackCoralRoller backCoralRoller,
@@ -52,9 +52,9 @@ public class Driver1DefaultBindings implements ControllerBindings {
       LEDSubsystem ledSubsystem,
       AlgaeRemoverPivot algaeRemoverPivot,
       AlgaeRemoverRollers algaeRemoverRollers,
-      Autos autos,
+//      Autos autos,
       CommandXboxController controller) {
-    this.poseEstimator = poseEstimator;
+//    this.poseEstimator = poseEstimator;
     this.groundIntakePivot = groundIntakePivot;
     this.groundIntakeRollers = groundIntakeRollers;
     this.frontCoralRoller = frontCoralRoller;
@@ -63,7 +63,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
     this.ledSubsystem = ledSubsystem;
     this.algaeRemoverPivot = algaeRemoverPivot;
     this.algaeRemoverRollers = algaeRemoverRollers;
-    this.autos = autos;
+//    this.autos = autos;
 
     new CTReSwerveControls(drivetrain, controller);
 
@@ -83,7 +83,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
       AlgaeRemoverRollers algaeRemoverRollers,
       Autos autos,
       CommandXboxController controller) {
-    this.poseEstimator = poseEstimator;
+//    this.poseEstimator = poseEstimator;
     this.groundIntakePivot = groundIntakePivot;
     this.groundIntakeRollers = groundIntakeRollers;
     this.frontCoralRoller = frontCoralRoller;
@@ -92,7 +92,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
     this.ledSubsystem = ledSubsystem;
     this.algaeRemoverPivot = algaeRemoverPivot;
     this.algaeRemoverRollers = algaeRemoverRollers;
-    this.autos = autos;
+//    this.autos = autos;
 
     swerveSubsystem.setDefaultCommand(
       new SwerveJoystickCmd(
@@ -110,11 +110,11 @@ public class Driver1DefaultBindings implements ControllerBindings {
   public void bind(CommandXboxController controller) {
     // -=-=-=-=-=-=- Drive Commands -=-=-=-=-=-=-
       // Zero heading
-      controller.start().onTrue(new InstantCommand(poseEstimator::zeroHeading));
-      // Auto align right
-      controller.rightBumper().and(controller.rightTrigger().negate()).onTrue(new InstantCommand(() -> autos.alignToClosestSide(true))); // Align to closest side when POV right is pressed
-      // Auto align left
-      controller.leftBumper().and(controller.leftTrigger().negate()).onTrue(new InstantCommand(() -> autos.alignToClosestSide(false))); // Align to closest side when POV left is pressed
+//      controller.start().onTrue(new InstantCommand(poseEstimator::zeroHeading));
+//      // Auto align right
+//      controller.rightBumper().and(controller.rightTrigger().negate()).onTrue(new InstantCommand(() -> autos.alignToClosestSide(true))); // Align to closest side when POV right is pressed
+//      // Auto align left
+//      controller.leftBumper().and(controller.leftTrigger().negate()).onTrue(new InstantCommand(() -> autos.alignToClosestSide(false))); // Align to closest side when POV left is pressed
 
     // -=-=-=-=-=-=- Coral Commands -=-=-=-=-=-=-
       // intake coral
