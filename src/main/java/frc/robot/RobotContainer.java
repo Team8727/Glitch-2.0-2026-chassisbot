@@ -29,60 +29,60 @@ public class RobotContainer {
   private final CTRESwerveDrivetrain drivetrain; // Command-based CTRE swerve drivetrain subsystem
 //  private final RevSwerve m_SwerveSubsystem; // Swerve subsystem
 //  private final PoseEstimator m_PoseEstimator; // Pose estimation subsystem
-  private final GroundIntakePivot groundIntakePivot; // Ground intake pivot subsystem
-  private final GroundIntakeRollers groundIntakeRollers; // Ground intake rollers subsystem
-  private final AlgaeRemoverPivot m_AlgaeRemoverPivot; // Algae remover pivot subsystem
-  private final AlgaeRemoverRollers m_AlgaeRemoverRollers; // Algae remover rollers subsystem
-  private final FrontCoralRoller frontCoralRoller; // front coral roller subsystem
-  private final BackCoralRoller backCoralRoller; // back coral roller subsystem
-  private final Elevator m_elevator; // Elevator subsystem
-  private final LEDSubsystem m_ledSubsystem; // LED subsystem
+//  private final GroundIntakePivot groundIntakePivot; // Ground intake pivot subsystem
+//  private final GroundIntakeRollers groundIntakeRollers; // Ground intake rollers subsystem
+//  private final AlgaeRemoverPivot m_AlgaeRemoverPivot; // Algae remover pivot subsystem
+//  private final AlgaeRemoverRollers m_AlgaeRemoverRollers; // Algae remover rollers subsystem
+//  private final FrontCoralRoller frontCoralRoller; // front coral roller subsystem
+//  private final BackCoralRoller backCoralRoller; // back coral roller subsystem
+//  private final Elevator m_elevator; // Elevator subsystem
+  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance(); // LED subsystem
 //  private final Autos m_Autos; // Autonomous routines subsystem
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
 
-  /**
-   * Constructor for RobotContainer when using a REV Swerve subsystem.
-   *
-   * @param swerveSubsystem The swerve subsystem
-   * @param poseEstimator The pose estimator subsystem
-   * @param groundIntakePivot The ground intake pivot subsystem
-   * @param groundIntakeRollers The ground intake rollers subsystem
-   * @param AlgaeRemoverPivot The algae remover pivot subsystem
-   * @param AlgaeRemoverRollers The algae remover rollers subsystem
-   * @param elevator The elevator subsystem
-   * @param ledSubsystem The LED subsystem
-   * @param autos The autonomous routines subsystem
-   */
-  public RobotContainer(
-    RevSwerve swerveSubsystem,
-    PoseEstimator poseEstimator,
-    GroundIntakePivot groundIntakePivot,
-    GroundIntakeRollers groundIntakeRollers,
-    AlgaeRemoverPivot AlgaeRemoverPivot,
-    AlgaeRemoverRollers AlgaeRemoverRollers,
-    FrontCoralRoller frontCoralRoller,
-    BackCoralRoller backCoralRoller,
-    Elevator elevator,
-    LEDSubsystem ledSubsystem,
-    Autos autos
-  ) {
-    this.drivetrain = null;
-//    m_SwerveSubsystem = swerveSubsystem;
-//    m_PoseEstimator = poseEstimator;
-    this.groundIntakePivot = groundIntakePivot;
-    this.groundIntakeRollers = groundIntakeRollers;
-    this.frontCoralRoller = frontCoralRoller;
-    this.backCoralRoller = backCoralRoller;
-    m_AlgaeRemoverPivot = AlgaeRemoverPivot;
-    m_AlgaeRemoverRollers = AlgaeRemoverRollers;
-    m_elevator = elevator;
-    m_ledSubsystem = ledSubsystem;
-//    m_Autos = autos;
-
-    // Setup the autonomous chooser
-//    m_Autos.setupAutoChooser();
-  }
+//  /**
+//   * Constructor for RobotContainer when using a REV Swerve subsystem.
+//   *
+//   * @param swerveSubsystem The swerve subsystem
+//   * @param poseEstimator The pose estimator subsystem
+//   * @param groundIntakePivot The ground intake pivot subsystem
+//   * @param groundIntakeRollers The ground intake rollers subsystem
+//   * @param AlgaeRemoverPivot The algae remover pivot subsystem
+//   * @param AlgaeRemoverRollers The algae remover rollers subsystem
+//   * @param elevator The elevator subsystem
+//   * @param ledSubsystem The LED subsystem
+//   * @param autos The autonomous routines subsystem
+//   */
+//  public RobotContainer(
+//    RevSwerve swerveSubsystem,
+//    PoseEstimator poseEstimator,
+//    GroundIntakePivot groundIntakePivot,
+//    GroundIntakeRollers groundIntakeRollers,
+//    AlgaeRemoverPivot AlgaeRemoverPivot,
+//    AlgaeRemoverRollers AlgaeRemoverRollers,
+//    FrontCoralRoller frontCoralRoller,
+//    BackCoralRoller backCoralRoller,
+//    Elevator elevator,
+//    LEDSubsystem ledSubsystem,
+//    Autos autos
+//  ) {
+//    this.drivetrain = null;
+////    m_SwerveSubsystem = swerveSubsystem;
+////    m_PoseEstimator = poseEstimator;
+////    this.groundIntakePivot = groundIntakePivot;
+////    this.groundIntakeRollers = groundIntakeRollers;
+////    this.frontCoralRoller = frontCoralRoller;
+////    this.backCoralRoller = backCoralRoller;
+////    m_AlgaeRemoverPivot = AlgaeRemoverPivot;
+////    m_AlgaeRemoverRollers = AlgaeRemoverRollers;
+////    m_elevator = elevator;
+//    m_ledSubsystem = ledSubsystem;
+////    m_Autos = autos;
+//
+//    // Setup the autonomous chooser
+////    m_Autos.setupAutoChooser();
+//  }
 
   /**
    * Constructor for RobotContainer when using a CTRE drivetrain.
@@ -96,28 +96,26 @@ public class RobotContainer {
    * @param ledSubsystem The LED subsystem
    */
   public RobotContainer(
-    CTRESwerveDrivetrain drivetrain,
-    GroundIntakePivot groundIntakePivot,
-    GroundIntakeRollers groundIntakeRollers,
-    AlgaeRemoverPivot AlgaeRemoverPivot,
-    AlgaeRemoverRollers AlgaeRemoverRollers,
-    FrontCoralRoller frontCoralRoller,
-    BackCoralRoller backCoralRoller,
-    Elevator elevator,
-    LEDSubsystem ledSubsystem
+    CTRESwerveDrivetrain drivetrain
+//    GroundIntakePivot groundIntakePivot,
+//    GroundIntakeRollers groundIntakeRollers,
+//    AlgaeRemoverPivot AlgaeRemoverPivot,
+//    AlgaeRemoverRollers AlgaeRemoverRollers,
+//    FrontCoralRoller frontCoralRoller,
+//    BackCoralRoller backCoralRoller,
+//    Elevator elevator,
 //    Autos autos
   ) {
     this.drivetrain = drivetrain;
 //    m_SwerveSubsystem = null;
 //    m_PoseEstimator = null;
-    this.groundIntakePivot = groundIntakePivot;
-    this.groundIntakeRollers = groundIntakeRollers;
-    this.frontCoralRoller = frontCoralRoller;
-    this.backCoralRoller = backCoralRoller;
-    m_AlgaeRemoverPivot = AlgaeRemoverPivot;
-    m_AlgaeRemoverRollers = AlgaeRemoverRollers;
-    m_elevator = elevator;
-    m_ledSubsystem = ledSubsystem;
+//    this.groundIntakePivot = groundIntakePivot;
+//    this.groundIntakeRollers = groundIntakeRollers;
+//    this.frontCoralRoller = frontCoralRoller;
+//    this.backCoralRoller = backCoralRoller;
+//    m_AlgaeRemoverPivot = AlgaeRemoverPivot;
+//    m_AlgaeRemoverRollers = AlgaeRemoverRollers;
+//    m_elevator = elevator;
 //    m_Autos = autos;
 
     // Setup the autonomous chooser
@@ -132,14 +130,14 @@ public class RobotContainer {
     m_mainController.applyBindings(
       new Driver1DefaultBindings(
               drivetrain,
-              groundIntakePivot,
-              groundIntakeRollers,
-        backCoralRoller,
-        frontCoralRoller,
-              m_elevator,
+//              groundIntakePivot,
+//              groundIntakeRollers,
+//        backCoralRoller,
+//        frontCoralRoller,
+//              m_elevator,
               m_ledSubsystem,
-              m_AlgaeRemoverPivot,
-              m_AlgaeRemoverRollers,
+//              m_AlgaeRemoverPivot,
+//              m_AlgaeRemoverRollers,
               m_mainController.getController()
             )
     );

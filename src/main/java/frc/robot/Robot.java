@@ -5,37 +5,19 @@
 package frc.robot;
 
 import Glitch.Lib.NetworkTableLogger;
-import Glitch.Lib.Swerve.RevSwerve;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.Autos;
 import frc.robot.subsystems.CTRESwerveDrivetrain;
-import frc.robot.subsystems.Elevator.AlgaeRemover.AlgaeRemoverPivot;
-import frc.robot.subsystems.Elevator.AlgaeRemover.AlgaeRemoverRollers;
-import frc.robot.subsystems.Elevator.Coral.BackCoralRoller;
-import frc.robot.subsystems.Elevator.Coral.FrontCoralRoller;
-import frc.robot.subsystems.Elevator.Elevator;
-import frc.robot.subsystems.GroundIntake.GroundIntakePivot;
-import frc.robot.subsystems.GroundIntake.GroundIntakeRollers;
 import frc.robot.subsystems.LEDs.GlitchLEDPatterns;
 import frc.robot.subsystems.LEDs.LEDSubsystem;
-import frc.robot.pose.PoseEstimator;
 import frc.robot.vision.Vision;
-import org.json.simple.parser.ParseException;
 import org.littletonrobotics.urcl.URCL;
-
-import java.io.IOException;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -47,18 +29,18 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
   private final CTRESwerveDrivetrain CTREdrivetrain = TunerConstants.createDrivetrain();
 //  private final RevSwerve m_SwerveSubsystem = new RevSwerveSubsystem();
-  private final Vision m_Vision = new Vision();
+//  private final Vision m_Vision = new Vision();
 //  private final PoseEstimator m_PoseEstimator = new PoseEstimator(m_SwerveSubsystem, m_Vision);
-  private final Elevator m_elevator = new Elevator();
+//  private final Elevator m_elevator = new Elevator();
   private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
-  private final GlitchLEDPatterns m_ledPatterns = new GlitchLEDPatterns();
+//  private final GlitchLEDPatterns m_ledPatterns = new GlitchLEDPatterns();
   private final NetworkTableLogger logger = new NetworkTableLogger("SHOW UPPPP");
-  private final AlgaeRemoverRollers m_AlgeaRemoverRollers = new AlgaeRemoverRollers();
-  private final AlgaeRemoverPivot m_AlgaeRemoverPivot = new AlgaeRemoverPivot();
-  private final FrontCoralRoller frontCoralRoller = new FrontCoralRoller();
-  private final BackCoralRoller backCoralRoller = new BackCoralRoller();
-  private final GroundIntakePivot groundIntakePivot = new GroundIntakePivot();
-  private final GroundIntakeRollers groundIntakeRollers = new GroundIntakeRollers();
+//  private final AlgaeRemoverRollers m_AlgeaRemoverRollers = new AlgaeRemoverRollers();
+//  private final AlgaeRemoverPivot m_AlgaeRemoverPivot = new AlgaeRemoverPivot();
+//  private final FrontCoralRoller frontCoralRoller = new FrontCoralRoller();
+//  private final BackCoralRoller backCoralRoller = new BackCoralRoller();
+//  private final GroundIntakePivot groundIntakePivot = new GroundIntakePivot();
+//  private final GroundIntakeRollers groundIntakeRollers = new GroundIntakeRollers();
 //  private final Autos m_Autos = new Autos(m_ledSubsystem, frontCoralRoller, backCoralRoller, m_elevator, m_PoseEstimator);
 
   /**
@@ -69,9 +51,9 @@ public class Robot extends TimedRobot {
     // Configure PathPlanner's AutoBuilder
 //    try {
 //      AutoBuilder.configure(
-//          m_PoseEstimator::get2dPose,
-//          m_PoseEstimator::resetPoseToPose2d,
-//          m_SwerveSubsystem::getChassisSpeeds,
+//          CTREdrivetrain..::get2dPose,
+//          CTREdrivetrain::resetPose,
+//          CTREdrivetrain.getKinematics().toChassisSpeeds(),
 //          (chassisSpeeds, driveff) -> { // drive command
 //            // INVERT IF THINGS ARE GOING BACKWARDS
 //            // if (Robot.isRedAlliance()) {
@@ -102,15 +84,14 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer =
         new RobotContainer(
-          CTREdrivetrain,
-          groundIntakePivot,
-          groundIntakeRollers,
-          m_AlgaeRemoverPivot,
-          m_AlgeaRemoverRollers,
-          frontCoralRoller,
-          backCoralRoller,
-          m_elevator,
-          m_ledSubsystem
+          CTREdrivetrain
+//          groundIntakePivot,
+//          groundIntakeRollers,
+//          m_AlgaeRemoverPivot,
+//          m_AlgeaRemoverRollers,
+//          frontCoralRoller,
+//          backCoralRoller,
+//          m_elevator,
 //          m_Autos
             );
     
