@@ -4,20 +4,29 @@
 
 package frc.robot;
 
+import Glitch.Lib.Controller.Controller;
 import Glitch.Lib.NetworkTableLogger;
+import com.ctre.phoenix6.swerve.SwerveModule;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CTRESwerveDrivetrain;
-import frc.robot.subsystems.LEDs.GlitchLEDPatterns;
-import frc.robot.subsystems.LEDs.LEDSubsystem;
-import frc.robot.vision.Vision;
+import frc.robot.controller.Driver1DefaultBindings;
+import frc.robot.Drivetrain.TunerConstants;
+import frc.robot.Drivetrain.CTRESwerveDrivetrain;
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.urcl.URCL;
+
+import java.io.IOException;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -26,78 +35,64 @@ import org.littletonrobotics.urcl.URCL;
  */
 public class Robot extends TimedRobot {
 
-  private final RobotContainer m_robotContainer;
-  private final CTRESwerveDrivetrain CTREdrivetrain = TunerConstants.createDrivetrain();
-//  private final RevSwerve m_SwerveSubsystem = new RevSwerveSubsystem();
-//  private final Vision m_Vision = new Vision();
-//  private final PoseEstimator m_PoseEstimator = new PoseEstimator(m_SwerveSubsystem, m_Vision);
-//  private final Elevator m_elevator = new Elevator();
-  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
-//  private final GlitchLEDPatterns m_ledPatterns = new GlitchLEDPatterns();
+  private final CTRESwerveDrivetrain CTRDrivetrain = TunerConstants.createDrivetrain();
+  private final Vision vision = new Vision();
+//  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
   private final NetworkTableLogger logger = new NetworkTableLogger("SHOW UPPPP");
-//  private final AlgaeRemoverRollers m_AlgeaRemoverRollers = new AlgaeRemoverRollers();
-//  private final AlgaeRemoverPivot m_AlgaeRemoverPivot = new AlgaeRemoverPivot();
-//  private final FrontCoralRoller frontCoralRoller = new FrontCoralRoller();
-//  private final BackCoralRoller backCoralRoller = new BackCoralRoller();
-//  private final GroundIntakePivot groundIntakePivot = new GroundIntakePivot();
-//  private final GroundIntakeRollers groundIntakeRollers = new GroundIntakeRollers();
-//  private final Autos m_Autos = new Autos(m_ledSubsystem, frontCoralRoller, backCoralRoller, m_elevator, m_PoseEstimator);
+  private final Autos autos = new Autos(CTRDrivetrain);
+  private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
+  private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
+
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   public Robot() {
+    CTRDrivetrain.setVision(vision);
     // Configure PathPlanner's AutoBuilder
-//    try {
-//      AutoBuilder.configure(
-//          CTREdrivetrain..::get2dPose,
-//          CTREdrivetrain::resetPose,
-//          CTREdrivetrain.getKinematics().toChassisSpeeds(),
-//          (chassisSpeeds, driveff) -> { // drive command
-//            // INVERT IF THINGS ARE GOING BACKWARDS
-//            // if (Robot.isRedAlliance()) {
-//            //   chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond, -chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
-//            // }
-//            m_SwerveSubsystem.setChassisSpeeds(chassisSpeeds);
-//          },
-//          new PPHolonomicDriveController(
-//            new PIDConstants(
-//              8,
-//              0,
-//              0),
-//            new PIDConstants(
-//              4,
-//              0,
-//              0)),
-//        RobotConfig.fromGUISettings(),
-//        Robot::isRedAlliance,
-//        // requirements
-//        m_SwerveSubsystem,
-//        m_PoseEstimator);
-//    } catch (IOException | ParseException e) {
-//      System.out.println("ERROR: Could not process pathplanner config");
-//      throw new RuntimeException(e);
-//    }
+    try {
+      AutoBuilder.configure(
+        () -> CTRDrivetrain.getState().Pose,
+        CTRDrivetrain::resetPose,
+        () -> CTRDrivetrain.getState().Speeds,
+        (chassisSpeeds, driveff) -> { // drive command
+          final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
 
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer =
-        new RobotContainer(
-          CTREdrivetrain
-//          groundIntakePivot,
-//          groundIntakeRollers,
-//          m_AlgaeRemoverPivot,
-//          m_AlgeaRemoverRollers,
-//          frontCoralRoller,
-//          backCoralRoller,
-//          m_elevator,
-//          m_Autos
-            );
-    
+          // INVERT IF THINGS ARE GOING BACKWARDS
+          // if (Robot.isRedAlliance()) {
+          //   chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond, -chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
+          // }
+
+          CTRDrivetrain.applyRequest(() ->
+            drive.withVelocityX(-chassisSpeeds.vyMetersPerSecond) // Drive forward with negative Y (forward)
+              .withVelocityY(-chassisSpeeds.vxMetersPerSecond) // Drive left with negative X (left)
+              .withRotationalRate(-chassisSpeeds.omegaRadiansPerSecond) // Drive counterclockwise with negative X (left)
+          );
+        },
+        new PPHolonomicDriveController(
+          new PIDConstants(
+            8,
+            0,
+            0),
+          new PIDConstants(
+            4,
+            0,
+            0)),
+        RobotConfig.fromGUISettings(),
+        Robot::isRedAlliance,
+        // requirements
+        CTRDrivetrain);
+    } catch (IOException | ParseException e) {
+      System.out.println("ERROR: Could not process pathplanner config");
+      throw new RuntimeException(e);
+    }
+
     // Load autos into chooser and use SmartDashboard to publish
-//    m_Autos.setupAutoChooser();
-//    SmartDashboard.putData("Auto choices", m_Autos.getAutoChooser());
+    autos.setupAutoChooser();
+    SmartDashboard.putData("Auto choices", autos.getAutoChooser());
 
     // Set Up PathPlanner to "warm up" the pathplanning system
     PathfindingCommand.warmupCommand().schedule();
@@ -121,8 +116,6 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     logger.logDouble("voltage", RobotController.getInputVoltage());
 
-    // m_elevatorSpeedControl = logger.getBoolean("Limit Speed", true);
-
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -133,22 +126,19 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    m_ledSubsystem.setPattern(GlitchLEDPatterns.purple);
   }
 
   /** This function is called periodically during disabled. */
   @Override
   public void disabledPeriodic() {}
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  /** This autonomous runs the autonomous command selected by your {@link Autos} class. */
   @Override
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
-    m_robotContainer.autonomousInit();
-    m_ledSubsystem.setPattern(GlitchLEDPatterns.rainbow);
-
-//    m_Autos.selectAuto(); //Only enable this if you want the robot to do stuff during autonomous
-
+    m_mainController.clearBindings();
+    m_assistController.clearBindings();
+    autos.selectAuto(); //Only enable this if you want the robot to do stuff during autonomous
   }
 
   /** This function is called periodically during autonomous. */
@@ -158,16 +148,15 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    // This makes sure that autonomous stops running when teleop starts running.
     CommandScheduler.getInstance().cancelAll();
 
-    m_ledSubsystem.setPattern(GlitchLEDPatterns.fire(LEDSubsystem.defaultPattern));
-    
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-
-    m_robotContainer.teleopInit();
+    m_mainController.applyBindings(
+      new Driver1DefaultBindings(
+        CTRDrivetrain,
+        m_mainController.getController()
+      )
+    );
   }
 
   /** This function is called periodically during operator control. */
@@ -175,6 +164,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
   }
 
+  /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
@@ -193,8 +183,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    // logger.logPose2d("closest", new Pose2d(Autos.ReefScorePoints.findClosestScorePoint(isRedAlliance() ? RobotAlliance.RED_ALLIANCE : RobotAlliance.BLUE_ALLIANCE, m_PoseEstimator.get2dPose()).getPoint(), new Rotation2d()).rotateAround(kVision.fieldCenter, isRedAlliance() ? new Rotation2d(Math.toRadians(180)) : new Rotation2d(Math.toRadians(0))));
-    // logger.logString("zone of closest", Autos.ReefScorePoints.findClosestScorePoint(null, m_PoseEstimator.get2dPose()).getZone());
   }
 
   public static boolean isRedAlliance() {

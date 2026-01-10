@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.LEDPattern;
-import frc.robot.subsystems.LEDs.LEDSubsystem;
+import frc.robot.LEDs.LEDSubsystem;
 
 
 public class LEDTests {

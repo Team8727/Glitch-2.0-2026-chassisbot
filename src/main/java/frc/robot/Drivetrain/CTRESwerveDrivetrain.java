@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.generated.TunerConstants;
+import frc.robot.Vision;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -30,7 +30,7 @@ import frc.robot.generated.TunerConstants;
  */
 public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain implements Subsystem {
     // Optional robot-layer Vision facade; when set, we will drain and fuse measurements here
-    private frc.robot.vision.Vision m_Vision = null;
+    private Vision m_Vision = null;
 
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
@@ -191,7 +191,7 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
      * timestamped measurements into the CTRE pose estimator. Only set this when CTRE is the
      * active drivetrain/pose owner; do not also run a separate robot-layer PoseEstimator drain.
      */
-    public void setVision(frc.robot.vision.Vision vision) {
+    public void setVision(Vision vision) {
         this.m_Vision = vision;
     }
 
@@ -255,7 +255,7 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
             // Use current drivetrain estimate as the reference pose for disambiguation
             Pose2d reference = this.getState().Pose;
 
-            for (frc.robot.vision.Vision.Measurement m : m_Vision.drainMeasurements(reference)) {
+            for (Vision.Measurement m : m_Vision.drainMeasurements(reference)) {
                 // Convert FPGA timestamp base to current time base expected by CTRE estimator
                 super.addVisionMeasurement(m.getPose(), Utils.fpgaToCurrentTime(m.getTimestampSeconds()));
             }

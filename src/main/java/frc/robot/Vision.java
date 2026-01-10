@@ -1,4 +1,4 @@
-package frc.robot.vision;
+package frc.robot;
 
 import Glitch.Lib.NetworkTableLogger;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.Robot;
 
 import java.util.Arrays;
 import java.util.List;

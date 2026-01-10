@@ -6,9 +6,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.generated.Telemetry;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CTRESwerveDrivetrain;
+import frc.robot.Drivetrain.CTRESwerveDrivetrain;
+import frc.robot.Drivetrain.Telemetry;
+import frc.robot.Drivetrain.TunerConstants;
 
 import static edu.wpi.first.units.Units.*;
 
