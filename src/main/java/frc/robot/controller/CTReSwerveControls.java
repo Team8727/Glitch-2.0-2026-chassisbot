@@ -27,15 +27,11 @@ public class CTReSwerveControls {
       .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
-    // In `src/main/java/frc/robot/controller/CTReSwerveControls.java`
     final SwerveRequest.FieldCentricFacingAngle facePoint =
       new SwerveRequest.FieldCentricFacingAngle()
         .withDeadband(MaxSpeed * 0.1)
         .withRotationalDeadband(MaxAngularRate * 0.1)
         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
-
-    // Example: target field point (meters)
-    final Translation2d target = new Translation2d(5.0, 3.0);
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.

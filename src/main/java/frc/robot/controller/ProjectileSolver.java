@@ -74,19 +74,7 @@ public class ProjectileSolver {
     // Positive = Up, Negative = Down
     double rawPitch = Math.toDegrees(Math.asin(Math.max(-1, Math.min(1, vMuzzle.getZ() / sol.power))));
 
-    // FIX: If you are seeing 110 when you expect 70, your system likely
-    // measures pitch from the opposite horizon (180).
-    // Try one of these fixes based on what your logger shows:
-
-    // OPTION A: If you see 110 and want 70 (The "Supplementary" Flip)
-    // This happens if 0 is "Backward" or the axis is reversed.
     sol.pitch = 180.0 - rawPitch;
-
-    // OPTION B: If you just need to invert Up/Down (Simple Invert)
-    // sol.pitch = -rawPitch;
-
-    // OPTION C: Standard (Use this if you want 0=Flat, 90=Up)
-    // sol.pitch = rawPitch;
 
     return sol;  }
 }
