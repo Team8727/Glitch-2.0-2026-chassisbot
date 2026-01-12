@@ -13,16 +13,17 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
+import frc.robot.controller.ProjectileSolver;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.urcl.URCL;
 
@@ -34,8 +35,10 @@ import java.io.IOException;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
-
+  private double lastTime = Timer.getFPGATimestamp();
+  private double deltaTime;
   private final CTRESwerveDrivetrain CTRDrivetrain = TunerConstants.createDrivetrain();
+  public static ProjectileSolver.FiringSolution firing;
   private final Vision vision = new Vision();
 //  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
   private final NetworkTableLogger logger = new NetworkTableLogger("SHOW UPPPP");
@@ -74,11 +77,11 @@ public class Robot extends TimedRobot {
         },
         new PPHolonomicDriveController(
           new PIDConstants(
-            8,
+            80,
             0,
             0),
           new PIDConstants(
-            4,
+            40,
             0,
             0)),
         RobotConfig.fromGUISettings(),
@@ -115,6 +118,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     logger.logDouble("voltage", RobotController.getInputVoltage());
+    double now = Timer.getFPGATimestamp();
+    deltaTime = now - lastTime;
+    lastTime = now;
+
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
@@ -154,6 +161,7 @@ public class Robot extends TimedRobot {
     m_mainController.applyBindings(
       new Driver1DefaultBindings(
         CTRDrivetrain,
+        autos,
         m_mainController.getController()
       )
     );
@@ -162,6 +170,30 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    firing = ProjectileSolver.solve(
+      new Translation3d(
+        CTRDrivetrain.getState().Pose.getX(),
+        CTRDrivetrain.getState().Pose.getY(),
+        0.3),
+      new Translation3d(10, 4.5, 1.8),
+      new Translation3d(
+        CTRDrivetrain.getState().Speeds.vxMetersPerSecond,
+        CTRDrivetrain.getState().Speeds.vyMetersPerSecond,
+        0),
+      -50);
+    logger.logDouble("shooter2 vel", firing.power);
+    logger.logDouble("shooter2 yaw", firing.yaw);
+    logger.logDouble("shooter2 pitch", firing.pitch);
+    logger.logBoolean("shooter2 valid", firing.isValid);
+    logger.logPose3d("shooter2 position", new Pose3d(
+      new Translation3d(
+        CTRDrivetrain.getState().Pose.getX(),
+        CTRDrivetrain.getState().Pose.getY(),
+        0.3),
+      new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
+    logger.logPose3d("target", new Pose3d(
+      new Translation3d(10, 4.5, 1.8),
+      new Rotation3d()));
   }
 
   /** This function is called once when test mode is enabled. */
