@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
   public static ProjectileSolver.FiringSolution firing;
   private final Vision vision = new Vision();
 //  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
-  private final NetworkTableLogger logger = new NetworkTableLogger("SHOW UPPPP");
+  private final NetworkTableLogger logger = new NetworkTableLogger("Robot");
   private final Autos autos = new Autos(CTRDrivetrain);
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
         () -> CTRDrivetrain.getState().Pose,
         CTRDrivetrain::resetPose,
         () -> CTRDrivetrain.getState().Speeds,
-        (chassisSpeeds, driveff) -> { // drive command
+        (chassisSpeeds, driveFF) -> { // drive command
           final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
 
@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
         // requirements
         CTRDrivetrain);
     } catch (IOException | ParseException e) {
-      System.out.println("ERROR: Could not process pathplanner config");
+      System.out.println("ERROR: Could not process pathPlanner config");
       throw new RuntimeException(e);
     }
 
@@ -97,14 +97,14 @@ public class Robot extends TimedRobot {
     autos.setupAutoChooser();
     SmartDashboard.putData("Auto choices", autos.getAutoChooser());
 
-    // Set Up PathPlanner to "warm up" the pathplanning system
-    PathfindingCommand.warmupCommand().schedule();
+    // Set Up PathPlanner to "warm up" the pathPlanning system
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
     // Log data to a log file using WPILib's DataLogManager
     DataLogManager.logNetworkTables(true);
     DataLogManager.start();
 
-    // Start the URCL logger (logs REV SparkMaxes and SparkFlexes automatically on networktables)
+    // Start the URCL logger (logs REV SparkMaxes and SparkFlexes automatically on networkTables)
     URCL.start();
   }
 
@@ -181,8 +181,9 @@ public class Robot extends TimedRobot {
         CTRDrivetrain.getState().Speeds.vyMetersPerSecond,
         0),
       -50);
-    logger.logDouble("shooter2 vel", firing.power);
-    logger.logDouble("shooter2 yaw", firing.yaw);
+    logger.logDouble("shooter vel", firing.power);
+    logger.logDouble("shooter yaw", firing.yaw);
+    logger.logDouble("shooter yaw radians", Math.toRadians(firing.yaw));
     logger.logDouble("shooter2 pitch", firing.pitch);
     logger.logBoolean("shooter2 valid", firing.isValid);
     logger.logPose3d("shooter2 position", new Pose3d(

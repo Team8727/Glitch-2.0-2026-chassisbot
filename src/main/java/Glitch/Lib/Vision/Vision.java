@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
@@ -175,7 +174,7 @@ public class Vision {
       CamBundle(CameraConfig config, AprilTagFieldLayout layout) {
         this.config = config;
         this.camera = new PhotonCamera(config.name);
-        this.poseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, config.robotToCamera);
+        this.poseEstimator = new PhotonPoseEstimator(layout, config.robotToCamera);
       }
     }
 
@@ -212,8 +211,8 @@ public class Vision {
             double dz = target.getBestCameraToTarget().getZ();
             double dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
             if ((ambiguity <= cfg.maxAmbiguity && ambiguity != -1) && dist < cfg.maxDistanceMeters) {
-              cb.poseEstimator.setReferencePose(referencePose);
-              Optional<EstimatedRobotPose> est = cb.poseEstimator.update(latest);
+              cb.poseEstimator.addHeadingData(latest.getTimestampSeconds(), referencePose.getRotation());
+              Optional<EstimatedRobotPose> est = cb.poseEstimator.estimateCoprocMultiTagPose(latest);
               if (est.isPresent()) {
                 out.add(new Measurement(est.get().estimatedPose.toPose2d(), latest.getTimestampSeconds()));
               }
@@ -274,7 +273,7 @@ public class Vision {
         this.camera = new PhotonCamera(config.name);
         this.cameraSim = new PhotonCameraSim(camera, props);
 //        this.cameraSim.enableDrawWireframe(true);
-        this.poseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, config.robotToCamera);
+        this.poseEstimator = new PhotonPoseEstimator(layout, config.robotToCamera);
       }
     }
 
@@ -326,7 +325,7 @@ public class Vision {
             double dz = target.getBestCameraToTarget().getZ();
             double dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
             if ((ambiguity <= cfg.maxAmbiguity && ambiguity != -1) && dist < cfg.maxDistanceMeters) {
-              cb.poseEstimator.setReferencePose(referencePose);
+              cb.poseEstimator.addHeadingData(latest.getTimestampSeconds(), referencePose.getRotation());
               Optional<EstimatedRobotPose> est = cb.poseEstimator.update(latest);
               if (est.isPresent()) {
                 // Use current FPGA timestamp to mirror real path
