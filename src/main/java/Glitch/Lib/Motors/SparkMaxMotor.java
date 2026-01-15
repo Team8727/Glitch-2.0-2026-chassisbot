@@ -1,7 +1,8 @@
 package Glitch.Lib.Motors;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.*;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import java.util.Set;
@@ -27,8 +28,8 @@ public class SparkMaxMotor implements Motor{
 
     motor.configure(
       config,
-      SparkBase.ResetMode.kNoResetSafeParameters,
-      SparkBase.PersistMode.kNoPersistParameters);
+      ResetMode.kNoResetSafeParameters,
+      PersistMode.kNoPersistParameters);
 
     motorController = motor.getClosedLoopController();
 
@@ -37,17 +38,17 @@ public class SparkMaxMotor implements Motor{
 
   @Override
   public void setVelocity(double velocity) {
-    motorController.setReference(velocity, SparkBase.ControlType.kVelocity);
+    motorController.setSetpoint(velocity, SparkBase.ControlType.kVelocity);
   }
 
   @Override
   public void setDutyCycle(double dutyCycle) {
-    motorController.setReference(dutyCycle, SparkBase.ControlType.kDutyCycle);
+    motorController.setSetpoint(dutyCycle, SparkBase.ControlType.kDutyCycle);
   }
 
   @Override
   public void setPosition(double position, double feedforward) {
-    motorController.setReference(
+    motorController.setSetpoint(
       position,
       SparkBase.ControlType.kPosition,
       ClosedLoopSlot.kSlot0,
@@ -56,7 +57,7 @@ public class SparkMaxMotor implements Motor{
 
   @Override
   public void setPosition(double position) {
-    motorController.setReference(
+    motorController.setSetpoint(
       position,
       SparkBase.ControlType.kPosition);
   }

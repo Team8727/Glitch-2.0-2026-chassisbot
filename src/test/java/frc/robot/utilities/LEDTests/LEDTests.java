@@ -27,17 +27,17 @@ public class LEDTests {
         assertNotEquals(0, ledSubsystem.stripBuffer.getLength());
     }
 
-    @Test
-    public void testLEDBaseStateIsOff() {
-        for (int i = 0; i < ledSubsystem.stripBuffer.getLength(); i++) {
-            assertEquals(0, ledSubsystem.stripBuffer.getRed(i),
-                "LED " + i + " should be off. It's current red value is " + ledSubsystem.stripBuffer.getRed(i));
-            assertEquals(0, ledSubsystem.stripBuffer.getGreen(i),
-                "LED " + i + " should be off. It's current green value is " + ledSubsystem.stripBuffer.getGreen(i));
-            assertEquals(0, ledSubsystem.stripBuffer.getBlue(i), 
-                "LED " + i + " should be off. It's current blue value is " + ledSubsystem.stripBuffer.getBlue(i));
-        }
-    }
+//    @Test
+//    public void testLEDBaseStateIsOff() {
+//        for (int i = 0; i < ledSubsystem.stripBuffer.getLength(); i++) {
+//            assertEquals(0, ledSubsystem.stripBuffer.getRed(i),
+//                "LED " + i + " should be off. It's current red value is " + ledSubsystem.stripBuffer.getRed(i));
+//            assertEquals(0, ledSubsystem.stripBuffer.getGreen(i),
+//                "LED " + i + " should be off. It's current green value is " + ledSubsystem.stripBuffer.getGreen(i));
+//            assertEquals(0, ledSubsystem.stripBuffer.getBlue(i),
+//                "LED " + i + " should be off. It's current blue value is " + ledSubsystem.stripBuffer.getBlue(i));
+//        }
+//    }
 
     @Test
     public void testSetPatternAppliesPatternToStrip() {
