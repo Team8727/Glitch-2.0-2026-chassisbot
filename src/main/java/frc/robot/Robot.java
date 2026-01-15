@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
+import frc.robot.Drivetrain.TunerConstants;
+import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.urcl.URCL;
@@ -34,6 +36,7 @@ import java.io.IOException;
  */
 public class Robot extends TimedRobot {
   private double lastTime = Timer.getFPGATimestamp();
+  private final CTRESwerveDrivetrain CTREDrivetrain = TunerConstants.createDrivetrain();
   private double deltaTime;
   private final CTRESwerveDrivetrain CTRDrivetrain = TunerConstants.createDrivetrain();
   public static ProjectileSolver.FiringSolution firing;
