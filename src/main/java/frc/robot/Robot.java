@@ -38,7 +38,6 @@ public class Robot extends TimedRobot {
   private double lastTime = Timer.getFPGATimestamp();
   private final CTRESwerveDrivetrain CTREDrivetrain = TunerConstants.createDrivetrain();
   private double deltaTime;
-  private final CTRESwerveDrivetrain CTRDrivetrain = TunerConstants.createDrivetrain();
   public static ProjectileSolver.FiringSolution firing;
   private final Vision vision = new Vision();
 //  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
