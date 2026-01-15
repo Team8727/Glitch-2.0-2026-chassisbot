@@ -3,16 +3,12 @@ package Glitch.Lib.Swerve;
 import Glitch.Lib.Motors.SparkConfigurator.LogData;
 import Glitch.Lib.Motors.SparkConfigurator.Sensors;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.*;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -230,7 +226,7 @@ public class MAXSwerve {
 
     // Set the built-in PID for closed loop, or just give a regular voltage for open loop
     if (closedLoopDrive) {
-      drivePID.setReference(
+      drivePID.setSetpoint(
           state.speedMetersPerSecond,
           ControlType.kVelocity,
           ClosedLoopSlot.kSlot0,
@@ -239,7 +235,7 @@ public class MAXSwerve {
       driveNEO.setVoltage(driveFF.calculate(state.speedMetersPerSecond));
     }
 
-    steerPID.setReference(
+    steerPID.setSetpoint(
         state.angle.minus(new Rotation2d(chassisOffset)).getRadians(),
         ControlType.kPosition);
 
@@ -282,7 +278,7 @@ public class MAXSwerve {
       SparkMaxConfig driveconfig = new SparkMaxConfig();
       driveconfig.idleMode(IdleMode.kBrake);
       driveNEO.configure(
-          driveconfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        driveconfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     } else {
       SparkMaxConfig driveConfig = new SparkMaxConfig();
       driveConfig.idleMode(IdleMode.kCoast);

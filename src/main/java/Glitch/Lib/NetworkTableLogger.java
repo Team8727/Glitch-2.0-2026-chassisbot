@@ -6,9 +6,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -177,29 +174,29 @@ public class NetworkTableLogger {
 
     chassisSpeedsPublishers.get(key).set(chassisSpeeds);
   }
-
-  /**
-   * Logs a Field2d to the network table.
-   *
-   * @param key the key, a string, that will represent the value
-   * @param field2d the value (Field2d) that will be logged
-   */
-  public void logField2d(String key, Field2d field2d) {
-    if (!table.containsKey(key)) {
-      Sendable sddata = tablesToData.get(key);
-      if (sddata == null || sddata != field2d) {
-        tablesToData.put(key, field2d);
-        NetworkTable dataTable = table.getSubTable(key);
-        SendableBuilderImpl builder = new SendableBuilderImpl();
-        builder.setTable(dataTable);
-        SendableRegistry.publish(field2d, builder);
-        builder.startListeners();
-        dataTable.getEntry(".name").setString(key);
-      }
-    }
-
-    for (Sendable data : tablesToData.values()) {
-      SendableRegistry.update(data);
-    }
-  }
+//
+//  /**
+//   * Logs a Field2d to the network table.
+//   *
+//   * @param key the key, a string, that will represent the value
+//   * @param field2d the value (Field2d) that will be logged
+//   */
+//  public void logField2d(String key, Field2d field2d) {
+//    if (!table.containsKey(key)) {
+//      Sendable sddata = tablesToData.get(key);
+//      if (sddata == null || sddata != field2d) {
+//        tablesToData.put(key, field2d);
+//        NetworkTable dataTable = table.getSubTable(key);
+//        SendableBuilderImpl builder = new SendableBuilderImpl();
+//        builder.setTable(dataTable);
+//        SendableRegistry.publish(field2d, builder);
+//        builder.startListeners();
+//        dataTable.getEntry(".name").setString(key);
+//      }
+//    }
+//
+//    for (Sendable data : tablesToData.values()) {
+//      SendableRegistry.update(data);
+//    }
+//  }
 }

@@ -82,7 +82,7 @@ public class Autos extends SubsystemBase {
    */
   public void selectAuto() {
     if (autoChooser.getSelected().equals("bareMinimum()")) {
-      bareMinimum().schedule();
+      CommandScheduler.getInstance().schedule(bareMinimum());
     } else {
       System.out.println("something is very wrong if you see this");
     }
