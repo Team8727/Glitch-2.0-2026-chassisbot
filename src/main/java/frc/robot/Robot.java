@@ -20,8 +20,6 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.controller.Driver1DefaultBindings;
-import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.controller.ProjectileSolver;
 import org.json.simple.parser.ParseException;
@@ -53,7 +51,7 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   public Robot() {
-    CTRDrivetrain.setVision(vision);
+    CTREDrivetrain.setVision(vision);
     // Configure PathPlanner's AutoBuilder
     try {
       AutoBuilder.configure(
@@ -69,7 +67,7 @@ public class Robot extends TimedRobot {
           //   chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond, -chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
           // }
 
-          CTRDrivetrain.applyRequest(() ->
+          CTREDrivetrain.applyRequest(() ->
             drive.withVelocityX(-chassisSpeeds.vyMetersPerSecond) // Drive forward with negative Y (forward)
               .withVelocityY(-chassisSpeeds.vxMetersPerSecond) // Drive left with negative X (left)
               .withRotationalRate(-chassisSpeeds.omegaRadiansPerSecond) // Drive counterclockwise with negative X (left)
@@ -87,7 +85,7 @@ public class Robot extends TimedRobot {
         RobotConfig.fromGUISettings(),
         Robot::isRedAlliance,
         // requirements
-        CTRDrivetrain);
+        CTREDrivetrain);
     } catch (IOException | ParseException e) {
       System.out.println("ERROR: Could not process pathPlanner config");
       throw new RuntimeException(e);

@@ -1,12 +1,13 @@
 package frc.robot.utilities.LEDTests;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.LEDs.LEDSubsystem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.LEDPattern;
-import frc.robot.LEDs.LEDSubsystem;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 
 public class LEDTests {

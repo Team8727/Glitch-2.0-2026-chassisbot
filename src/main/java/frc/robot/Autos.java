@@ -24,15 +24,15 @@ import java.util.LinkedHashMap;
 public class Autos extends SubsystemBase {
 //  private final LEDSubsystem m_ledSubsystem = ;
   private final LinkedHashMap<String, PathPlannerPath> paths = new LinkedHashMap<>();
-  private final CTRESwerveDrivetrain CTRDrivetrain;
+  private final CTRESwerveDrivetrain CTREDrivetrain;
   private final SendableChooser<String> autoChooser = new SendableChooser<>();
   private final NetworkTableLogger logger = new NetworkTableLogger(this.getName());
 
   private static final Translation2d fieldCenter = new Translation2d(8.770, 4.026); // meters
 
   /** Creates a new Autos. */
-  public Autos(CTRESwerveDrivetrain CTREdrivetrain) {
-    this.CTRDrivetrain = CTREdrivetrain;
+  public Autos(CTRESwerveDrivetrain CTREDrivetrain) {
+    this.CTREDrivetrain = CTREDrivetrain;
 
     loadPaths();
    }
@@ -153,9 +153,9 @@ public class Autos extends SubsystemBase {
       startPose = path.getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
     }
     if (Robot.isReal()) {
-      CTRDrivetrain.resetPose(startPose);
+      CTREDrivetrain.resetPose(startPose);
     } else {
-      CTRDrivetrain.resetPose(new Pose2d(startPose.getTranslation(), startPose.getRotation().plus(CTRDrivetrain.getState().Pose.getRotation())));
+      CTREDrivetrain.resetPose(new Pose2d(startPose.getTranslation(), startPose.getRotation().plus(CTREDrivetrain.getState().Pose.getRotation())));
     }
   }
 
