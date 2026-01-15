@@ -35,11 +35,11 @@ import java.io.IOException;
  */
 public class Robot extends TimedRobot {
 
-  private final CTRESwerveDrivetrain CTRDrivetrain = TunerConstants.createDrivetrain();
+  private final CTRESwerveDrivetrain CTREDrivetrain = TunerConstants.createDrivetrain();
   private final Vision vision = new Vision();
 //  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
   private final NetworkTableLogger logger = new NetworkTableLogger("SHOW UPPPP");
-  private final Autos autos = new Autos(CTRDrivetrain);
+  private final Autos autos = new Autos(CTREDrivetrain);
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
 
@@ -50,13 +50,13 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   public Robot() {
-    CTRDrivetrain.setVision(vision);
+    CTREDrivetrain.setVision(vision);
     // Configure PathPlanner's AutoBuilder
     try {
       AutoBuilder.configure(
-        () -> CTRDrivetrain.getState().Pose,
-        CTRDrivetrain::resetPose,
-        () -> CTRDrivetrain.getState().Speeds,
+        () -> CTREDrivetrain.getState().Pose,
+        CTREDrivetrain::resetPose,
+        () -> CTREDrivetrain.getState().Speeds,
         (chassisSpeeds, driveff) -> { // drive command
           final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
           //   chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond, -chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
           // }
 
-          CTRDrivetrain.applyRequest(() ->
+          CTREDrivetrain.applyRequest(() ->
             drive.withVelocityX(-chassisSpeeds.vyMetersPerSecond) // Drive forward with negative Y (forward)
               .withVelocityY(-chassisSpeeds.vxMetersPerSecond) // Drive left with negative X (left)
               .withRotationalRate(-chassisSpeeds.omegaRadiansPerSecond) // Drive counterclockwise with negative X (left)
@@ -84,7 +84,7 @@ public class Robot extends TimedRobot {
         RobotConfig.fromGUISettings(),
         Robot::isRedAlliance,
         // requirements
-        CTRDrivetrain);
+        CTREDrivetrain);
     } catch (IOException | ParseException e) {
       System.out.println("ERROR: Could not process pathplanner config");
       throw new RuntimeException(e);
@@ -153,7 +153,7 @@ public class Robot extends TimedRobot {
 
     m_mainController.applyBindings(
       new Driver1DefaultBindings(
-        CTRDrivetrain,
+        CTREDrivetrain,
         m_mainController.getController()
       )
     );
