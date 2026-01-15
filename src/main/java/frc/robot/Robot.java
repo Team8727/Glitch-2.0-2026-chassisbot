@@ -20,9 +20,9 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.controller.Driver1DefaultBindings;
-import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
+import frc.robot.Drivetrain.TunerConstants;
+import frc.robot.controller.Driver1DefaultBindings;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.urcl.URCL;
 
