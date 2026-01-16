@@ -42,7 +42,7 @@ public class Robot extends TimedRobot {
   private final Vision vision = new Vision();
 //  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
   private final NetworkTableLogger logger = new NetworkTableLogger("Robot");
-  private final Autos autos = new Autos(CTRDrivetrain);
+  private final Autos autos = new Autos(CTREDrivetrain);
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
 
@@ -57,9 +57,9 @@ public class Robot extends TimedRobot {
     // Configure PathPlanner's AutoBuilder
     try {
       AutoBuilder.configure(
-        () -> CTRDrivetrain.getState().Pose,
-        CTRDrivetrain::resetPose,
-        () -> CTRDrivetrain.getState().Speeds,
+        () -> CTREDrivetrain.getState().Pose,
+        CTREDrivetrain::resetPose,
+        () -> CTREDrivetrain.getState().Speeds,
         (chassisSpeeds, driveFF) -> { // drive command
           final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
@@ -160,7 +160,7 @@ public class Robot extends TimedRobot {
 
     m_mainController.applyBindings(
       new Driver1DefaultBindings(
-        CTRDrivetrain,
+        CTREDrivetrain,
         autos,
         m_mainController.getController()
       )
@@ -172,13 +172,13 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     firing = ProjectileSolver.solve(
       new Translation3d(
-        CTRDrivetrain.getState().Pose.getX(),
-        CTRDrivetrain.getState().Pose.getY(),
+        CTREDrivetrain.getState().Pose.getX(),
+        CTREDrivetrain.getState().Pose.getY(),
         0.3),
       new Translation3d(10, 4.5, 1.8),
       new Translation3d(
-        CTRDrivetrain.getState().Speeds.vxMetersPerSecond,
-        CTRDrivetrain.getState().Speeds.vyMetersPerSecond,
+        CTREDrivetrain.getState().Speeds.vxMetersPerSecond,
+        CTREDrivetrain.getState().Speeds.vyMetersPerSecond,
         0),
       -50);
     logger.logDouble("shooter vel", firing.power);
@@ -188,8 +188,8 @@ public class Robot extends TimedRobot {
     logger.logBoolean("shooter2 valid", firing.isValid);
     logger.logPose3d("shooter2 position", new Pose3d(
       new Translation3d(
-        CTRDrivetrain.getState().Pose.getX(),
-        CTRDrivetrain.getState().Pose.getY(),
+        CTREDrivetrain.getState().Pose.getX(),
+        CTREDrivetrain.getState().Pose.getY(),
         0.3),
       new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
     logger.logPose3d("target", new Pose3d(
