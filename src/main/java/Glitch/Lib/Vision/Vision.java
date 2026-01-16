@@ -212,7 +212,7 @@ public class Vision {
             double dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
             if ((ambiguity <= cfg.maxAmbiguity && ambiguity != -1) && dist < cfg.maxDistanceMeters) {
               cb.poseEstimator.addHeadingData(latest.getTimestampSeconds(), referencePose.getRotation());
-              Optional<EstimatedRobotPose> est = cb.poseEstimator.estimateCoprocMultiTagPose(latest);
+              Optional<EstimatedRobotPose> est = cb.poseEstimator.estimatePnpDistanceTrigSolvePose(latest);
               if (est.isPresent()) {
                 out.add(new Measurement(est.get().estimatedPose.toPose2d(), latest.getTimestampSeconds()));
               }
