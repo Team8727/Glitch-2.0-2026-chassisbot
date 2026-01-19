@@ -37,8 +37,8 @@ public class CTReSwerveControls {
     // Calculate desired heading in radians
     final SwerveRequest.FieldCentricFacingAngle faceTarget =
       new SwerveRequest.FieldCentricFacingAngle()
-        .withDeadband(MaxSpeed)
-        .withRotationalDeadband(MaxAngularRate)
+        .withDeadband(MaxSpeed * 0.1)
+        .withRotationalDeadband(MaxAngularRate * 0.1)
         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
         .withHeadingPID(50, 0, 0); // P, I, D values for heading control - can probably be tuned with SysId later
 
