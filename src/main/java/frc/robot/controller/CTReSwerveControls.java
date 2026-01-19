@@ -19,6 +19,8 @@ public class CTReSwerveControls {
     double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
+    final NetworkTableLogger netLogger = new NetworkTableLogger("CTReSwerveControls");
+
     final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1)
       .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -30,7 +32,7 @@ public class CTReSwerveControls {
         .withRotationalDeadband(MaxAngularRate * 0.1)
         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
 
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Swerve Request constants to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// -=-=-=-=-=-=-=-=-=-=-= Swerve Request and constants to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-
     Pose3d targetsPose = new Pose3d(
       new Translation3d(10, 4.5, 1.8),
       new Rotation3d());
@@ -40,9 +42,8 @@ public class CTReSwerveControls {
         .withDeadband(MaxSpeed * 0.1)
         .withRotationalDeadband(MaxAngularRate * 0.1)
         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-        .withHeadingPID(50, 0, 0); // P, I, D values for heading control - can probably be tuned with SysId later
-
-    final NetworkTableLogger netLogger = new NetworkTableLogger("CTReSwerveControls");
+        .withHeadingPID(50, 0, 0); // P, I, D values for heading control - tune with SysId later?
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
@@ -68,7 +69,7 @@ public class CTReSwerveControls {
     controller.start().and(controller.rightTrigger()).toggleOnTrue(drivetrain.applyRequest(() ->
       point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))));
 
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-=-=-=-
     controller.a().whileTrue(drivetrain.applyRequest(() -> {
       //netLogger.logString("CTReSwerveControls", "Face Target Command Activated");
       // TEMPORARY!!!: Will need the pose that includes vision measurements added for more accuracy
@@ -96,6 +97,7 @@ public class CTReSwerveControls {
         .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
         .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
     }));
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
