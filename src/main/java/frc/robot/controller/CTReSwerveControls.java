@@ -105,7 +105,7 @@ public class CTReSwerveControls {
     controller.start().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
     // reset the field-centric heading on left bumper press    // reset the field-centric heading on left bumper press
-    controller.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+    controller.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
