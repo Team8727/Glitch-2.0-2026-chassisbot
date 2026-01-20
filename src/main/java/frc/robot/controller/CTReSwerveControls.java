@@ -1,6 +1,6 @@
 package frc.robot.controller;
 
-import GlitchLib.Glitch.Lib.NetworkTableLogger;
+import Glitch.NetworkTableLogger;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.*;

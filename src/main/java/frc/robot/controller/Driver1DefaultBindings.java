@@ -1,6 +1,6 @@
 package frc.robot.controller;
 
-import GlitchLib.Glitch.Lib.Controller.ControllerBindings;
+import Glitch.Controller.ControllerBindings;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Autos;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;

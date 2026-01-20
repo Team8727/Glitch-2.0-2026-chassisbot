@@ -1,7 +1,7 @@
 package frc.Glitch.Lib.BaseMechanisms;
 
-import GlitchLib.Glitch.Lib.BaseMechanisms.Roller;
-import GlitchLib.Glitch.Lib.Motors.Motor;
+import Glitch.BaseMechanisms.Roller;
+import Glitch.Motors.Motor;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.TestModules;
 import org.junit.jupiter.api.BeforeEach;
