@@ -9,6 +9,12 @@ sourceSets {
       srcDirs += ['src/main/java', 'GlitchLib/Glitch/Lib/main']
     }
   }
+
+  test {
+    java {
+      srcDirs += ['src/test/java', 'GlitchLib/Glitch/Lib/test']
+    }
+  }
 }
 
 java {
