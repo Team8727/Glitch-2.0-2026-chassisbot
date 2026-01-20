@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import Glitch.Lib.Controller.Controller;
-import Glitch.Lib.NetworkTableLogger;
+import GlitchLib.Glitch.Lib.Controller.Controller;
+import GlitchLib.Glitch.Lib.NetworkTableLogger;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;

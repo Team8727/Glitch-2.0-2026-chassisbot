@@ -1,6 +1,6 @@
 package frc.robot.utilities;
 
-import Glitch.Lib.NetworkTableLogger;
+import GlitchLib.Glitch.Lib.NetworkTableLogger;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

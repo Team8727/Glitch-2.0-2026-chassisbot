@@ -1,7 +1,7 @@
-package Glitch.Lib.Swerve;
+package GlitchLib.Glitch.Lib.Swerve;
 
-import Glitch.Lib.Motors.SparkConfigurator.LogData;
-import Glitch.Lib.Motors.SparkConfigurator.Sensors;
+import GlitchLib.Glitch.Lib.Motors.SparkConfigurator.LogData;
+import GlitchLib.Glitch.Lib.Motors.SparkConfigurator.Sensors;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -23,8 +23,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 
 import java.util.Set;
 
-import static Glitch.Lib.Motors.SparkConfigurator.getSparkFlex;
-import static Glitch.Lib.Motors.SparkConfigurator.getSparkMax;
+import static GlitchLib.Glitch.Lib.Motors.SparkConfigurator.getSparkFlex;
+import static GlitchLib.Glitch.Lib.Motors.SparkConfigurator.getSparkMax;
 
 public class MAXSwerve {
   private SwerveModuleState targetState = new SwerveModuleState();

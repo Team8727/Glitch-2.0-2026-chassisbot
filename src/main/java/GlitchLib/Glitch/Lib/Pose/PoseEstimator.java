@@ -1,4 +1,4 @@
-package Glitch.Lib.Pose;
+package GlitchLib.Glitch.Lib.Pose;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;

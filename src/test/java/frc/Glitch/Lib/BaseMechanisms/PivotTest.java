@@ -1,7 +1,7 @@
 package frc.Glitch.Lib.BaseMechanisms;
 
-import Glitch.Lib.BaseMechanisms.Pivot;
-import Glitch.Lib.Motors.Motor;
+import GlitchLib.Glitch.Lib.BaseMechanisms.Pivot;
+import GlitchLib.Glitch.Lib.Motors.Motor;
 import frc.TestModules;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

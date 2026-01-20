@@ -1,7 +1,7 @@
-package Glitch.Lib.BaseMechanisms;
+package GlitchLib.Glitch.Lib.BaseMechanisms;
 
-import Glitch.Lib.Motors.Motor;
-import Glitch.Lib.NetworkTableLogger;
+import GlitchLib.Glitch.Lib.Motors.Motor;
+import GlitchLib.Glitch.Lib.NetworkTableLogger;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public abstract class Roller extends SubsystemBase {

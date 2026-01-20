@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import Glitch.Lib.NetworkTableLogger;
+import GlitchLib.Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;

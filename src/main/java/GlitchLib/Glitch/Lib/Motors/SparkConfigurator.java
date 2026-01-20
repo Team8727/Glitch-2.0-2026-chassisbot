@@ -1,4 +1,4 @@
-package Glitch.Lib.Motors;
+package GlitchLib.Glitch.Lib.Motors;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;

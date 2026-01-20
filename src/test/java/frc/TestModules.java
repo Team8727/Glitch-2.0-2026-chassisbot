@@ -1,6 +1,6 @@
 package frc;
 
-import Glitch.Lib.Motors.Motor;
+import GlitchLib.Glitch.Lib.Motors.Motor;
 
 public class TestModules {
 //  public static class FakeMotor implements Motor {

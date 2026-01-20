@@ -1,6 +1,6 @@
 package frc.robot;
 
-import Glitch.Lib.NetworkTableLogger;
+import GlitchLib.Glitch.Lib.NetworkTableLogger;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -45,7 +45,7 @@ public class Vision implements AutoCloseable {
     public double getTimestampSeconds() { return timestampSeconds; }
   }
 
-  private final Glitch.Lib.Vision.Vision.Provider provider;
+  private final GlitchLib.Glitch.Lib.Vision.Vision.Provider provider;
   private final NetworkTableLogger logger = new NetworkTableLogger("Vision");
 
   // Camera names as configured in PhotonVision
@@ -86,13 +86,13 @@ public class Vision implements AutoCloseable {
    * robot-specific camera configurations and thresholds.
    */
   public Vision() {
-    List<Glitch.Lib.Vision.Vision.CameraConfig> cameras = Arrays.asList(
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_LEFT, FRONT_LEFT_POS),
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_RIGHT, FRONT_RIGHT_POS),
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_CENTER, CENTER_POS)
+    List<GlitchLib.Glitch.Lib.Vision.Vision.CameraConfig> cameras = Arrays.asList(
+        new GlitchLib.Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_LEFT, FRONT_LEFT_POS),
+        new GlitchLib.Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_RIGHT, FRONT_RIGHT_POS),
+        new GlitchLib.Glitch.Lib.Vision.Vision.CameraConfig(CAM_CENTER, CENTER_POS)
     );
 
-    Glitch.Lib.Vision.Vision.Config cfg = new Glitch.Lib.Vision.Vision.Config(
+    GlitchLib.Glitch.Lib.Vision.Vision.Config cfg = new GlitchLib.Glitch.Lib.Vision.Vision.Config(
         cameras,
         MAX_AMBIGUITY,
         MAX_DISTANCE_METERS,
@@ -102,9 +102,9 @@ public class Vision implements AutoCloseable {
     AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     if (Robot.isSimulation()) {
-      this.provider = Glitch.Lib.Vision.Vision.createPhotonVisionSim(cfg, layout);
+      this.provider = GlitchLib.Glitch.Lib.Vision.Vision.createPhotonVisionSim(cfg, layout);
     } else {
-      this.provider = Glitch.Lib.Vision.Vision.createPhotonVision(cfg, layout);
+      this.provider = GlitchLib.Glitch.Lib.Vision.Vision.createPhotonVision(cfg, layout);
     }
   }
 
