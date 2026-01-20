@@ -3,12 +3,10 @@ package frc.robot;
 import Glitch.Lib.NetworkTableLogger;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,24 +47,12 @@ public class Vision implements AutoCloseable {
   private final NetworkTableLogger logger = new NetworkTableLogger("Vision");
 
   // Camera names as configured in PhotonVision
-  private static final String CAM_FRONT_RIGHT = "frontRight";
-  private static final String CAM_FRONT_LEFT = "frontLeft";
-  private static final String CAM_CENTER = "center";
+  private static final String CAM_CENTER = "Center";
 
   // Robot-to-camera transforms
-  private static final Transform3d FRONT_LEFT_POS =
-      new Transform3d(
-          new Translation3d(Units.inchesToMeters(8), Units.inchesToMeters(-8), Units.inchesToMeters(19.5)),
-          new Rotation3d(Math.toRadians(14.586), Math.toRadians(25), Math.toRadians(34)));
-
-  private static final Transform3d FRONT_RIGHT_POS =
-      new Transform3d(
-          new Translation3d(Units.inchesToMeters(8), Units.inchesToMeters(8), Units.inchesToMeters(19.5)),
-          new Rotation3d(Math.toRadians(-14.586), Math.toRadians(25), Math.toRadians(-34)));
-
   private static final Transform3d CENTER_POS =
       new Transform3d(
-          new Translation3d(Units.inchesToMeters(8.5), Units.inchesToMeters(0), Units.inchesToMeters(8.5)),
+          new Translation3d(Units.inchesToMeters(3.5), Units.inchesToMeters(2), Units.inchesToMeters(21.5)),
           new Rotation3d(Math.toRadians(0), Math.toRadians(0), Math.toRadians(0)));
 
   // Thresholds and sim properties
@@ -87,8 +73,6 @@ public class Vision implements AutoCloseable {
    */
   public Vision() {
     List<Glitch.Lib.Vision.Vision.CameraConfig> cameras = Arrays.asList(
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_LEFT, FRONT_LEFT_POS),
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_RIGHT, FRONT_RIGHT_POS),
         new Glitch.Lib.Vision.Vision.CameraConfig(CAM_CENTER, CENTER_POS)
     );
 
@@ -150,12 +134,8 @@ public class Vision implements AutoCloseable {
    */
   public void logCameraPoses(Pose2d robotPose) {
     var robotPose3d = new edu.wpi.first.math.geometry.Pose3d(robotPose);
-    var camFrontLeft = robotPose3d.transformBy(FRONT_LEFT_POS);
-    var camFrontRight = robotPose3d.transformBy(FRONT_RIGHT_POS);
     var camCenter = robotPose3d.transformBy(CENTER_POS);
 
-    logger.logPose3d("/" + CAM_FRONT_LEFT + "/Pose", camFrontLeft);
-    logger.logPose3d("/" + CAM_FRONT_RIGHT + "/Pose", camFrontRight);
     logger.logPose3d("/" + CAM_CENTER + "/Pose", camCenter);
   }
 

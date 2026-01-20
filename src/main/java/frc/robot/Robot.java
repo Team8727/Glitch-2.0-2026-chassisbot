@@ -123,6 +123,7 @@ public class Robot extends TimedRobot {
     double now = Timer.getFPGATimestamp();
     deltaTime = now - lastTime;
     lastTime = now;
+    vision.logCameraPoses(CTREDrivetrain.getState().Pose);
 
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled

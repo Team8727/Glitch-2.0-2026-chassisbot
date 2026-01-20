@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import Glitch.Lib.NetworkTableLogger;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -40,6 +41,7 @@ import static edu.wpi.first.units.Units.Volts;
 public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain implements Subsystem {
 
     private Vision m_Vision = null;
+    private final NetworkTableLogger logger = new NetworkTableLogger("ctre");
 
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
@@ -267,8 +269,10 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
             Pose2d reference = this.getState().Pose;
 
             for (Vision.Measurement m : m_Vision.drainMeasurements(reference)) {
-                // Convert FPGA timestamp base to current time base expected by CTRE estimator
-                super.addVisionMeasurement(m.getPose(), Utils.fpgaToCurrentTime(m.getTimestampSeconds()));
+                System.out.println("Vision measurement: " + m.getPose() + " at " + m.getTimestampSeconds() + " seconds");
+
+                // Convert timestamp inside the override to avoid double-shifting the time base
+                addVisionMeasurement(m.getPose(), m.getTimestampSeconds());
             }
         }
     }
