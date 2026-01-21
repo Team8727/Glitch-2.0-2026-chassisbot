@@ -42,7 +42,7 @@ public class CTReSwerveControls {
         .withDeadband(MaxSpeed * 0.1)
         .withRotationalDeadband(MaxAngularRate * 0.1)
         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-        .withHeadingPID(50, 0, 0); // P, I, D values for heading control - tune with SysId later?
+        .withHeadingPID(0.8, 0, 0); // P, I, D values for heading control - tune with SysId later?
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     // Note that X is defined as forward according to WPILib convention,
@@ -101,10 +101,10 @@ public class CTReSwerveControls {
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    controller.back().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    controller.back().and(controller.x()).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    controller.start().and(controller.y()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    controller.start().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    controller.povUp().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward)); // 2
+    controller.povLeft().and(controller.x()).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse)); // 1
+    controller.povDown().and(controller.y()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward)); // 4
+    controller.povRight().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)); // 3
 
     // reset the field-centric heading on left bumper press    // reset the field-centric heading on left bumper press
     controller.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
