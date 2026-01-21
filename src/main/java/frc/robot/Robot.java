@@ -6,6 +6,7 @@ package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
 import Glitch.Lib.NetworkTableLogger;
+
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -24,6 +25,7 @@ import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
+
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.urcl.URCL;
 
