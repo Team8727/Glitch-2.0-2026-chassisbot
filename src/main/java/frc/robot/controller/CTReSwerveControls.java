@@ -15,6 +15,8 @@ import static edu.wpi.first.units.Units.*;
 
 public class CTReSwerveControls {
 
+  public static ProjectileSolver.FiringSolution firing;
+
   public CTReSwerveControls(CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
     double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -40,9 +42,9 @@ public class CTReSwerveControls {
     final SwerveRequest.FieldCentricFacingAngle faceTarget =
       new SwerveRequest.FieldCentricFacingAngle()
         .withDeadband(MaxSpeed * 0.1)
-        .withRotationalDeadband(MaxAngularRate * 0.1)
+        .withRotationalDeadband(MaxAngularRate * 0.5)
         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-        .withHeadingPID(0.8, 0, 0); // P, I, D values for heading control - tune with SysId later?
+        .withHeadingPID(50, 0, 0); // Real PID: .withHeadingPID(0.8, 0, 0); // P, I, D values for heading control - tune with SysId later?
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     // Note that X is defined as forward according to WPILib convention,
@@ -70,34 +72,57 @@ public class CTReSwerveControls {
       point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))));
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-=-=-=-
+//    controller.a().whileTrue(drivetrain.applyRequest(() -> {
+//      //netLogger.logString("CTReSwerveControls", "Face Target Command Activated");
+//      // TEMPORARY!!!: Will need the pose that includes vision measurements added for more accuracy
+//      Pose2d robotPose = drivetrain.getState().Pose;
+//
+//      // Calculate vector and heading from robot to target
+//      double dx = targetsPose.getX() - robotPose.getX();
+//      double dy = targetsPose.getY() - robotPose.getY();
+//
+//      // Desired heading calculation
+//      double desiredHeadingRadians = Math.atan2(dx, dy);
+//
+//      // Log targetRobotPose for debugging and testing its accuracy
+//      Pose2d targetRobotPose = new Pose2d(
+//        robotPose.getTranslation(),
+//        new Rotation2d((0.5*Math.PI) - desiredHeadingRadians) // 90-degree offset I had to add for the Pose2d targetRobotPose to point correctly
+//      );
+//
+//      //netLogger.logDouble("desiredHeading: ", desiredHeadingRadians);
+//      netLogger.logPose3d("targetsPose: ", targetsPose);
+//      netLogger.logPose2d("targetRobotPose: ", targetRobotPose);
+//
+//      return faceTarget
+//        .withTargetDirection(Rotation2d.fromRadians((1.5*Math.PI) - desiredHeadingRadians)) // face the target with 180-degree offset I had to add for some reason
+//        .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+//        .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
+//    }));
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     controller.a().whileTrue(drivetrain.applyRequest(() -> {
-      //netLogger.logString("CTReSwerveControls", "Face Target Command Activated");
-      // TEMPORARY!!!: Will need the pose that includes vision measurements added for more accuracy
-      Pose2d robotPose = drivetrain.getState().Pose;
 
-      // Calculate vector and heading from robot to target
-      double dx = targetsPose.getX() - robotPose.getX();
-      double dy = targetsPose.getY() - robotPose.getY();
+      firing = ProjectileSolver.solve(
+              new Translation3d(
+                      drivetrain.getState().Pose.getX(),
+                      drivetrain.getState().Pose.getY(),
+                      0.3),
+              new Translation3d(10, 4.5, 1.8),
+              new Translation3d(
+                      drivetrain.getState().Speeds.vxMetersPerSecond,
+                      drivetrain.getState().Speeds.vyMetersPerSecond,
+                      0),
+              -50);
 
-      // Desired heading calculation
-      double desiredHeadingRadians = Math.atan2(dx, dy);
-
-      // Log targetRobotPose for debugging and testing its accuracy
-      Pose2d targetRobotPose = new Pose2d(
-        robotPose.getTranslation(),
-        new Rotation2d((0.5*Math.PI) - desiredHeadingRadians) // 90-degree offset I had to add for the Pose2d targetRobotPose to point correctly
-      );
-
-      //netLogger.logDouble("desiredHeading: ", desiredHeadingRadians);
-      netLogger.logPose3d("targetsPose: ", targetsPose);
-      netLogger.logPose2d("targetRobotPose: ", targetRobotPose);
+      netLogger.logDouble("firing_yaw", firing.yaw);
 
       return faceTarget
-        .withTargetDirection(Rotation2d.fromRadians((1.5*Math.PI) - desiredHeadingRadians)) // face the target with 180-degree offset I had to add for some reason
-        .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
-        .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
+              .withTargetDirection(Rotation2d.fromDegrees(firing.yaw)) // face the target with 180-degree offset I had to add for some reason
+              .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+              .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
     }));
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
