@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
 import frc.robot.Drivetrain.TunerConstants;
+import frc.robot.Robot;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -102,22 +103,22 @@ public class CTReSwerveControls {
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     controller.a().whileTrue(drivetrain.applyRequest(() -> {
 
-      firing = ProjectileSolver.solve(
-              new Translation3d(
-                      drivetrain.getState().Pose.getX(),
-                      drivetrain.getState().Pose.getY(),
-                      0.3),
-              new Translation3d(10, 4.5, 1.8),
-              new Translation3d(
-                      drivetrain.getState().Speeds.vxMetersPerSecond,
-                      drivetrain.getState().Speeds.vyMetersPerSecond,
-                      0),
-              -50);
-
-      netLogger.logDouble("firing_yaw", firing.yaw);
+//      firing = ProjectileSolver.solve(
+//              new Translation3d(
+//                      drivetrain.getState().Pose.getX(),
+//                      drivetrain.getState().Pose.getY(),
+//                      0.3),
+//              new Translation3d(10, 4.5, 1.8),
+//              new Translation3d(
+//                      drivetrain.getState().Speeds.vxMetersPerSecond,
+//                      drivetrain.getState().Speeds.vyMetersPerSecond,
+//                      0),
+//              -50);
+//
+//      netLogger.logDouble("firing_yaw", firing.yaw);
 
       return faceTarget
-              .withTargetDirection(Rotation2d.fromDegrees(firing.yaw)) // face the target with 180-degree offset I had to add for some reason
+              .withTargetDirection(Rotation2d.fromDegrees(Robot.firing.yaw)) // face the target with 180-degree offset I had to add for some reason
               .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
               .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
     }));

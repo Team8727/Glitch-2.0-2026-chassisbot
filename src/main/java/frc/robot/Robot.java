@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -183,7 +184,8 @@ public class Robot extends TimedRobot {
       new Translation3d(
         CTREDrivetrain.getState().Speeds.vxMetersPerSecond,
         CTREDrivetrain.getState().Speeds.vyMetersPerSecond,
-        0),
+        0)
+          .rotateBy(new Rotation3d(CTREDrivetrain.getState().Pose.getRotation())),// rotate by robot rotation
       -50);
     logger.logDouble("shooter vel", firing.power);
     logger.logDouble("shooter yaw", firing.yaw);
@@ -199,6 +201,8 @@ public class Robot extends TimedRobot {
     logger.logPose3d("target", new Pose3d(
       new Translation3d(10, 4.5, 1.8),
       new Rotation3d()));
+
+    logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
   }
 
   /** This function is called once when test mode is enabled. */
