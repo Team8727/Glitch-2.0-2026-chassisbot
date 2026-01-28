@@ -10,42 +10,46 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
 import frc.robot.Drivetrain.TunerConstants;
+import frc.robot.Robot;
 
 import static edu.wpi.first.units.Units.*;
 
 public class CTReSwerveControls {
 
-  public static ProjectileSolver.FiringSolution firing;
-
   public CTReSwerveControls(CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
     double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
+    // PID gains for whole-robot rotation to face a target - different for sim and real (and different from swerve module PID gains)
+    double simRotationP = 50;
+    double realRotationP = 0.8;
+
     final NetworkTableLogger netLogger = new NetworkTableLogger("CTReSwerveControls");
 
+    // Swerve Request for normal driving, is the default command
     final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1)
       .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
+    // Swerve Request to face a point at (pointX, pointY), not currently used, must place this in a trigger command to use
     final SwerveRequest.FieldCentricFacingAngle facePoint =
       new SwerveRequest.FieldCentricFacingAngle()
         .withDeadband(MaxSpeed * 0.1)
         .withRotationalDeadband(MaxAngularRate * 0.1)
         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
 
-// -=-=-=-=-=-=-=-=-=-=-= Swerve Request and constants to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-
+    // Swerve Request and target's pose for use in trigger command to always point towards the target.
     Pose3d targetsPose = new Pose3d(
       new Translation3d(10, 4.5, 1.8),
       new Rotation3d());
-    // Calculate desired heading in radians
+      // Calculate desired heading in radians
     final SwerveRequest.FieldCentricFacingAngle faceTarget =
       new SwerveRequest.FieldCentricFacingAngle()
         .withDeadband(MaxSpeed * 0.1)
-        .withRotationalDeadband(MaxAngularRate * 0.5)
+        .withRotationalDeadband(MaxAngularRate * 0.75)
         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-        .withHeadingPID(50, 0, 0); // Real PID: .withHeadingPID(0.8, 0, 0); // P, I, D values for heading control - tune with SysId later?
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+        .withHeadingPID(Robot.isReal() ? realRotationP : simRotationP, 0, 0);
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
@@ -73,7 +77,6 @@ public class CTReSwerveControls {
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-=-=-=-
 //    controller.a().whileTrue(drivetrain.applyRequest(() -> {
-//      //netLogger.logString("CTReSwerveControls", "Face Target Command Activated");
 //      // TEMPORARY!!!: Will need the pose that includes vision measurements added for more accuracy
 //      Pose2d robotPose = drivetrain.getState().Pose;
 //
@@ -99,30 +102,16 @@ public class CTReSwerveControls {
 //        .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
 //        .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
 //    }));
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to point at an angle to hit a target with a projectile using ProjectileSolver -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
     controller.a().whileTrue(drivetrain.applyRequest(() -> {
-
-//      firing = ProjectileSolver.solve(
-//              new Translation3d(
-//                      drivetrain.getState().Pose.getX(),
-//                      drivetrain.getState().Pose.getY(),
-//                      0.3),
-//              new Translation3d(10, 4.5, 1.8),
-//              new Translation3d(
-//                      drivetrain.getState().Speeds.vxMetersPerSecond,
-//                      drivetrain.getState().Speeds.vyMetersPerSecond,
-//                      0),
-//              -50);
-//
-//      netLogger.logDouble("firing_yaw", firing.yaw);
-
       return faceTarget
               .withTargetDirection(Rotation2d.fromDegrees(Robot.firing.yaw)) // face the target with 180-degree offset I had to add for some reason
               .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
               .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
     }));
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.

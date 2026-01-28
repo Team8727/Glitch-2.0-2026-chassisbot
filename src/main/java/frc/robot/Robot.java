@@ -14,10 +14,7 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -39,16 +36,24 @@ import java.io.IOException;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
-  private double lastTime = Timer.getFPGATimestamp();
-  private final CTRESwerveDrivetrain CTREDrivetrain = TunerConstants.createDrivetrain();
-  private double deltaTime;
+
+  private static final double SHOOTER_ANGLE_DEGREES = -60.0;
+  private static final double SHOOTER_HEIGHT_METERS = 0.3;
+  private static final Translation3d TARGET_POSITION_3D = new Translation3d(4.612, 4.021, 1.8);
   public static ProjectileSolver.FiringSolution firing;
-  private final Vision vision = new Vision();
-//  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
+  private double lastTime = Timer.getFPGATimestamp();
+  private double deltaTime;
+
   private final NetworkTableLogger logger = new NetworkTableLogger("Robot");
+  private final CTRESwerveDrivetrain CTREDrivetrain = TunerConstants.createDrivetrain();
+  private final Vision vision = new Vision();
   private final Autos autos = new Autos(CTREDrivetrain);
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
+
+
+//  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
+
 
 
 
@@ -175,31 +180,33 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
+    Translation3d shooterPosition = new Translation3d(
+      CTREDrivetrain.getState().Pose.getX(),
+      CTREDrivetrain.getState().Pose.getY(),
+      SHOOTER_HEIGHT_METERS);
+
+    Translation3d drivetrainFOCVelocity = new Translation3d(
+      CTREDrivetrain.getState().Speeds.vxMetersPerSecond,
+      CTREDrivetrain.getState().Speeds.vyMetersPerSecond,
+      0).rotateBy(new Rotation3d(CTREDrivetrain.getState().Pose.getRotation()));// rotate by robot rotation
+
     firing = ProjectileSolver.solve(
-      new Translation3d(
-        CTREDrivetrain.getState().Pose.getX(),
-        CTREDrivetrain.getState().Pose.getY(),
-        0.3),
-      new Translation3d(10, 4.5, 1.8),
-      new Translation3d(
-        CTREDrivetrain.getState().Speeds.vxMetersPerSecond,
-        CTREDrivetrain.getState().Speeds.vyMetersPerSecond,
-        0)
-          .rotateBy(new Rotation3d(CTREDrivetrain.getState().Pose.getRotation())),// rotate by robot rotation
-      -50);
+      shooterPosition,
+      TARGET_POSITION_3D,
+      drivetrainFOCVelocity,// rotate by robot rotation
+      SHOOTER_ANGLE_DEGREES);
+
     logger.logDouble("shooter vel", firing.power);
     logger.logDouble("shooter yaw", firing.yaw);
     logger.logDouble("shooter yaw radians", Math.toRadians(firing.yaw));
     logger.logDouble("shooter2 pitch", firing.pitch);
     logger.logBoolean("shooter2 valid", firing.isValid);
     logger.logPose3d("shooter2 position", new Pose3d(
-      new Translation3d(
-        CTREDrivetrain.getState().Pose.getX(),
-        CTREDrivetrain.getState().Pose.getY(),
-        0.3),
+      shooterPosition,
       new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
     logger.logPose3d("target", new Pose3d(
-      new Translation3d(10, 4.5, 1.8),
+      TARGET_POSITION_3D,
       new Rotation3d()));
 
     logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
