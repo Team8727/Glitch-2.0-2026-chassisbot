@@ -3,9 +3,13 @@ package frc.robot.controller;
 import Glitch.Lib.NetworkTableLogger;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
@@ -28,52 +32,57 @@ public class CTReSwerveControls {
 
     // Swerve Request for normal driving, is the default command
     final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1)
-      .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-      .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            .withDeadband(MaxSpeed * 0.1)
+            .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
     // Swerve Request to face a point at (pointX, pointY), not currently used, must place this in a trigger command to use
     final SwerveRequest.FieldCentricFacingAngle facePoint =
-      new SwerveRequest.FieldCentricFacingAngle()
-        .withDeadband(MaxSpeed * 0.1)
-        .withRotationalDeadband(MaxAngularRate * 0.1)
-        .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
+            new SwerveRequest.FieldCentricFacingAngle()
+                    .withDeadband(MaxSpeed * 0.1)
+                    .withRotationalDeadband(MaxAngularRate * 0.1)
+                    .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
+                    .withHeadingPID(Robot.isReal() ? realRotationP : simRotationP, 0, 0);
 
     // Swerve Request and target's pose for use in trigger command to always point towards the target.
     Pose3d targetsPose = new Pose3d(
-      new Translation3d(10, 4.5, 1.8),
-      new Rotation3d());
-      // Calculate desired heading in radians
+            new Translation3d(10, 4.5, 1.8),
+            new Rotation3d());
+    // Calculate desired heading in radians
     final SwerveRequest.FieldCentricFacingAngle faceTarget =
-      new SwerveRequest.FieldCentricFacingAngle()
-        .withDeadband(MaxSpeed * 0.1)
-        .withRotationalDeadband(MaxAngularRate * 0.75)
-        .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-        .withHeadingPID(Robot.isReal() ? realRotationP : simRotationP, 0, 0);
+            new SwerveRequest.FieldCentricFacingAngle()
+                    .withDeadband(MaxSpeed * 0.1)
+                    .withRotationalDeadband(MaxAngularRate * 0.75)
+                    .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
+                    .withHeadingPID(Robot.isReal() ? realRotationP : simRotationP, 0, 0);
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
-      drivetrain.applyRequest(() ->
-        drive.withVelocityX(-controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-          .withVelocityY(-controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-          .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-      ));
+            drivetrain.applyRequest(() ->
+                    drive.withVelocityX(-controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                            .withVelocityY(-controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                            .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            ));
 
     final Telemetry logger = new Telemetry(MaxSpeed);
 
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Commands on disable, to automatically brake when stopped, and to point wheels with left stick on pressing certain buttons -=-=-=-=-=-=-=-=-=-=-=-=-
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
     final var idle = new SwerveRequest.Idle();
     RobotModeTriggers.disabled().whileTrue(
-      drivetrain.applyRequest(() -> idle).ignoringDisable(true)
-    );
+            drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-    final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    // Automatically brake (and put wheels in X) when the robot is stopped (within deadband)
     final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    controller.start().and(controller.b()).toggleOnTrue(drivetrain.applyRequest(() -> brake));
+    new Trigger(() -> Math.abs(controller.getLeftY()) < 0.1 && Math.abs(controller.getLeftX()) < 0.1 && Math.abs(controller.getRightX()) < 0.1 && controller.a().negate().getAsBoolean())
+            .whileTrue(drivetrain.applyRequest(() -> brake));
+
+    // Point wheels in direction of left stick when pressing right trigger and start button together
+    final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     controller.start().and(controller.rightTrigger()).toggleOnTrue(drivetrain.applyRequest(() ->
-      point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))));
+            point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))));
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-=-=-=-
 //    controller.a().whileTrue(drivetrain.applyRequest(() -> {
@@ -103,26 +112,27 @@ public class CTReSwerveControls {
 //        .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
 //    }));
 
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to point at an angle to hit a target with a projectile using ProjectileSolver -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to point at an angle to hit a target with a projectile using ProjectileSolver -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     controller.a().whileTrue(drivetrain.applyRequest(() -> {
       return faceTarget
               .withTargetDirection(Rotation2d.fromDegrees(Robot.firing.yaw)) // face the target with 180-degree offset I had to add for some reason
               .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
               .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
     }));
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-= SysID characterization for driving and turning (but not heading controller, unless you add a trigger for that) -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    controller.povUp().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward)); // 2
-    controller.povLeft().and(controller.x()).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse)); // 1
-    controller.povDown().and(controller.y()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward)); // 4
-    controller.povRight().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)); // 3
+//    controller.povUp().and(controller.y()).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward)); // 2
+//    controller.povLeft().and(controller.x()).whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse)); // 1
+//    controller.povDown().and(controller.y()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward)); // 4
+//    controller.povRight().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)); // 3
 
+// -=-=-=-=-=-=-=-=-=-=-=-=-=- Reset field-centric heading -=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // reset the field-centric heading on left bumper press    // reset the field-centric heading on left bumper press
     controller.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Telemetry registration -=-=-=-=-=-=-=-=-=-=-=-=-
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 }
