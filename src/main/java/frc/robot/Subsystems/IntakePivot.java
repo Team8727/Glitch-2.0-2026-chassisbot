@@ -8,7 +8,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class IntakePivot extends Pivot {
   public enum IntakePosition {
-    UP(0),
+    UP(0),//TODO: find values
     DOWN(0);
 
     private final double degrees;
@@ -34,7 +34,7 @@ public class IntakePivot extends Pivot {
         config,
         CANID,
         FeedbackSensor.kAbsoluteEncoder),
-      0,
+      0,//TODO: find values
       0,
       0,
       1);
