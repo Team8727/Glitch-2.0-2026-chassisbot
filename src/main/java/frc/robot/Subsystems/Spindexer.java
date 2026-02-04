@@ -7,7 +7,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 
 public class Spindexer extends Roller {
-  private static final int CANID = 16;
+  private static final int CANID = 55;
   private static final SparkMaxConfig config = new SparkMaxConfig();
   static {
     config
