@@ -2,7 +2,7 @@
 
 ## Getting the robot driving
 
-Check all mechanical parts of the modules (Mk5n’s) before attempting to program:
+Check all mechanical parts of the modules (Mk5n type) before attempting to program:
 
 - Check that CANCoder magnets are glued.
 - Ensure CANCoders are installed properly.
@@ -17,7 +17,7 @@ Check all mechanical parts of the modules (Mk5n’s) before attempting to progra
 
 ## Calibration and Swerve Code Generation Tips
 
-- Make sure the CAN numbering scheme makes sense and all hardware is labeled and easily identifiable.
+- Make sure the CAN numbering scheme makes sense and all hardware is labeled and easily identifiable. One easy CAN scheme is numbering each module 10s place by module (10, 20, 30, 40) and the 1s place by function (1 = drive, 2 = steer, 3 = CANCoder).
 - Make sure that if required, the Driver Station is open and the robot is enabled.
 - Make sure that all devices are on the correct firmware (each device should have a green box in the “Devices” section of Phoenix Tuner X). If a device is yellow, checkbox all the devices needing the firmware and click update in the top right.
 
@@ -28,7 +28,7 @@ Check all mechanical parts of the modules (Mk5n’s) before attempting to progra
 - If the CANCoders are flashing red, open the cover and check whether the casing has been installed around the CANCoders. They flash red because they are either too close or too far from the magnet.
 - Otherwise, open the Plot for the motor and log the reference position and position. If reference position is changing with either joystick or Tuner X position control, then it is likely a motor constants/PID issue.
 - If it’s a turning motor, plot CANCoder position to also check that the CANCoder is not upside-down / magnet is installed and glued down (move a magnetic screwdriver on top of the magnet and check for wobble).
-- If the CANCoder is registering position change in Tuner X when you turn the wheel manually but the robot is not driving when you use the joystick, check the CANCoder installation to make sure they were installed with the housing/are flashing green. If one of these is wrong, retry after fixing it.
+- If the CANCoder is registering position change in Tuner X when you turn the wheel manually but the robot is not driving with the joystick, check the CANCoder installation to make sure they were installed with the housing/magnet/are flashing green. If one of these is wrong (housing missing, no magnet, flashing red), retry after fixing it.
 
 > CANCODERS FLASHING GREEN MEANS THEY ARE OKAY
 
@@ -59,7 +59,7 @@ Check all mechanical parts of the modules (Mk5n’s) before attempting to progra
 
 ### What is SysID?
 
-Don’t skip this for the drivetrain. It's not super necessary but it is easy, and it makes the drivetrain sound and drive a bit better (and could be the difference between winning and losing a match).
+Don’t skip this for the drivetrain. It's not super necessary, but it is easy, and it makes the drivetrain sound and drive a bit better (and could be the difference between winning and losing a match).
 
 SysID is a program that calculates the best P, I, and D gains (values tuned to carry out the desired movement of the motor for the mechanism as quickly and accurately as possible). You run SysID to tune the gains for motors on any “arm,” including intakes, multi-DOF mechanisms, and anything that “flips”; “elevator,” including parts that move up and down; or “simple mechanism,” referring to flywheels, swerve motors, and any belts or rollers.
 
@@ -91,7 +91,7 @@ m_sysIdRoutineToApply = m_sysIdRoutineTranslation; // OR m_sysIdRoutineSteer, OR
 
 - Run this on the robot (can also be run in simulation to test or practice doing these steps).
 - Same as drive, but run the four SysID routines for the steer motors (change the parameters for the triggers in `CTReSwerveControls`).
-- Afterwards in SysID, drag the `SysIDSteer_State` (or similar name) instead.
+- Afterward in SysID, drag the `SysIDSteer_State` (or similar name) instead.
 - Be sure to change the result (bottom of the center panel) to the loop type “Position” and not velocity.
 
 #### Swerve: Heading PID controller for FieldCentricFaceAngle

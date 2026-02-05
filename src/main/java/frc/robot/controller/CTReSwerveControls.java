@@ -3,14 +3,10 @@ package frc.robot.controller;
 import Glitch.Lib.NetworkTableLogger;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
 import frc.robot.Drivetrain.TunerConstants;
@@ -20,13 +16,20 @@ import static edu.wpi.first.units.Units.*;
 
 public class CTReSwerveControls {
 
+  // PID gains for whole-robot rotation to face a target - different for sim and real (and different from swerve module PID gains)
+  static final double SIM_ROTATION_kP = 50;
+  static final double REAL_ROTATION_kP = 0.8;
+
+  // Hub positions
+//  private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
+//  private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
+
+  // Will be one of the hub positions depending on alliance color. See in point to hub trigger command below.
+//  private Translation3d target;
+
   public CTReSwerveControls(CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
     double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-
-    // PID gains for whole-robot rotation to face a target - different for sim and real (and different from swerve module PID gains)
-    double simRotationP = 50;
-    double realRotationP = 0.8;
 
     final NetworkTableLogger netLogger = new NetworkTableLogger("CTReSwerveControls");
 
@@ -42,19 +45,15 @@ public class CTReSwerveControls {
                     .withDeadband(MaxSpeed * 0.1)
                     .withRotationalDeadband(MaxAngularRate * 0.1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                    .withHeadingPID(Robot.isReal() ? realRotationP : simRotationP, 0, 0);
+                    .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
 
-    // Swerve Request and target's pose for use in trigger command to always point towards the target.
-    Pose3d targetsPose = new Pose3d(
-            new Translation3d(10, 4.5, 1.8),
-            new Rotation3d());
-    // Calculate desired heading in radians
+    // Swerve Request for use in trigger command to always point towards the target.
     final SwerveRequest.FieldCentricFacingAngle faceTarget =
             new SwerveRequest.FieldCentricFacingAngle()
                     .withDeadband(MaxSpeed * 0.1)
                     .withRotationalDeadband(MaxAngularRate * 0.75)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                    .withHeadingPID(Robot.isReal() ? realRotationP : simRotationP, 0, 0);
+                    .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
@@ -86,12 +85,14 @@ public class CTReSwerveControls {
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-=-=-=-
 //    controller.a().whileTrue(drivetrain.applyRequest(() -> {
+//      target = Robot.isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
+//
 //      // TEMPORARY!!!: Will need the pose that includes vision measurements added for more accuracy
 //      Pose2d robotPose = drivetrain.getState().Pose;
 //
 //      // Calculate vector and heading from robot to target
-//      double dx = targetsPose.getX() - robotPose.getX();
-//      double dy = targetsPose.getY() - robotPose.getY();
+//      double dx = target.getX() - robotPose.getX();
+//      double dy = target.getY() - robotPose.getY();
 //
 //      // Desired heading calculation
 //      double desiredHeadingRadians = Math.atan2(dx, dy);
@@ -103,7 +104,7 @@ public class CTReSwerveControls {
 //      );
 //
 //      //netLogger.logDouble("desiredHeading: ", desiredHeadingRadians);
-//      netLogger.logPose3d("targetsPose: ", targetsPose);
+//      netLogger.logPose3d("target: ", new Pose3d(target, new Rotation3d()));
 //      netLogger.logPose2d("targetRobotPose: ", targetRobotPose);
 //
 //      return faceTarget

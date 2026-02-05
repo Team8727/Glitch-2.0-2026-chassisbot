@@ -39,7 +39,10 @@ public class Robot extends TimedRobot {
 
   private static final double SHOOTER_ANGLE_DEGREES = -60.0;
   private static final double SHOOTER_HEIGHT_METERS = 0.3;
-  private static final Translation3d TARGET_POSITION_3D = new Translation3d(4.612, 4.021, 1.8);
+  private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
+  private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
+  private Translation3d target;
+
   public static ProjectileSolver.FiringSolution firing;
   private double lastTime = Timer.getFPGATimestamp();
   private double deltaTime;
@@ -175,6 +178,8 @@ public class Robot extends TimedRobot {
         m_mainController.getController()
       )
     );
+
+    target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
   }
 
   /** This function is called periodically during operator control. */
@@ -193,7 +198,7 @@ public class Robot extends TimedRobot {
 
     firing = ProjectileSolver.solve(
       shooterPosition,
-      TARGET_POSITION_3D,
+      target,
       drivetrainFOCVelocity,// rotate by robot rotation
       SHOOTER_ANGLE_DEGREES);
 
@@ -206,7 +211,7 @@ public class Robot extends TimedRobot {
       shooterPosition,
       new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
     logger.logPose3d("target", new Pose3d(
-      TARGET_POSITION_3D,
+      target,
       new Rotation3d()));
 
     logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
