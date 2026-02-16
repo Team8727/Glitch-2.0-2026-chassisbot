@@ -6,7 +6,6 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,13 +46,29 @@ public class Vision implements AutoCloseable {
   private final NetworkTableLogger logger = new NetworkTableLogger("Vision");
 
   // Camera names as configured in PhotonVision
-  private static final String CAM_CENTER = "Center";
+  private static final String CAM_FRONT_RIGHT = "FrontRight";
+  private static final String CAM_FRONT_LEFT = "FrontLeft";
+  private static final String CAM_BACK_RIGHT = "BackRight";
+  private static final String CAM_BACK_LEFT = "BackRight";
+
 
   // Robot-to-camera transforms
-  private static final Transform3d CENTER_POS =
+  private static final Transform3d FRONT_RIGHT_POS =
       new Transform3d(
-          new Translation3d(Units.inchesToMeters(3.5), Units.inchesToMeters(2), Units.inchesToMeters(21.5)),
-          new Rotation3d(Math.toRadians(0), Math.toRadians(0), Math.toRadians(0)));
+          new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
+          new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(-45)));
+  private static final Transform3d FRONT_LEFT_POS =
+    new Transform3d(
+        new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
+        new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(45)));
+    private static final Transform3d BACK_RIGHT_POS =
+      new Transform3d(
+          new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
+          new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(225)));
+      private static final Transform3d BACK_LEFT_POS =
+      new Transform3d(
+          new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
+          new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(135)));
 
   // Thresholds and sim properties
   private static final double MAX_AMBIGUITY = 0.2; // ignore -1 (handled in provider)
@@ -73,7 +88,10 @@ public class Vision implements AutoCloseable {
    */
   public Vision() {
     List<Glitch.Lib.Vision.Vision.CameraConfig> cameras = Arrays.asList(
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_CENTER, CENTER_POS)
+        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_RIGHT, FRONT_RIGHT_POS),
+        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_LEFT, FRONT_LEFT_POS),
+        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_BACK_RIGHT, BACK_RIGHT_POS),
+        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_BACK_LEFT, BACK_LEFT_POS)
     );
 
     Glitch.Lib.Vision.Vision.Config cfg = new Glitch.Lib.Vision.Vision.Config(
@@ -134,9 +152,16 @@ public class Vision implements AutoCloseable {
    */
   public void logCameraPoses(Pose2d robotPose) {
     var robotPose3d = new edu.wpi.first.math.geometry.Pose3d(robotPose);
-    var camCenter = robotPose3d.transformBy(CENTER_POS);
+    var camFrontRight = robotPose3d.transformBy(FRONT_RIGHT_POS);
+    var camFrontLeft = robotPose3d.transformBy(FRONT_LEFT_POS);
+    var camBackRight = robotPose3d.transformBy(BACK_RIGHT_POS);
+    var camBackLeft = robotPose3d.transformBy(BACK_LEFT_POS);
 
-    logger.logPose3d("/" + CAM_CENTER + "/Pose", camCenter);
+
+    logger.logPose3d("/" + CAM_FRONT_RIGHT + "/Pose", camFrontRight);
+    logger.logPose3d("/" + CAM_FRONT_LEFT + "/Pose", camFrontLeft);
+    logger.logPose3d("/" + CAM_BACK_RIGHT + "/Pose", camBackRight);
+    logger.logPose3d("/" + CAM_BACK_LEFT + "/Pose", camBackLeft);
   }
 
   /** Releases any provider resources (no-op by default). */
