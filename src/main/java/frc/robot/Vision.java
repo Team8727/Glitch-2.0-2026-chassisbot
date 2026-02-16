@@ -51,32 +51,32 @@ public class Vision implements AutoCloseable {
   private static final Transform3d CENTER_POS =
           new Transform3d(
                   new Translation3d(Units.inchesToMeters(4.25), Units.inchesToMeters(2), Units.inchesToMeters(21.5)), //new Translation3d(Units.inchesToMeters(3.5), Units.inchesToMeters(2), Units.inchesToMeters(21.5)),
-                  // Keep roll at 0, pitch set to -15 degrees (camera pitched upward), yaw unchanged (0)
+                  // Keep roll at 0°, pitch set to -15 degrees (camera pitched upward), yaw unchanged (0)
                   new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(0)));
 
   private static final Transform3d FRONT_RIGHT_POS =
           new Transform3d(
                   new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
-                  // Original code used 360-15 which is equivalent to -15°; keep roll as -15°, set pitch to -15°, keep yaw 315°
-                  new Rotation3d(Math.toRadians(-15), Math.toRadians(-15), Math.toRadians(315)));
+                  // Keep roll as 0°, set pitch to -15°, keep yaw 315°
+                  new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(315)));
 
   private static final Transform3d FRONT_LEFT_POS =
           new Transform3d(
                   new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
-                  // Keep roll 15°, set pitch to -15°, keep yaw 45°
-                  new Rotation3d(Math.toRadians(15), Math.toRadians(-15), Math.toRadians(45)));
+                  // Keep roll 0°, set pitch to -15°, keep yaw 45°
+                  new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(45)));
 
   private static final Transform3d BACK_LEFT_POS =
           new Transform3d(
                   new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
-                  // Keep roll 15°, set pitch to -15°, keep yaw 135°
-                  new Rotation3d(Math.toRadians(15), Math.toRadians(-15), Math.toRadians(135)));
+                  // Keep roll 0°, set pitch to -15°, keep yaw 135°
+                  new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(135)));
 
     private static final Transform3d BACK_RIGHT_POS =
             new Transform3d(
                     new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
-                    // Original roll was 360-15 (i.e. -15°); keep that roll, set pitch to -15°, keep yaw 225°
-                    new Rotation3d(Math.toRadians(-15), Math.toRadians(-15), Math.toRadians(225)));
+                    // keep roll 0°, set pitch to -15°, keep yaw 225°
+                    new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(225)));
 
   // Thresholds and sim properties
   private static final double MAX_AMBIGUITY = 0.2; // ignore -1 (handled in provider)
