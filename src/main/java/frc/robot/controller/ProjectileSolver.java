@@ -1,5 +1,6 @@
 package frc.robot.controller;
 
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 
 public class ProjectileSolver {
@@ -9,6 +10,7 @@ public class ProjectileSolver {
     public double pitch;    // Angle above ground (degrees)
     public double power;    // Muzzle velocity magnitude
     public boolean isValid;
+    public Translation3d worldVel;
 
     @Override
     public String toString() {
@@ -75,6 +77,7 @@ public class ProjectileSolver {
     double rawPitch = Math.toDegrees(Math.asin(Math.max(-1, Math.min(1, vMuzzle.getZ() / sol.power))));
 
     sol.pitch = 180.0 - rawPitch;
+    sol.worldVel = shooterVel;
 
     return sol;  }
 }

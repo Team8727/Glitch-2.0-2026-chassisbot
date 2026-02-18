@@ -3,10 +3,12 @@ package frc.robot;
 import Glitch.Lib.NetworkTableLogger;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,23 +26,15 @@ import java.util.stream.Collectors;
 public class Vision implements AutoCloseable {
   /**
    * Robot-layer measurement wrapper to decouple robot code from library nested types.
+   * This is a record, so Measurement automatically has accessor methods for pose and timestampSeconds.
    * <p>
    * Values are produced by the underlying library provider but re-wrapped here for stability
    * of the robot API.
+   *
+   * @param pose             Estimated field pose at capture time.
+   * @param timestampSeconds Capture timestamp in seconds.
    */
-  public static class Measurement {
-    /** Estimated field pose at capture time. */
-    public final Pose2d pose;
-    /** Capture timestamp in seconds. */
-    public final double timestampSeconds;
-    public Measurement(Pose2d pose, double timestampSeconds) {
-      this.pose = pose;
-      this.timestampSeconds = timestampSeconds;
-    }
-    /** @return Pose measured by vision at capture time */
-    public Pose2d getPose() { return pose; }
-    /** @return Measurement timestamp in seconds */
-    public double getTimestampSeconds() { return timestampSeconds; }
+  public record Measurement(Pose2d pose, double timestampSeconds) {
   }
 
   private final Glitch.Lib.Vision.Vision.Provider provider;
@@ -48,19 +42,48 @@ public class Vision implements AutoCloseable {
 
   // Camera names as configured in PhotonVision
   private static final String CAM_CENTER = "Center";
+  private static final String CAM_FRONT_RIGHT = "Front Right";
+  private static final String CAM_FRONT_LEFT = "Front Left";
+  private static final String CAM_BACK_LEFT = "Back Left";
+  private static final String CAM_BACK_RIGHT = "Back Right";
 
   // Robot-to-camera transforms
   private static final Transform3d CENTER_POS =
-      new Transform3d(
-          new Translation3d(Units.inchesToMeters(3.5), Units.inchesToMeters(2), Units.inchesToMeters(21.5)),
-          new Rotation3d(Math.toRadians(0), Math.toRadians(0), Math.toRadians(0)));
+          new Transform3d(
+                  new Translation3d(Units.inchesToMeters(4.25), Units.inchesToMeters(2), Units.inchesToMeters(21.5)), //new Translation3d(Units.inchesToMeters(3.5), Units.inchesToMeters(2), Units.inchesToMeters(21.5)),
+                  // Keep roll at 0°, pitch set to -15 degrees (camera pitched upward), yaw unchanged (0)
+                  new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(0)));
+
+  private static final Transform3d FRONT_RIGHT_POS =
+          new Transform3d(
+                  new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
+                  // Keep roll as 0°, set pitch to -15°, keep yaw 315°
+                  new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(315)));
+
+  private static final Transform3d FRONT_LEFT_POS =
+          new Transform3d(
+                  new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
+                  // Keep roll 0°, set pitch to -15°, keep yaw 45°
+                  new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(45)));
+
+  private static final Transform3d BACK_LEFT_POS =
+          new Transform3d(
+                  new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
+                  // Keep roll 0°, set pitch to -15°, keep yaw 135°
+                  new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(135)));
+
+    private static final Transform3d BACK_RIGHT_POS =
+            new Transform3d(
+                    new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
+                    // keep roll 0°, set pitch to -15°, keep yaw 225°
+                    new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(225)));
 
   // Thresholds and sim properties
   private static final double MAX_AMBIGUITY = 0.2; // ignore -1 (handled in provider)
   private static final double MAX_DISTANCE_METERS = 3.5;
   private static final int SIM_WIDTH = 640;
   private static final int SIM_HEIGHT = 480;
-  private static final double SIM_FOV_DEG = 70;
+  private static final double SIM_FOV_DEG = 70; // TODO: Change if using 120 degree lenses (which we have in stock) on cameras!!!
   private static final int SIM_FPS = 40;
   private static final double SIM_AVG_LAT_MS = 35;
   private static final double SIM_LAT_STD_MS = 5;
@@ -73,15 +96,18 @@ public class Vision implements AutoCloseable {
    */
   public Vision() {
     List<Glitch.Lib.Vision.Vision.CameraConfig> cameras = Arrays.asList(
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_CENTER, CENTER_POS)
+            new Glitch.Lib.Vision.Vision.CameraConfig(CAM_CENTER, CENTER_POS),
+            new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_RIGHT, FRONT_RIGHT_POS),
+            new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_LEFT, FRONT_LEFT_POS),
+            new Glitch.Lib.Vision.Vision.CameraConfig(CAM_BACK_LEFT, BACK_LEFT_POS)
     );
 
     Glitch.Lib.Vision.Vision.Config cfg = new Glitch.Lib.Vision.Vision.Config(
-        cameras,
-        MAX_AMBIGUITY,
-        MAX_DISTANCE_METERS,
-        SIM_WIDTH, SIM_HEIGHT, SIM_FOV_DEG, SIM_FPS,
-        SIM_AVG_LAT_MS, SIM_LAT_STD_MS);
+            cameras,
+            MAX_AMBIGUITY,
+            MAX_DISTANCE_METERS,
+            SIM_WIDTH, SIM_HEIGHT, SIM_FOV_DEG, SIM_FPS,
+            SIM_AVG_LAT_MS, SIM_LAT_STD_MS);
 
     AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
@@ -92,7 +118,9 @@ public class Vision implements AutoCloseable {
     }
   }
 
-  /** Optional provider hook for per-loop processing. */
+  /**
+   * Optional provider hook for per-loop processing.
+   */
   public void periodic() {
     provider.periodic();
   }
@@ -105,9 +133,9 @@ public class Vision implements AutoCloseable {
    */
   public List<Measurement> drainMeasurements(Pose2d referencePose) {
     return provider.drainMeasurements(referencePose)
-        .stream()
-        .map(m -> new Measurement(m.pose, m.timestampSeconds))
-        .collect(Collectors.toList());
+            .stream()
+            .map(m -> new Measurement(m.pose, m.timestampSeconds))
+            .collect(Collectors.toList());
   }
 
   /**
@@ -135,11 +163,21 @@ public class Vision implements AutoCloseable {
   public void logCameraPoses(Pose2d robotPose) {
     var robotPose3d = new edu.wpi.first.math.geometry.Pose3d(robotPose);
     var camCenter = robotPose3d.transformBy(CENTER_POS);
+    var camFrontRight = robotPose3d.transformBy(FRONT_RIGHT_POS);
+    var camFrontLeft = robotPose3d.transformBy(FRONT_LEFT_POS);
+    var camBackLeft = robotPose3d.transformBy(BACK_LEFT_POS);
+    var camBackRight = robotPose3d.transformBy(BACK_RIGHT_POS);
 
     logger.logPose3d("/" + CAM_CENTER + "/Pose", camCenter);
+    logger.logPose3d("/" + CAM_FRONT_RIGHT + "/Pose", camFrontRight);
+    logger.logPose3d("/" + CAM_FRONT_LEFT + "/Pose", camFrontLeft);
+    logger.logPose3d("/" + CAM_BACK_LEFT + "/Pose", camBackLeft);
+    logger.logPose3d("/" + CAM_BACK_RIGHT + "/Pose", camBackRight);
   }
 
-  /** Releases any provider resources (no-op by default). */
+  /**
+   * Releases any provider resources (no-op by default).
+   */
   @Override
   public void close() {
     provider.close();
