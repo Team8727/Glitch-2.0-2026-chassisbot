@@ -49,7 +49,7 @@ public class Vision implements AutoCloseable {
   private static final String CAM_FRONT_RIGHT = "FrontRight";
   private static final String CAM_FRONT_LEFT = "FrontLeft";
   private static final String CAM_BACK_RIGHT = "BackRight";
-  private static final String CAM_BACK_LEFT = "BackRight";
+  private static final String CAM_BACK_LEFT = "BackLeft";
 
 
   // Robot-to-camera transforms
