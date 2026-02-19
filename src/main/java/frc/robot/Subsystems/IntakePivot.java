@@ -8,8 +8,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class IntakePivot extends Pivot {
   public enum IntakePosition {
-    UP(0),//TODO: find values
-    DOWN(0);
+    UP(20),//TODO: find values
+    DOWN(30);
 
     private final double degrees;
     private IntakePosition(double degrees) { this.degrees = degrees; }
@@ -38,7 +38,7 @@ public class IntakePivot extends Pivot {
       0,
       0,
       1);
-    setPosition(IntakePosition.DOWN.getDegrees());
+    setDefaultCommand(setPositionCommand(IntakePosition.DOWN.getDegrees()));
   }
 
   /** This method will be called once per scheduler run */
