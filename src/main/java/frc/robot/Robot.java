@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
+import frc.robot.Subsystems.IntakePivot;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
 
@@ -53,6 +54,7 @@ public class Robot extends TimedRobot {
   private final Autos autos = new Autos(CTREDrivetrain);
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
+  private final IntakePivot intakePivot = new IntakePivot();
 
 
 //  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
@@ -174,6 +176,7 @@ public class Robot extends TimedRobot {
     m_mainController.applyBindings(
       new Driver1DefaultBindings(
         CTREDrivetrain,
+        intakePivot,
         autos,
         m_mainController.getController()
       )
