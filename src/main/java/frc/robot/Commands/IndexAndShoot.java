@@ -1,8 +1,23 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Subsystems.Indexer;
+import frc.robot.Subsystems.ShooterPivot;
+import frc.robot.Subsystems.ShooterRoller;
 
 public class IndexAndShoot extends Command {
+
+  Indexer indexer;
+  ShooterPivot shooterPivot;
+  ShooterRoller shooterRoller;
+
+  public IndexAndShoot(Indexer indexer, ShooterPivot shooterPivot, ShooterRoller shooterRoller) {
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(indexer, shooterPivot, shooterRoller);
+    this.indexer = indexer;
+    this.shooterPivot = shooterPivot;
+    this.shooterRoller = shooterRoller;
+  }
 
   @Override
   public void initialize() {
