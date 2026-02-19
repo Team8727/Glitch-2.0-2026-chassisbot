@@ -22,16 +22,27 @@ public class IndexAndShoot extends Command {
   @Override
   public void initialize() {
     // This method will be called once per scheduler run
+
+    // point robot
+    // point shooter pivot
+    // spin up indexer
+    // spin up shooter
   }
 
   @Override
   public void execute() {
     // This method will be called repeatedly until this Command either finishes or is interrupted.
+
+    // adjust robot yaw
+    // adjust shooter pitch
   }
 
   @Override
   public void end(boolean interrupted) {
     // This method will be called once after isFinished returns true, or if the command is interrupted/canceled.
+
+    // stop shooter
+    // stop indexer
   }
 
   @Override
