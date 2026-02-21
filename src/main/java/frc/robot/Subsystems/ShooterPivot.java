@@ -7,6 +7,17 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class ShooterPivot extends Pivot {
+  public enum MaxShooterAngles {
+    UP(20),//TODO: find values
+    DOWN(0);
+
+    private final double degrees;
+    private MaxShooterAngles(double degrees) { this.degrees = degrees; }
+
+    public double getDegrees() {
+      return degrees;
+    }
+  }
 
   private static final int CANID = 57;
   private static final SparkMaxConfig config = new SparkMaxConfig();

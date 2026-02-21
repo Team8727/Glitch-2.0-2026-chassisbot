@@ -12,15 +12,14 @@ import frc.robot.Subsystems.IntakePivot;
  */
 public class Driver1DefaultBindings implements ControllerBindings {
   private final Autos autos;
-  private final IntakePivot intakePivot;
+  //private final IntakePivot intakePivot;
 
   public Driver1DefaultBindings(
       CTRESwerveDrivetrain drivetrain,
-      IntakePivot intakePivot,
       Autos autos,
       CommandXboxController controller) {
     this.autos = autos;
-    this.intakePivot = intakePivot;
+    //this.intakePivot = intakePivot;
 
     new CTReSwerveControls(drivetrain, controller);
 
@@ -29,7 +28,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
 
   @Override
   public void bind(CommandXboxController controller) {
-    controller.povUp().whileTrue(intakePivot.setPositionCommand(IntakePivot.IntakePosition.UP.getDegrees()));
+    // controller.povUp().whileTrue(intakePivot.setPositionCommand(IntakePivot.IntakePosition.UP.getDegrees()));
     // Put binds here
   }
 }

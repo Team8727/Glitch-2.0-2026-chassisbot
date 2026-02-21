@@ -109,7 +109,7 @@ public class Vision implements AutoCloseable {
             SIM_WIDTH, SIM_HEIGHT, SIM_FOV_DEG, SIM_FPS,
             SIM_AVG_LAT_MS, SIM_LAT_STD_MS);
 
-    AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+    AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
     if (Robot.isSimulation()) {
       this.provider = Glitch.Lib.Vision.Vision.createPhotonVisionSim(cfg, layout);

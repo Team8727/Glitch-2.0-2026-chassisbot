@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
-import frc.robot.Subsystems.IntakePivot;
+import frc.robot.Subsystems.*;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
 
@@ -54,7 +54,12 @@ public class Robot extends TimedRobot {
   private final Autos autos = new Autos(CTREDrivetrain);
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
-  private final IntakePivot intakePivot = new IntakePivot();
+//  private final IntakePivot intakePivot = new IntakePivot();
+//  private final IntakeRoller intakeRoller = new IntakeRoller();
+//  public final Indexer indexer = new Indexer();
+//  public final ShooterPivot shooterPivot = new ShooterPivot();
+//  public final ShooterRoller shooterRoller = new ShooterRoller();
+
 
 
 //  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
@@ -176,7 +181,6 @@ public class Robot extends TimedRobot {
     m_mainController.applyBindings(
       new Driver1DefaultBindings(
         CTREDrivetrain,
-        intakePivot,
         autos,
         m_mainController.getController()
       )
@@ -189,33 +193,35 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    Translation3d shooterPosition = new Translation3d(
-      CTREDrivetrain.getState().Pose.getX(),
-      CTREDrivetrain.getState().Pose.getY(),
-      SHOOTER_HEIGHT_METERS);
+    Translation3d shooterFieldPosition = new Translation3d(
+            CTREDrivetrain.getState().Pose.getX(),
+            CTREDrivetrain.getState().Pose.getY(),
+            SHOOTER_HEIGHT_METERS);
 
     Translation3d drivetrainFOCVelocity = new Translation3d(
-      CTREDrivetrain.getState().Speeds.vxMetersPerSecond,
-      CTREDrivetrain.getState().Speeds.vyMetersPerSecond,
-      0).rotateBy(new Rotation3d(CTREDrivetrain.getState().Pose.getRotation()));// rotate by robot rotation
+            CTREDrivetrain.getState().Speeds.vxMetersPerSecond,
+            CTREDrivetrain.getState().Speeds.vyMetersPerSecond,
+            0).rotateBy(new Rotation3d(CTREDrivetrain.getState().Pose.getRotation()));// rotate by robot rotation
 
     firing = ProjectileSolver.solve(
-      shooterPosition,
-      target,
-      drivetrainFOCVelocity,// rotate by robot rotation
-      SHOOTER_ANGLE_DEGREES);
+            shooterFieldPosition,
+            target,
+            drivetrainFOCVelocity,// rotate by robot rotation
+            SHOOTER_ANGLE_DEGREES);
 
     logger.logDouble("shooter vel", firing.power);
     logger.logDouble("shooter yaw", firing.yaw);
     logger.logDouble("shooter yaw radians", Math.toRadians(firing.yaw));
     logger.logDouble("shooter2 pitch", firing.pitch);
     logger.logBoolean("shooter2 valid", firing.isValid);
+
     logger.logPose3d("shooter2 position", new Pose3d(
-      shooterPosition,
-      new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
+            shooterFieldPosition,
+            new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
+
     logger.logPose3d("target", new Pose3d(
-      target,
-      new Rotation3d()));
+            target,
+            new Rotation3d()));
 
     logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
   }

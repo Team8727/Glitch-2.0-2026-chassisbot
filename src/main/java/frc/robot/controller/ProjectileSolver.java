@@ -9,7 +9,7 @@ public class ProjectileSolver {
     public double yaw;      // Rotation around Z (degrees) - Standard FRC Gyro frame
     public double pitch;    // Angle above ground (degrees)
     public double power;    // Muzzle velocity magnitude
-    public boolean isValid;
+    public boolean isValid; // Whether a valid solution was found (e.g. not out of range)
     public Translation3d worldVel;
 
     @Override
