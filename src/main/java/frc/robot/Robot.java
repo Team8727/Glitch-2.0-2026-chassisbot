@@ -179,11 +179,11 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
 
     m_mainController.applyBindings(
-      new Driver1DefaultBindings(
-        CTREDrivetrain,
-        autos,
-        m_mainController.getController()
-      )
+            new Driver1DefaultBindings(
+                    m_mainController.getController(),
+                    autos,
+                    CTREDrivetrain
+            )
     );
 
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;

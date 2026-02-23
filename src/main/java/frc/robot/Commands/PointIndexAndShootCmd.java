@@ -13,7 +13,7 @@ import frc.robot.controller.CTReSwerveControls;
 
 import static frc.robot.controller.CTReSwerveControls.MaxSpeed;
 
-public class PointIndexAndShoot extends Command {
+public class PointIndexAndShootCmd extends Command {
 
   CommandXboxController controller;
 
@@ -22,7 +22,7 @@ public class PointIndexAndShoot extends Command {
   ShooterRoller shooterRoller;
   CTRESwerveDrivetrain drivetrain;
 
-  public PointIndexAndShoot(Indexer indexer, ShooterPivot shooterPivot, ShooterRoller shooterRoller, CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
+  public PointIndexAndShootCmd(Indexer indexer, ShooterPivot shooterPivot, ShooterRoller shooterRoller, CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(indexer, shooterPivot, shooterRoller, drivetrain);
     this.controller = controller;
