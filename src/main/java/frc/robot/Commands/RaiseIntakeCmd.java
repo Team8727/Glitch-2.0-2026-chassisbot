@@ -9,7 +9,7 @@ import frc.robot.Subsystems.IntakePivot;
 import frc.robot.Subsystems.IntakeRoller;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SpinIntakeCmd extends Command {
+public class RaiseIntakeCmd extends Command {
 
   private final IntakeRoller roller;
   private final IntakePivot pivot;
@@ -17,22 +17,17 @@ public class SpinIntakeCmd extends Command {
   boolean ended = false;
 
   /** Creates a new IntakeRollerCommand. */
-  public SpinIntakeCmd(IntakeRoller roller, IntakePivot pivot) {
-
+  public RaiseIntakeCmd(IntakeRoller roller, IntakePivot pivot) {
     this.roller = roller;
     this.pivot = pivot;
-
     addRequirements(roller, pivot);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (pivot.getPosition() == IntakePivot.IntakePosition.DOWN.getDegrees()) {
-      roller.setSpeedDutyCycle(1);
-    } else {
-      roller.setSpeedDutyCycle(0);
-    }
+    roller.setSpeedDutyCycle(0);
+    pivot.setPosition(IntakePivot.IntakePosition.UP.getDegrees());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,14 +36,11 @@ public class SpinIntakeCmd extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    roller.setSpeedDutyCycle(0);
-    ended = true;
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ended;
+    return false;
   }
 }
