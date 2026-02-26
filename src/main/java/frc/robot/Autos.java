@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 
 public class Autos extends SubsystemBase {
-//  private final LEDSubsystem m_ledSubsystem = ;
+  //  private final LEDSubsystem m_ledSubsystem = ;
   private final LinkedHashMap<String, PathPlannerPath> paths = new LinkedHashMap<>();
   private final CTRESwerveDrivetrain CTREDrivetrain;
   private final SendableChooser<String> autoChooser = new SendableChooser<>();
@@ -30,19 +30,20 @@ public class Autos extends SubsystemBase {
 
   private static final Translation2d fieldCenter = new Translation2d(8.770, 4.026); // meters
 
-  /** Creates a new Autos. */
+  /**
+   * Creates a new Autos.
+   */
   public Autos(CTRESwerveDrivetrain CTREDrivetrain) {
     this.CTREDrivetrain = CTREDrivetrain;
 
     loadPaths();
-   }
+  }
 
   /**
    * Loads the paths from the specified path files.
    * Example:
    * <pre>
-   *   loadPath("Path-Name");
-   * </pre>
+   *   loadPath("Path-Name"); </pre>
    */
   private void loadPaths() {
     loadPath("bareMinimum");
@@ -66,8 +67,7 @@ public class Autos extends SubsystemBase {
    * Example:
    * <pre>
    *   autoChooser.setDefaultOption("Path-Name", "Path_Function()");
-   *   autoChooser.addOption("Path-Name", "Path_Function()");
-   * </pre>
+   *   autoChooser.addOption("Path-Name", "Path_Function()"); </pre>
    */
   public void setupAutoChooser() {
     autoChooser.setDefaultOption("BareMinimum", "bareMinimum()");
@@ -77,8 +77,7 @@ public class Autos extends SubsystemBase {
    * runs the autonomous command based on the selected option in the auto chooser.
    * <pre>
    *   autoChooser.setDefaultOption("Path-Name", "Path_Function()");
-   *   autoChooser.addOption("Path-Name", "Path_Function()");
-   * </pre>
+   *   autoChooser.addOption("Path-Name", "Path_Function()"); </pre>
    */
   public void selectAuto() {
     if (autoChooser.getSelected().equals("bareMinimum()")) {
@@ -105,12 +104,12 @@ public class Autos extends SubsystemBase {
    */
   public Command align(Pose2d goal) {
     return AutoBuilder.pathfindToPose(
-        goal,
-        new PathConstraints(
-            TunerConstants.kMaxLinearVelocity,
-            TunerConstants.kMaxLinearAcceleration,
-            TunerConstants.kMaxAngularVelocity,
-            TunerConstants.kMaxAngularAcceleration)).andThen(new WaitCommand(0.0001));
+            goal,
+            new PathConstraints(
+                    TunerConstants.kMaxLinearVelocity,
+                    TunerConstants.kMaxLinearAcceleration,
+                    TunerConstants.kMaxAngularVelocity,
+                    TunerConstants.kMaxAngularAcceleration)).andThen(new WaitCommand(0.0001));
   }
 
   /**
@@ -121,12 +120,12 @@ public class Autos extends SubsystemBase {
    */
   public Command alignToPath(PathPlannerPath goal) {
     return AutoBuilder.pathfindThenFollowPath(
-        goal,
-        new PathConstraints(
-          TunerConstants.kMaxLinearVelocity,
-          TunerConstants.kMaxLinearAcceleration,
-          TunerConstants.kMaxAngularVelocity,
-          TunerConstants.kMaxAngularAcceleration)).andThen(new WaitCommand(0.0001));
+            goal,
+            new PathConstraints(
+                    TunerConstants.kMaxLinearVelocity,
+                    TunerConstants.kMaxLinearAcceleration,
+                    TunerConstants.kMaxAngularVelocity,
+                    TunerConstants.kMaxAngularAcceleration)).andThen(new WaitCommand(0.0001));
   }
 
   /**
@@ -147,7 +146,7 @@ public class Autos extends SubsystemBase {
    */
   private void setStartPose(PathPlannerPath path) {
     Pose2d startPose;
-    if (DriverStation.getAlliance().orElse(Alliance.Blue) ==  Alliance.Red) {
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
       startPose = path.flipPath().getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
     } else {
       startPose = path.getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
@@ -162,8 +161,8 @@ public class Autos extends SubsystemBase {
   // Commands for different paths
   private Command bareMinimum() {
     return new SequentialCommandGroup(
-      new InstantCommand(() -> setStartPose(paths.get("bareMinimum"))),
-      alignToPath(paths.get("bareMinimum"))
+            new InstantCommand(() -> setStartPose(paths.get("bareMinimum"))),
+            alignToPath(paths.get("bareMinimum"))
     );
   }
 }

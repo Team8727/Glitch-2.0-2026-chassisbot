@@ -3,7 +3,10 @@ package frc.robot;
 import Glitch.Lib.NetworkTableLogger;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
@@ -23,23 +26,15 @@ import java.util.stream.Collectors;
 public class Vision implements AutoCloseable {
   /**
    * Robot-layer measurement wrapper to decouple robot code from library nested types.
+   * This is a record, so Measurement automatically has accessor methods for pose and timestampSeconds.
    * <p>
    * Values are produced by the underlying library provider but re-wrapped here for stability
    * of the robot API.
+   *
+   * @param pose             Estimated field pose at capture time.
+   * @param timestampSeconds Capture timestamp in seconds.
    */
-  public static class Measurement {
-    /** Estimated field pose at capture time. */
-    public final Pose2d pose;
-    /** Capture timestamp in seconds. */
-    public final double timestampSeconds;
-    public Measurement(Pose2d pose, double timestampSeconds) {
-      this.pose = pose;
-      this.timestampSeconds = timestampSeconds;
-    }
-    /** @return Pose measured by vision at capture time */
-    public Pose2d getPose() { return pose; }
-    /** @return Measurement timestamp in seconds */
-    public double getTimestampSeconds() { return timestampSeconds; }
+  public record Measurement(Pose2d pose, double timestampSeconds) {
   }
 
   private final Glitch.Lib.Vision.Vision.Provider provider;
@@ -75,7 +70,7 @@ public class Vision implements AutoCloseable {
   private static final double MAX_DISTANCE_METERS = 3.5;
   private static final int SIM_WIDTH = 640;
   private static final int SIM_HEIGHT = 480;
-  private static final double SIM_FOV_DEG = 70;
+  private static final double SIM_FOV_DEG = 70; // TODO: Change if using 120 degree lenses (which we have in stock) on cameras!!!
   private static final int SIM_FPS = 40;
   private static final double SIM_AVG_LAT_MS = 35;
   private static final double SIM_LAT_STD_MS = 5;
@@ -95,11 +90,11 @@ public class Vision implements AutoCloseable {
     );
 
     Glitch.Lib.Vision.Vision.Config cfg = new Glitch.Lib.Vision.Vision.Config(
-        cameras,
-        MAX_AMBIGUITY,
-        MAX_DISTANCE_METERS,
-        SIM_WIDTH, SIM_HEIGHT, SIM_FOV_DEG, SIM_FPS,
-        SIM_AVG_LAT_MS, SIM_LAT_STD_MS);
+            cameras,
+            MAX_AMBIGUITY,
+            MAX_DISTANCE_METERS,
+            SIM_WIDTH, SIM_HEIGHT, SIM_FOV_DEG, SIM_FPS,
+            SIM_AVG_LAT_MS, SIM_LAT_STD_MS);
 
     AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
@@ -110,7 +105,9 @@ public class Vision implements AutoCloseable {
     }
   }
 
-  /** Optional provider hook for per-loop processing. */
+  /**
+   * Optional provider hook for per-loop processing.
+   */
   public void periodic() {
     provider.periodic();
   }
@@ -123,9 +120,9 @@ public class Vision implements AutoCloseable {
    */
   public List<Measurement> drainMeasurements(Pose2d referencePose) {
     return provider.drainMeasurements(referencePose)
-        .stream()
-        .map(m -> new Measurement(m.pose, m.timestampSeconds))
-        .collect(Collectors.toList());
+            .stream()
+            .map(m -> new Measurement(m.pose, m.timestampSeconds))
+            .collect(Collectors.toList());
   }
 
   /**
@@ -164,7 +161,9 @@ public class Vision implements AutoCloseable {
     logger.logPose3d("/" + CAM_BACK_LEFT + "/Pose", camBackLeft);
   }
 
-  /** Releases any provider resources (no-op by default). */
+  /**
+   * Releases any provider resources (no-op by default).
+   */
   @Override
   public void close() {
     provider.close();
