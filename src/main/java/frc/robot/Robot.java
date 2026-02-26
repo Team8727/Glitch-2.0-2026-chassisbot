@@ -54,11 +54,11 @@ public class Robot extends TimedRobot {
   private final Autos autos = new Autos(CTREDrivetrain);
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
-//  private final IntakePivot intakePivot = new IntakePivot();
-//  private final IntakeRoller intakeRoller = new IntakeRoller();
-//  public final Indexer indexer = new Indexer();
-//  public final ShooterPivot shooterPivot = new ShooterPivot();
-//  public final ShooterRoller shooterRoller = new ShooterRoller();
+  private final IntakePivot intakePivot = new IntakePivot();
+  private final IntakeRoller intakeRoller = new IntakeRoller();
+  private final Indexer indexer = new Indexer();
+  private final Spindexer spindexer = new Spindexer();
+  private final ShooterRollers shooterRollers = new ShooterRollers();
 
 
 
@@ -182,7 +182,12 @@ public class Robot extends TimedRobot {
             new Driver1DefaultBindings(
                     m_mainController.getController(),
                     autos,
-                    CTREDrivetrain
+                    CTREDrivetrain,
+                    spindexer,
+                    intakePivot,
+                    intakeRoller,
+                    indexer,
+                    shooterRollers
             )
     );
 

@@ -5,6 +5,7 @@ import Glitch.Lib.BaseMechanisms.Pivot;
 import Glitch.Lib.Motors.SparkMaxMotor;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class IntakePivot extends Pivot {
   public enum IntakePosition {
@@ -19,11 +20,11 @@ public class IntakePivot extends Pivot {
     }
   }
 
-  private static final int CANID = 52;
+  private static final int CANID = 4;
   private static final SparkMaxConfig config = new SparkMaxConfig();
   static {
     config
-      .smartCurrentLimit(60)
+      .smartCurrentLimit(40)
       .idleMode(SparkMaxConfig.IdleMode.kBrake)
       .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);}
@@ -38,7 +39,7 @@ public class IntakePivot extends Pivot {
       0,
       0,
       1);
-    setDefaultCommand(setPositionCommand(IntakePosition.DOWN.getDegrees()));
+    setDefaultCommand(run(() -> setPosition(IntakePosition.DOWN.getDegrees())));
   }
 
   /** This method will be called once per scheduler run */

@@ -35,6 +35,14 @@ public class PointIndexAndShootCmd extends Command {
 
   @Override
   public void initialize() {  // This method will be called once per scheduler run
+    if (Robot.firing.isValid && Robot.firing.pitch < ShooterPivot.MaxShooterAngles.UP.getDegrees() && Robot.firing.pitch > ShooterPivot.MaxShooterAngles.DOWN.getDegrees()) {
+      try {
+        alertDriver();
+        this.cancel();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
     // 1. point robot
     pointRobot();
     // 2. point shooter pivot
@@ -47,6 +55,15 @@ public class PointIndexAndShootCmd extends Command {
 
   @Override
   public void execute() {  // This method will be called repeatedly until this Command either finishes or is interrupted.
+    if (Robot.firing.isValid && Robot.firing.pitch < ShooterPivot.MaxShooterAngles.UP.getDegrees() && Robot.firing.pitch > ShooterPivot.MaxShooterAngles.DOWN.getDegrees()) {
+      try {
+        alertDriver();
+        this.cancel();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
     // 5. adjust robot yaw
     pointRobot();
     // 6. adjust shooter pitch
@@ -76,11 +93,13 @@ public class PointIndexAndShootCmd extends Command {
   }
 
   private void angleShooterPivot() {
-    if (Robot.firing.pitch < ShooterPivot.MaxShooterAngles.UP.getDegrees() && Robot.firing.pitch > ShooterPivot.MaxShooterAngles.DOWN.getDegrees()) {
       shooterPivot.setPosition(Robot.firing.pitch);
-    } else {
-      controller.setRumble(GenericHID.RumbleType.kRightRumble, 1); // rumble controller if trying to set shooter pivot below minimum angle or above maximum angle to alert driver that they are trying to set an invalid angle
-    }
+  }
+
+  private void alertDriver() throws InterruptedException {
+    controller.setRumble(GenericHID.RumbleType.kBothRumble, 1);
+    wait(200);
+    controller.setRumble(GenericHID.RumbleType.kBothRumble, 0);
   }
 
 }
