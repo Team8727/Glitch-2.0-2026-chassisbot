@@ -7,11 +7,11 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 
 public class Spindexer extends Roller {
-  private static final int CANID = 55;
+  private static final int CANID = 5;
   private static final SparkMaxConfig config = new SparkMaxConfig();
   static {
     config
-      .smartCurrentLimit(60)
+      .smartCurrentLimit(40)
       .idleMode(SparkMaxConfig.IdleMode.kBrake)
       .inverted(false)
       .closedLoop
@@ -20,6 +20,8 @@ public class Spindexer extends Roller {
 
   public Spindexer() {
     super(new SparkMaxMotor(config, CANID, FeedbackSensor.kPrimaryEncoder));
+    setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
+//    setSpeedVelocity(1);
   }
     /** This method will be called once per scheduler run */
   @Override

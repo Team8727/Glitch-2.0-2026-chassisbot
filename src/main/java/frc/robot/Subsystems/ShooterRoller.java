@@ -6,7 +6,7 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class ShooterRoller extends Roller {
-    private static final int CANID = 58;
+    private static final int CANID = 7;
     private static final SparkMaxConfig config = new SparkMaxConfig();
     static {
         config
@@ -19,6 +19,7 @@ public class ShooterRoller extends Roller {
 
     public ShooterRoller() {
         super(new SparkMaxMotor(config, CANID, FeedbackSensor.kPrimaryEncoder));
+        setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
     }
 
     /** This method will be called once per scheduler run */

@@ -19,14 +19,14 @@ public class ShooterPivot extends Pivot {
     }
   }
 
-  private static final int CANID = 57;
+  private static final int CANID = 9;
   private static final SparkMaxConfig config = new SparkMaxConfig();
   static {
     config
-      .smartCurrentLimit(60)
+      .smartCurrentLimit(40)
       .idleMode(SparkMaxConfig.IdleMode.kBrake)
       .closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);}
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder);}
 
   public ShooterPivot() {
     super(
