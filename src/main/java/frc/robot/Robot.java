@@ -59,9 +59,6 @@ public class Robot extends TimedRobot {
   private final Indexer indexer = new Indexer();
   private final Spindexer spindexer = new Spindexer();
   private final ShooterRollers shooterRollers = new ShooterRollers();
-
-
-
 //  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
 
 
