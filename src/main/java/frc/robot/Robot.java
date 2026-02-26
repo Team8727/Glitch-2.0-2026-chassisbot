@@ -5,6 +5,7 @@
 package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
+import Glitch.Lib.LEDS.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
@@ -19,9 +20,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
+import frc.robot.Subsystems.LEDSubsystem2026;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
 
@@ -54,11 +57,7 @@ public class Robot extends TimedRobot {
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
 
-
-//  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
-
-
-
+  private final LEDSubsystem2026 m_leds = LEDSubsystem2026.getInstance();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -146,6 +145,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    m_leds.setAll(GlitchLEDPatterns.purple);
   }
 
   /** This function is called periodically during disabled. */
@@ -159,6 +159,8 @@ public class Robot extends TimedRobot {
     m_mainController.clearBindings();
     m_assistController.clearBindings();
     autos.selectAuto(); //Only enable this if you want the robot to do stuff during autonomous
+
+    m_leds.setAll(GlitchLEDPatterns.fire(GlitchLEDPatterns.funGradient, Color.kGreen));
   }
 
   /** This function is called periodically during autonomous. */
@@ -180,6 +182,8 @@ public class Robot extends TimedRobot {
     );
 
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
+
+    m_leds.returnAllToBase();
   }
 
   /** This function is called periodically during operator control. */
@@ -215,6 +219,10 @@ public class Robot extends TimedRobot {
       new Rotation3d()));
 
     logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
+
+    if (firing.isValid) {
+      m_leds.setAll(GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 5, 1), 0.3);
+    }
   }
 
   /** This function is called once when test mode is enabled. */
