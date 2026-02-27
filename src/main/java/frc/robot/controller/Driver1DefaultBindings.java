@@ -23,7 +23,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
   private final IntakePivot intakePivot;
   private final IntakeRoller intakeRoller;
   public final Indexer indexer;
-//  public final ShooterPivot shooterPivot;
+  public final ShooterPivot shooterPivot;
   public final ShooterRollers shooterRollers;
 
   public Driver1DefaultBindings(
@@ -32,6 +32,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
           CTRESwerveDrivetrain drivetrain,
           Spindexer spindexer,
           IntakePivot intakePivot,
+          ShooterPivot shooterPivot,
           IntakeRoller intakeRoller,
           Indexer indexer,
           ShooterRollers shooterRollers
@@ -40,6 +41,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
     this.drivetrain = drivetrain;
     this.spindexer = spindexer;
     this.intakePivot = intakePivot;
+    this.shooterPivot = shooterPivot;
     this.intakeRoller = intakeRoller;
     this.indexer = indexer;
     this.shooterRollers = shooterRollers;
@@ -54,10 +56,18 @@ public class Driver1DefaultBindings implements ControllerBindings {
     // Put binds here
     controller.x().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.5)));
     controller.rightTrigger().whileTrue(run(() -> shooterRollers.setSpeedDutyCycle(.5)));
-    controller.povUp().whileTrue(run(() -> indexer.setSpeedDutyCycle(.5)));
+    controller.povRight().whileTrue(run(() -> indexer.setSpeedDutyCycle(.5)));
     controller.povRight().whileTrue(run(() -> spindexer.setSpeedDutyCycle(.3)));
-    controller.y().onTrue(run(() -> intakePivot.setPosition(ShooterPivot.MaxShooterAngles.UP.getDegrees())));
-    controller.a().onTrue(run(() -> intakePivot.setPosition(ShooterPivot.MaxShooterAngles.DOWN.getDegrees())));
+    controller.y().onTrue(new InstantCommand(() -> intakePivot.setPosition(130)));
+    controller.a().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
+    controller.povUp().onTrue(new InstantCommand(() -> shooterPivot.setPosition(0)));
+    controller.povDown().onTrue(new InstantCommand(() -> shooterPivot.setPosition(360)));
+
+
+//    controller.leftBumper().onTrue(new InstantCommand(() -> shooterPivot.setPosition(100)));
+//    controller.rightBumper().onTrue(new InstantCommand(() -> shooterPivot.setPosition(300)));
+//    controller.b().onTrue(new InstantCommand(() -> shooterPivot.setPosition(400)));
+
 
 //    controller.x().whileTrue(new PointIndexAndShootCmd(indexer, shooterPivot, shooterRoller, drivetrain, controller));
 //    controller.b().whileTrue(new RaiseIntakeCmd(intakeRoller, intakePivot));

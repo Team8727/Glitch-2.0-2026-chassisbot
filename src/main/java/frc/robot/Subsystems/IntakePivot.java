@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class IntakePivot extends Pivot {
   public enum IntakePosition {
-    UP(20),//TODO: find values
-    DOWN(30);
+    UP(360),//TODO: find values
+    DOWN(0);
 
     private final double degrees;
     private IntakePosition(double degrees) { this.degrees = degrees; }
@@ -27,7 +27,9 @@ public class IntakePivot extends Pivot {
       .smartCurrentLimit(40)
       .idleMode(SparkMaxConfig.IdleMode.kBrake)
       .closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);}
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .pid(5,0,0);
+  }
 
   public IntakePivot() {
     super(
@@ -36,10 +38,10 @@ public class IntakePivot extends Pivot {
         CANID,
         FeedbackSensor.kAbsoluteEncoder),
       0,//TODO: find values
-      0,
-      0,
+      1000,
+      1000,
       1);
-    setDefaultCommand(run(() -> setPosition(IntakePosition.DOWN.getDegrees())));
+    setPosition(IntakePosition.DOWN.getDegrees());
   }
 
   /** This method will be called once per scheduler run */

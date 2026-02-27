@@ -2,13 +2,14 @@
 package frc.robot.Subsystems;
 
 import Glitch.Lib.BaseMechanisms.Pivot;
+import Glitch.Lib.BaseMechanisms.SimplePivot;
 import Glitch.Lib.Motors.SparkMaxMotor;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-public class ShooterPivot extends Pivot {
+public class ShooterPivot extends SimplePivot {
   public enum MaxShooterAngles {
-    UP(20),//TODO: find values
+    UP(100),//TODO: find values
     DOWN(0);
 
     private final double degrees;
@@ -26,19 +27,24 @@ public class ShooterPivot extends Pivot {
       .smartCurrentLimit(40)
       .idleMode(SparkMaxConfig.IdleMode.kBrake)
       .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder);}
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(1,0,0);}
 
   public ShooterPivot() {
     super(
       new SparkMaxMotor(
         config,
         CANID,
-        FeedbackSensor.kAbsoluteEncoder),
-      0,//TODO: find values
-      0,
-      0,
+        FeedbackSensor.kPrimaryEncoder),
+      20,//TODO: find values
       1);
   }
+
+  @Override
+  public void setPosition(double angleDegrees) {
+    super.setPosition(angleDegrees*9);
+  }
+
 
   /** This method will be called once per scheduler run */
   @Override

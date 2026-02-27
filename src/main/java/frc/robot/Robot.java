@@ -55,6 +55,7 @@ public class Robot extends TimedRobot {
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
   private final IntakePivot intakePivot = new IntakePivot();
+  private final ShooterPivot shooterPivot = new ShooterPivot();
   private final IntakeRoller intakeRoller = new IntakeRoller();
   private final Indexer indexer = new Indexer();
   private final Spindexer spindexer = new Spindexer();
@@ -185,6 +186,7 @@ public class Robot extends TimedRobot {
                     CTREDrivetrain,
                     spindexer,
                     intakePivot,
+                    shooterPivot,
                     intakeRoller,
                     indexer,
                     shooterRollers
