@@ -10,7 +10,7 @@ public class Indexer extends Roller {
     private static final SparkMaxConfig config = new SparkMaxConfig();
     static {
         config
-                .smartCurrentLimit(40)
+                .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kBrake)
                 .inverted(true)
                 .closedLoop

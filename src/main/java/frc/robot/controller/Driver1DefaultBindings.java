@@ -2,15 +2,18 @@ package frc.robot.controller;
 
 import Glitch.Lib.Controller.ControllerBindings;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Autos;
 import frc.robot.Commands.PointIndexAndShootCmd;
 import frc.robot.Commands.RaiseIntakeCmd;
+import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Subsystems.*;
 
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 
 /**
@@ -55,13 +58,18 @@ public class Driver1DefaultBindings implements ControllerBindings {
   public void bind(CommandXboxController controller) {
     // Put binds here
     controller.x().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.5)));
+    controller.povLeft().whileTrue(new Shoot(indexer, spindexer, shooterRollers));
+    controller.leftTrigger().whileTrue(
+            run(() -> indexer.setSpeedDutyCycle(-1)).alongWith(
+            run(() -> spindexer.setSpeedDutyCycle(-.5))));
+
     controller.rightTrigger().whileTrue(run(() -> shooterRollers.setSpeedDutyCycle(.5)));
     controller.povRight().whileTrue(run(() -> indexer.setSpeedDutyCycle(.5)));
-    controller.povRight().whileTrue(run(() -> spindexer.setSpeedDutyCycle(.3)));
+    controller.povRight().toggleOnTrue(run(() -> spindexer.setSpeedDutyCycle(.3)));
     controller.y().onTrue(new InstantCommand(() -> intakePivot.setPosition(130)));
     controller.a().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
     controller.povUp().onTrue(new InstantCommand(() -> shooterPivot.setPosition(0)));
-    controller.povDown().onTrue(new InstantCommand(() -> shooterPivot.setPosition(360)));
+    controller.povDown().onTrue(new InstantCommand(() -> shooterPivot.setPosition(500)));
 
 
 //    controller.leftBumper().onTrue(new InstantCommand(() -> shooterPivot.setPosition(100)));

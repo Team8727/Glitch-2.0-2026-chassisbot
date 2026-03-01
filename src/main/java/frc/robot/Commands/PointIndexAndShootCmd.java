@@ -35,39 +35,38 @@ public class PointIndexAndShootCmd extends Command {
 
   @Override
   public void initialize() {  // This method will be called once per scheduler run
-    if (Robot.firing.isValid && Robot.firing.pitch < ShooterPivot.MaxShooterAngles.UP.getDegrees() && Robot.firing.pitch > ShooterPivot.MaxShooterAngles.DOWN.getDegrees()) {
-      try {
-        alertDriver();
-        this.cancel();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }
+//    if (Robot.firing.isValid && Robot.firing.pitch < ShooterPivot.MaxShooterAngles.UP.getDegrees() && Robot.firing.pitch > ShooterPivot.MaxShooterAngles.DOWN.getDegrees()) {
+//      try {
+//        alertDriver();
+//        this.cancel();
+//      } catch (InterruptedException e) {
+//        throw new RuntimeException(e);
+//      }
+//    }
     // 1. point robot
-    pointRobot();
+//    pointRobot();
     // 2. point shooter pivot
-    angleShooterPivot();
-    // 3. spin up indexer
-    indexer.setSpeedDutyCycle(1); // TODO: find right value for speed of indexer to feed balls into shooter without jamming or leaving too much space between balls
-    // 4. spin up shooter
-    shooterRoller.setSpeedDutyCycle(Robot.firing.power);
+//    angleShooterPivot();
+    // 3. spin up
+    indexer.setSpeedDutyCycle(.5); // TODO: find right value for speed of indexer to feed balls into shooter without jamming or leaving too much space between balls
+    shooterRoller.setSpeedDutyCycle(.5);
   }
 
   @Override
   public void execute() {  // This method will be called repeatedly until this Command either finishes or is interrupted.
-    if (Robot.firing.isValid && Robot.firing.pitch < ShooterPivot.MaxShooterAngles.UP.getDegrees() && Robot.firing.pitch > ShooterPivot.MaxShooterAngles.DOWN.getDegrees()) {
-      try {
-        alertDriver();
-        this.cancel();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }
+//    if (Robot.firing.isValid && Robot.firing.pitch < ShooterPivot.MaxShooterAngles.UP.getDegrees() && Robot.firing.pitch > ShooterPivot.MaxShooterAngles.DOWN.getDegrees()) {
+//      try {
+//        alertDriver();
+//        this.cancel();
+//      } catch (InterruptedException e) {
+//        throw new RuntimeException(e);
+//      }
+//    }
 
     // 5. adjust robot yaw
-    pointRobot();
+//    pointRobot();
     // 6. adjust shooter pitch
-    angleShooterPivot();
+//    angleShooterPivot();
   }
 
   @Override
