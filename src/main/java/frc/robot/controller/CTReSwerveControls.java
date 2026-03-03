@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
 import frc.robot.Drivetrain.TunerConstants;
@@ -17,8 +18,12 @@ import static edu.wpi.first.units.Units.*;
 public class CTReSwerveControls {
 
   // PID gains for whole-robot rotation to face a target - different for sim and real (and different from swerve module PID gains)
-  static final double SIM_ROTATION_kP = 50;
-  static final double REAL_ROTATION_kP = 0.8;
+  static final double SIM_ROTATION_kP = 22.711; // Tuned with SysID (yes, simulation of this with CTRE requires PID)
+  static final double SIM_ROTATION_kD = 0.81472; // Tuned with SysID (yes, simulation of this with CTRE requires PID)
+
+  static final double REAL_ROTATION_kP = 0.8; // TODO: tune this with SysID
+  static final double REAL_ROTATION_kD = 0; // TODO: tune this with SysID
+
 
   // Hub positions
 //  private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
@@ -45,7 +50,10 @@ public class CTReSwerveControls {
                     .withDeadband(MaxSpeed * 0.1)
                     .withRotationalDeadband(MaxAngularRate * 0.1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                    .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
+                    .withHeadingPID(
+                            Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP,
+                            0,
+                            Robot.isReal() ? REAL_ROTATION_kD : SIM_ROTATION_kD);
 
     // Swerve Request for use in trigger command to always point towards the target.
     final SwerveRequest.FieldCentricFacingAngle faceTarget =
@@ -53,7 +61,10 @@ public class CTReSwerveControls {
                     .withDeadband(MaxSpeed * 0.1)
                     .withRotationalDeadband(MaxAngularRate * 0.75)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                    .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
+                    .withHeadingPID(
+                            Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP,
+                            0,
+                            Robot.isReal() ? REAL_ROTATION_kD : SIM_ROTATION_kD);
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
