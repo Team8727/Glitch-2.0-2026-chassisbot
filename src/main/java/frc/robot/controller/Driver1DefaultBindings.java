@@ -57,19 +57,19 @@ public class Driver1DefaultBindings implements ControllerBindings {
   @Override
   public void bind(CommandXboxController controller) {
     // Put binds here
-    controller.x().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.5)));
-    controller.povLeft().whileTrue(new Shoot(indexer, spindexer, shooterRollers));
-    controller.leftTrigger().whileTrue(
+    controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
+    controller.rightTrigger().whileTrue(new Shoot(indexer, spindexer, shooterRollers));
+    controller.y().whileTrue(
             run(() -> indexer.setSpeedDutyCycle(-1)).alongWith(
             run(() -> spindexer.setSpeedDutyCycle(-.5))));
 
-    controller.rightTrigger().whileTrue(run(() -> shooterRollers.setSpeedDutyCycle(.5)));
-    controller.povRight().whileTrue(run(() -> indexer.setSpeedDutyCycle(.5)));
-    controller.povRight().toggleOnTrue(run(() -> spindexer.setSpeedDutyCycle(.3)));
-    controller.y().onTrue(new InstantCommand(() -> intakePivot.setPosition(130)));
-    controller.a().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
-    controller.povUp().onTrue(new InstantCommand(() -> shooterPivot.setPosition(0)));
-    controller.povDown().onTrue(new InstantCommand(() -> shooterPivot.setPosition(500)));
+    controller.a().onTrue(new InstantCommand(() -> intakePivot.setPosition(100)));
+    controller.x().onTrue(new InstantCommand(() -> intakePivot.setPosition(130)));
+    controller.povRight().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
+    controller.povUp().onTrue(new InstantCommand(() -> shooterPivot.setPosition(30)));
+    controller.povDown().onTrue(new InstantCommand(() -> shooterPivot.setPosition(50)));
+    controller.povLeft().onTrue(new InstantCommand(() -> shooterPivot.setPosition(75)));
+
 
 
 //    controller.leftBumper().onTrue(new InstantCommand(() -> shooterPivot.setPosition(100)));

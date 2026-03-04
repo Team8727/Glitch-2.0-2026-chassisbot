@@ -76,9 +76,9 @@ public class CTReSwerveControls {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
     // Automatically brake (and put wheels in X) when the robot is stopped (within deadband)
-    final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    new Trigger(() -> Math.abs(controller.getLeftY()) < 0.1 && Math.abs(controller.getLeftX()) < 0.1 && Math.abs(controller.getRightX()) < 0.1 && controller.a().negate().getAsBoolean())
-            .whileTrue(drivetrain.applyRequest(() -> brake));
+//    final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+//    new Trigger(() -> Math.abs(controller.getLeftY()) < 0.1 && Math.abs(controller.getLeftX()) < 0.1 && Math.abs(controller.getRightX()) < 0.1 && controller.a().negate().getAsBoolean())
+//            .whileTrue(drivetrain.applyRequest(() -> brake));
 
     // Point wheels in direction of left stick when pressing right trigger and start button together
 //    final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();

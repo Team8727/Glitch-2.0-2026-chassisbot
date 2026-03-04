@@ -264,8 +264,6 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
             Pose2d reference = this.getState().Pose;
 
             for (Vision.Measurement m : m_Vision.drainMeasurements(reference)) {
-                System.out.println("Vision measurement: " + m.pose() + " at " + m.timestampSeconds() + " seconds");
-
                 // Convert timestamp inside the override to avoid double-shifting the time base
                 addVisionMeasurement(m.pose(), m.timestampSeconds());
             }

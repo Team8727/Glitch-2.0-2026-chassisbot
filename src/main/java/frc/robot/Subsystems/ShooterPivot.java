@@ -8,9 +8,10 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class ShooterPivot extends SimplePivot {
+  private final double gearRatio = (double) 158/11;
   public enum MaxShooterAngles {
     UP(100),//TODO: find values
-    DOWN(0);
+    DOWN(30);
 
     private final double degrees;
     private MaxShooterAngles(double degrees) { this.degrees = degrees; }
@@ -42,7 +43,11 @@ public class ShooterPivot extends SimplePivot {
 
   @Override
   public void setPosition(double angleDegrees) {
-    super.setPosition(angleDegrees*9);
+    if (angleDegrees >= 30) {
+      super.setPosition((angleDegrees-30) * 9 * gearRatio);
+    } else {
+      System.out.println("stop trying to kill the robot dumbass");
+    }
   }
 
 

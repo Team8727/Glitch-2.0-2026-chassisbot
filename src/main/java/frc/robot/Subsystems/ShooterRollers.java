@@ -9,7 +9,7 @@ public class ShooterRollers extends SubsystemBase {
   public void setSpeedDutyCycle(double speedDutyCycle) {
     shooterRoller.setSpeedDutyCycle(speedDutyCycle);
     shooterRoller2.setSpeedDutyCycle(speedDutyCycle);
-    setDefaultCommand(run(() ->setSpeedDutyCycle(0)));
+    setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
   }
 
 }

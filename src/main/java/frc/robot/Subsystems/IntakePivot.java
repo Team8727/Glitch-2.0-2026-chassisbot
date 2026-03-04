@@ -28,7 +28,7 @@ public class IntakePivot extends Pivot {
       .idleMode(SparkMaxConfig.IdleMode.kBrake)
       .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .pid(0,0,0);
+        .pid(4,0,0);
   }
 
   public IntakePivot() {
@@ -41,7 +41,7 @@ public class IntakePivot extends Pivot {
       1000,
       1000,
       1);
-    setPosition(IntakePosition.UP.getDegrees());
+    setPosition(IntakePosition.DOWN.getDegrees());
   }
 
   /** This method will be called once per scheduler run */

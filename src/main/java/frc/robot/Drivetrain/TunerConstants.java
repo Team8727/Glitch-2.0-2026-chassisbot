@@ -28,7 +28,7 @@ public class TunerConstants {
     // The steer motor uses any SwerveModule.SteerRequestType control request with the
     // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     private static final Slot0Configs steerGains = new Slot0Configs()
-            .withKP(0).withKI(0).withKD(0.5)
+            .withKP(100).withKI(0).withKD(0.5)
             .withKS(0.1).withKV(2.49).withKA(0)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // When using closed-loop control, the drive motor uses the control
@@ -130,8 +130,8 @@ public class TunerConstants {
 
 
     // Front Left
-    private static final int kFrontLeftDriveMotorId = 11;
-    private static final int kFrontLeftSteerMotorId = 12;
+    private static final int kFrontLeftDriveMotorId = 12;
+    private static final int kFrontLeftSteerMotorId = 11;
     private static final int kFrontLeftEncoderId = 13;
     private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.322021484375);
     private static final boolean kFrontLeftSteerMotorInverted = false;
@@ -152,12 +152,12 @@ public class TunerConstants {
     private static final Distance kFrontRightYPos = Inches.of(-10.375);
 
     // Back Left
-    private static final int kBackLeftDriveMotorId = 31;
-    private static final int kBackLeftSteerMotorId = 32;
+    private static final int kBackLeftDriveMotorId = 32;
+    private static final int kBackLeftSteerMotorId = 31;
     private static final int kBackLeftEncoderId = 33;
-    private static final Angle kBackLeftEncoderOffset = Rotations.of(0.32763671875);
+    private static final Angle kBackLeftEncoderOffset = Rotations.of(0.2373046875);
     private static final boolean kBackLeftSteerMotorInverted = false;
-    private static final boolean kBackLeftEncoderInverted = true;
+    private static final boolean kBackLeftEncoderInverted = false;
 
     private static final Distance kBackLeftXPos = Inches.of(-10.375);
     private static final Distance kBackLeftYPos = Inches.of(10.375);
