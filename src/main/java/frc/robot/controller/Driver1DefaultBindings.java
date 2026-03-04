@@ -11,6 +11,7 @@ import frc.robot.Commands.PointIndexAndShootCmd;
 import frc.robot.Commands.RaiseIntakeCmd;
 import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
+import frc.robot.Robot;
 import frc.robot.Subsystems.*;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
@@ -64,7 +65,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
             run(() -> indexer.setSpeedDutyCycle(-1)).alongWith(
             run(() -> spindexer.setSpeedDutyCycle(-.5))));
 
-//    controller.a().whileTrue(new PointIndexAndShootCmd());
+    controller.b().whileTrue(new InstantCommand(() -> shooterPivot.setPosition(180 - Robot.firing.pitch)));
     controller.x().onTrue(new RaiseIntakeCmd(intakeRoller, intakePivot));
 //    controller.povRight().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
     controller.povUp().onTrue(new InstantCommand(() -> shooterPivot.setPosition(30)));

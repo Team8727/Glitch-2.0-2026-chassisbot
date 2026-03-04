@@ -20,7 +20,7 @@ public class CTReSwerveControls {
 
   // PID gains for whole-robot rotation to face a target - different for sim and real (and different from swerve module PID gains)
   static final double SIM_ROTATION_kP = 50;
-  static final double REAL_ROTATION_kP = 0.8;
+  static final double REAL_ROTATION_kP = 8;
 
   // Max speed and angular rate for teleop control, can be tuned for better driver feel
   public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -124,9 +124,9 @@ public class CTReSwerveControls {
 
     controller.a().whileTrue(drivetrain.applyRequest(() -> {
       return faceTarget
-        .withTargetDirection(Rotation2d.fromRadians((3))) // face the target with 180-degree offset I had to add for some reason
-        .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
-        .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
+              .withTargetDirection(Rotation2d.fromDegrees(Robot.firing.yaw)) // face the target with 180-degree offset I had to add for some reason
+              .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+              .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
     }));
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-= SysID characterization for driving and turning (but not heading controller, unless you add a trigger for that) -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Run SysId routines when holding back/start and X/Y.
