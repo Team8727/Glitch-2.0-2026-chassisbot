@@ -1,11 +1,11 @@
 package frc.robot.controller;
 
-import Glitch.Lib.NetworkTableLogger;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
 import frc.robot.Drivetrain.TunerConstants;
@@ -14,6 +14,9 @@ import frc.robot.Robot;
 import static edu.wpi.first.units.Units.*;
 
 public class CTReSwerveControls {
+
+  private CTRESwerveDrivetrain drivetrain;
+  private CommandXboxController controller;
 
   // PID gains for whole-robot rotation to face a target - different for sim and real (and different from swerve module PID gains)
   static final double SIM_ROTATION_kP = 50;
@@ -55,7 +58,8 @@ public class CTReSwerveControls {
 
   public CTReSwerveControls(CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
 
-    final NetworkTableLogger netLogger = new NetworkTableLogger("CTReSwerveControls");
+    this.drivetrain = drivetrain;
+    this.controller = controller;
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
@@ -118,6 +122,12 @@ public class CTReSwerveControls {
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to point at an angle to hit a target with a projectile using ProjectileSolver -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // NOW MOVED TO Driver1DefaultBindings.java:   controller.a().whileTrue(new PointIndexAndShoot(shooterPivot, shooterRoller, indexer, drivetrain, controller));
 
+    controller.a().whileTrue(drivetrain.applyRequest(() -> {
+      return faceTarget
+        .withTargetDirection(Rotation2d.fromRadians((3))) // face the target with 180-degree offset I had to add for some reason
+        .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+        .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
+    }));
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-= SysID characterization for driving and turning (but not heading controller, unless you add a trigger for that) -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -134,5 +144,14 @@ public class CTReSwerveControls {
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 
+//  public Command pointToHub() {
+//    System.out.println("aligning");
+//    return drivetrain.applyRequest(() -> {
+//      return CTReSwerveControls.faceTarget
+//              .withTargetDirection(Rotation2d.fromDegrees(Robot.firing.yaw)) // face the target with 180-degree offset I had to add for some reason
+//              .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+//              .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
+//    });
+//  }
 
 }

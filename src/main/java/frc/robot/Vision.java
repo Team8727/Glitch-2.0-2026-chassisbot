@@ -55,7 +55,7 @@ public class Vision implements AutoCloseable {
   private static final Transform3d FRONT_LEFT_POS =
     new Transform3d(
         new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
-        new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(45)));
+        new Rotation3d(Math.toRadians(11), Math.toRadians(-12.77), Math.toRadians(99)));
     private static final Transform3d BACK_RIGHT_POS =
       new Transform3d(
           new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),

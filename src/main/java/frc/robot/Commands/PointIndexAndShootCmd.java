@@ -9,6 +9,7 @@ import frc.robot.Robot;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.ShooterPivot;
 import frc.robot.Subsystems.ShooterRoller;
+import frc.robot.Subsystems.ShooterRollers;
 import frc.robot.controller.CTReSwerveControls;
 
 import static frc.robot.controller.CTReSwerveControls.MaxSpeed;
@@ -19,16 +20,16 @@ public class PointIndexAndShootCmd extends Command {
 
   Indexer indexer;
   ShooterPivot shooterPivot;
-  ShooterRoller shooterRoller;
+  ShooterRollers shooterRollers;
   CTRESwerveDrivetrain drivetrain;
 
-  public PointIndexAndShootCmd(Indexer indexer, ShooterPivot shooterPivot, ShooterRoller shooterRoller, CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
+  public PointIndexAndShootCmd(Indexer indexer, ShooterPivot shooterPivot, ShooterRollers shooterRollers, CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(indexer, shooterPivot, shooterRoller, drivetrain);
+    addRequirements(indexer, shooterPivot, shooterRollers, drivetrain);
     this.controller = controller;
     this.indexer = indexer;
     this.shooterPivot = shooterPivot;
-    this.shooterRoller = shooterRoller;
+    this.shooterRollers = shooterRollers;
     this.drivetrain = drivetrain;
 
   }
@@ -44,12 +45,12 @@ public class PointIndexAndShootCmd extends Command {
 //      }
 //    }
     // 1. point robot
-//    pointRobot();
+    pointRobot();
     // 2. point shooter pivot
 //    angleShooterPivot();
     // 3. spin up
-    indexer.setSpeedDutyCycle(.5); // TODO: find right value for speed of indexer to feed balls into shooter without jamming or leaving too much space between balls
-    shooterRoller.setSpeedDutyCycle(.5);
+//    indexer.setSpeedDutyCycle(.5); // TODO: find right value for speed of indexer to feed balls into shooter without jamming or leaving too much space between balls
+//    shooterRoller.setSpeedDutyCycle(.5);
   }
 
   @Override
@@ -71,10 +72,10 @@ public class PointIndexAndShootCmd extends Command {
 
   @Override
   public void end(boolean interrupted) {  // This method will be called once after isFinished returns true, or if the command is interrupted/canceled.
-    // 7. stop shooter
-    shooterRoller.setSpeedDutyCycle(0);
-    // 8. stop indexer
-    indexer.setSpeedDutyCycle(0);
+//    // 7. stop shooter
+//    shooterRoller.setSpeedDutyCycle(0);
+//    // 8. stop indexer
+//    indexer.setSpeedDutyCycle(0);
   }
 
   @Override

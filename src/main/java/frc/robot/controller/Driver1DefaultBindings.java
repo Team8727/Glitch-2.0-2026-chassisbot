@@ -22,6 +22,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.run;
 public class Driver1DefaultBindings implements ControllerBindings {
   private final Autos autos;
   private final CTRESwerveDrivetrain drivetrain;
+  private final CTReSwerveControls swerveControls;
   private final Spindexer spindexer;
   private final IntakePivot intakePivot;
   private final IntakeRoller intakeRoller;
@@ -49,7 +50,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
     this.indexer = indexer;
     this.shooterRollers = shooterRollers;
 
-    new CTReSwerveControls(drivetrain, controller);
+    swerveControls= new CTReSwerveControls(drivetrain, controller);
 
     bind(controller);
   }
@@ -63,9 +64,9 @@ public class Driver1DefaultBindings implements ControllerBindings {
             run(() -> indexer.setSpeedDutyCycle(-1)).alongWith(
             run(() -> spindexer.setSpeedDutyCycle(-.5))));
 
-    controller.a().onTrue(new InstantCommand(() -> intakePivot.setPosition(100)));
-    controller.x().onTrue(new InstantCommand(() -> intakePivot.setPosition(130)));
-    controller.povRight().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
+//    controller.a().whileTrue(new PointIndexAndShootCmd());
+    controller.x().onTrue(new RaiseIntakeCmd(intakeRoller, intakePivot));
+//    controller.povRight().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
     controller.povUp().onTrue(new InstantCommand(() -> shooterPivot.setPosition(30)));
     controller.povDown().onTrue(new InstantCommand(() -> shooterPivot.setPosition(50)));
     controller.povLeft().onTrue(new InstantCommand(() -> shooterPivot.setPosition(75)));
@@ -77,7 +78,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
 //    controller.b().onTrue(new InstantCommand(() -> shooterPivot.setPosition(400)));
 
 
-//    controller.x().whileTrue(new PointIndexAndShootCmd(indexer, shooterPivot, shooterRoller, drivetrain, controller));
+//    controller.a().whileTrue(new PointIndexAndShootCmd(indexer, shooterPivot, shooterRollers, drivetrain, controller));
 //    controller.b().whileTrue(new RaiseIntakeCmd(intakeRoller, intakePivot));
 //
 //    new Trigger(() -> intakePivot.getPosition() == IntakePivot.IntakePosition.DOWN.getDegrees() && controller.a().getAsBoolean())

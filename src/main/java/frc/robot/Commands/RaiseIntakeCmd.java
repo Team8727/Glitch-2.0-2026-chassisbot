@@ -21,13 +21,22 @@ public class RaiseIntakeCmd extends Command {
     this.roller = roller;
     this.pivot = pivot;
     addRequirements(roller, pivot);
+    System.out.println("RaiseIntakeCmd");
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     roller.setSpeedDutyCycle(0);
-    pivot.setPosition(IntakePivot.IntakePosition.UP.getDegrees());
+    if (Math.abs(pivot.getPosition() * 360 - IntakePivot.IntakePosition.MID.getDegrees()) < 5) {
+      pivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees());
+      System.out.println("intake down");
+      cancel();
+    } else {
+      pivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees());
+      System.out.println("intake up");
+      cancel();
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
