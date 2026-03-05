@@ -45,7 +45,7 @@
     "rotation": -38.26522830330433
   },
   "reversed": false,
-  "folder": "NeutralBumpLeft",
+  "folder": "NeutralBump",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
