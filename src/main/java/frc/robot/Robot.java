@@ -26,9 +26,11 @@ import frc.robot.Subsystems.*;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
 
+import frc.robot.controller.ZoneController;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.urcl.URCL;
 
+import java.awt.*;
 import java.io.IOException;
 
 /**
@@ -126,6 +128,12 @@ public class Robot extends TimedRobot {
 
     // Start the URCL logger (logs REV SparkMaxes and SparkFlexes automatically on networkTables)
     URCL.start();
+
+    // Setup zones
+//    new ZoneController(
+//            CTREDrivetrain,
+//            new Rectangle(1,1,1,1),
+//            () -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees()));
   }
 
   /**

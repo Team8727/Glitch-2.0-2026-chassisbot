@@ -41,10 +41,10 @@ public class Vision implements AutoCloseable {
   private final NetworkTableLogger logger = new NetworkTableLogger("Vision");
 
   // Camera names as configured in PhotonVision
-  private static final String CAM_FRONT_RIGHT = "FrontRight";
-  private static final String CAM_FRONT_LEFT = "FrontLeft";
-  private static final String CAM_BACK_RIGHT = "BackRight";
-  private static final String CAM_BACK_LEFT = "BackLeft";
+//  private static final String CAM_FRONT_RIGHT = "FrontRight";
+//  private static final String CAM_FRONT_LEFT = "FrontLeft";
+//  private static final String CAM_BACK_RIGHT = "BackRight";
+//  private static final String CAM_BACK_LEFT = "BackLeft";
 
   private static final String CAM_BACK_RIGHT_FRONT = "BackRightFront";
   private static final String CAM_BACK_LEFT_FRONT = "BackLeftFront";
@@ -53,22 +53,22 @@ public class Vision implements AutoCloseable {
 
 
   // Robot-to-camera transforms for Chassis Bot
-  private static final Transform3d FRONT_RIGHT_POS =
-      new Transform3d(
-          new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
-          new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(-45))); // Camera has no roll (on camera plane), 15 degree pitch (degrees to point camera up relative to camera facing forward), yaw (rotation around z axis that points directly upward from the robot).
-  private static final Transform3d FRONT_LEFT_POS =
-    new Transform3d(
-        new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
-        new Rotation3d(Math.toRadians(11), Math.toRadians(-12.77), Math.toRadians(99)));
-  private static final Transform3d BACK_RIGHT_POS =
-    new Transform3d(
-        new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
-        new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(225)));
-  private static final Transform3d BACK_LEFT_POS =
-    new Transform3d(
-        new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
-        new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(135)));
+//  private static final Transform3d FRONT_RIGHT_POS =
+//      new Transform3d(
+//          new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
+//          new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(-45))); // Camera has no roll (on camera plane), 15 degree pitch (degrees to point camera up relative to camera facing forward), yaw (rotation around z axis that points directly upward from the robot).
+//  private static final Transform3d FRONT_LEFT_POS =
+//    new Transform3d(
+//        new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
+//        new Rotation3d(Math.toRadians(11), Math.toRadians(-12.77), Math.toRadians(99)));
+//  private static final Transform3d BACK_RIGHT_POS =
+//    new Transform3d(
+//        new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
+//        new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(225)));
+//  private static final Transform3d BACK_LEFT_POS =
+//    new Transform3d(
+//        new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
+//        new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(135)));
 
   //New Cameras for Season Robot:
   private static final Transform3d BACK_LEFT_FRONT =
@@ -182,24 +182,24 @@ public class Vision implements AutoCloseable {
     var robotPose3d = new edu.wpi.first.math.geometry.Pose3d(robotPose);
 
     // Chassis Bot Cams
-    var camFrontRight = robotPose3d.transformBy(FRONT_RIGHT_POS);
-    var camFrontLeft = robotPose3d.transformBy(FRONT_LEFT_POS);
-    var camBackRight = robotPose3d.transformBy(BACK_RIGHT_POS);
-    var camBackLeft = robotPose3d.transformBy(BACK_LEFT_POS);
-    logger.logPose3d("/" + CAM_FRONT_RIGHT + "/Pose", camFrontRight);
-    logger.logPose3d("/" + CAM_FRONT_LEFT + "/Pose", camFrontLeft);
-    logger.logPose3d("/" + CAM_BACK_RIGHT + "/Pose", camBackRight);
-    logger.logPose3d("/" + CAM_BACK_LEFT + "/Pose", camBackLeft);
+//    var camFrontRight = robotPose3d.transformBy(FRONT_RIGHT_POS);
+//    var camFrontLeft = robotPose3d.transformBy(FRONT_LEFT_POS);
+//    var camBackRight = robotPose3d.transformBy(BACK_RIGHT_POS);
+//    var camBackLeft = robotPose3d.transformBy(BACK_LEFT_POS);
+//    logger.logPose3d("/" + CAM_FRONT_RIGHT + "/Pose", camFrontRight);
+//    logger.logPose3d("/" + CAM_FRONT_LEFT + "/Pose", camFrontLeft);
+//    logger.logPose3d("/" + CAM_BACK_RIGHT + "/Pose", camBackRight);
+//    logger.logPose3d("/" + CAM_BACK_LEFT + "/Pose", camBackLeft);
 
     // Real Bot Cams
     var camBackLeftFront = robotPose3d.transformBy(BACK_LEFT_FRONT);
-    logger.logPose3d("/" + "BackLeftFront" + "/Pose", camBackLeftFront);
+    logger.logPose3d("/" + CAM_BACK_LEFT_FRONT+ "/Pose", camBackLeftFront);
     var camBackRightFront = robotPose3d.transformBy(BACK_RIGHT_FRONT);
-    logger.logPose3d("/" + "BackRightFront" + "/Pose", camBackRightFront);
+    logger.logPose3d("/" + CAM_BACK_RIGHT_FRONT + "/Pose", camBackRightFront);
     var camBackLeftBack = robotPose3d.transformBy(BACK_LEFT_BACK);
-    logger.logPose3d("/" + "BackLeftBack" + "/Pose", camBackLeftBack);
+    logger.logPose3d("/" + CAM_BACK_LEFT_BACK + "/Pose", camBackLeftBack);
     var camBackRightBack = robotPose3d.transformBy(BACK_RIGHT_BACK);
-    logger.logPose3d("/" + "BackRightBack" + "/Pose", camBackRightBack);
+    logger.logPose3d("/" + CAM_BACK_RIGHT_BACK + "/Pose", camBackRightBack);
 
 
   }

@@ -126,7 +126,8 @@ public class CTReSwerveControls {
       return faceTarget
               .withTargetDirection(Rotation2d.fromDegrees(Robot.firing.yaw)) // face the target with 180-degree offset I had to add for some reason
               .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
-              .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
+              .withVelocityY(-controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
+              .withRotationalDeadband(MaxAngularRate * 0.1);
     }));
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-= SysID characterization for driving and turning (but not heading controller, unless you add a trigger for that) -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Run SysId routines when holding back/start and X/Y.

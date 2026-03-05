@@ -21,14 +21,13 @@ public class Shoot extends SequentialCommandGroup {
   public Shoot(Indexer indexer, Spindexer spindexer, ShooterRollers shooterRollers) {
     addCommands(
         parallel(
-            run(() -> shooterRollers.setSpeedDutyCycle(.5), shooterRollers),
+            run(() -> shooterRollers.setSpeedVelocityM1(Robot.firing.power*4.02985+10), shooterRollers),
             sequence(
-                waitSeconds(0.25),
-                run(() -> indexer.setSpeedDutyCycle(1), indexer)
-            ),
-            sequence(
-                waitSeconds(0.3),
-                run(() -> spindexer.setSpeedDutyCycle(.5), spindexer)
+                waitSeconds(0.5),
+                parallel(
+                  run(() -> indexer.setSpeedDutyCycle(1), indexer),
+                  run(() -> spindexer.setSpeedDutyCycle(.5), spindexer)
+                )
             )
         )
     );
