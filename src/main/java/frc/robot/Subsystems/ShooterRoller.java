@@ -14,7 +14,7 @@ public class ShooterRoller extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kBrake)
                 .inverted(false)
                 .closedLoop
-                .pid(10, 0, 0); //TODO: Tune PID values
+                .pid(.05, 0, 0); //TODO: Tune PID values
     }
 
     public ShooterRoller() {

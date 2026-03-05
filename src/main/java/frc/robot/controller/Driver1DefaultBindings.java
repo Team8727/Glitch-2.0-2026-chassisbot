@@ -72,6 +72,8 @@ public class Driver1DefaultBindings implements ControllerBindings {
     controller.povDown().onTrue(new InstantCommand(() -> shooterPivot.setPosition(50)));
     controller.povLeft().onTrue(new InstantCommand(() -> shooterPivot.setPosition(75)));
 
+    controller.povRight().whileTrue(run(()->spindexer.setSpeedDutyCycle(.5)));
+
 
 
 //    controller.leftBumper().onTrue(new InstantCommand(() -> shooterPivot.setPosition(100)));

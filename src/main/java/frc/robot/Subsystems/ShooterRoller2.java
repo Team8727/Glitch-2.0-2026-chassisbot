@@ -12,9 +12,10 @@ public class ShooterRoller2 extends Roller {
         config
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kBrake)
-                .inverted(false)
+                .inverted(true)
+                .follow(7)
                 .closedLoop
-                .pid(10, 0, 0); //TODO: Tune PID values
+                .pid(.05, 0, 0); //TODO: Tune PID values
     }
 
     public ShooterRoller2() {

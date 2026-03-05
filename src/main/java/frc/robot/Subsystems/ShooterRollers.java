@@ -13,7 +13,19 @@ public class ShooterRollers extends SubsystemBase {
 
   public void setSpeedVelocity(double velocity) {
     shooterRoller.setSpeedVelocity(velocity);
+    shooterRoller2.setSpeedVelocity(velocity);
+  }
+
+  public void setSpeedVelocityM1(double velocity) {
     shooterRoller.setSpeedVelocity(velocity);
+  }
+
+  public void setSpeedVelocityM2(double velocity) {
+    shooterRoller2.setSpeedVelocity(velocity);
+  }
+
+  public void setSpeedDutyCycleM1(double dutyCycle) {
+    shooterRoller.setSpeedDutyCycle(dutyCycle);
   }
 
 }

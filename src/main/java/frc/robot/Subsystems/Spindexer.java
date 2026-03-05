@@ -15,7 +15,8 @@ public class Spindexer extends Roller {
       .idleMode(SparkMaxConfig.IdleMode.kBrake)
       .inverted(false)
       .closedLoop
-        .pid(0, 0, 0);//TODO: find these values
+        .pid(1, 0, 0)
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder);//TODO: find these values
   }
 
   public Spindexer() {

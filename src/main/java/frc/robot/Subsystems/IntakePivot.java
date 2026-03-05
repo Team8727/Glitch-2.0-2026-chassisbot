@@ -27,6 +27,7 @@ public class IntakePivot extends Pivot {
     config
       .smartCurrentLimit(40)
       .idleMode(SparkMaxConfig.IdleMode.kBrake)
+      .inverted(false)
       .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .pid(15,0,0);
