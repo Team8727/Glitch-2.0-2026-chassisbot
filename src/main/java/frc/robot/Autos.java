@@ -14,12 +14,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
+import frc.robot.Subsystems.Indexer;
+import frc.robot.Subsystems.ShooterRollers;
+import frc.robot.Subsystems.Spindexer;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 public class Autos extends SubsystemBase {
   //  private final LEDSubsystem m_ledSubsystem = ;
@@ -27,14 +33,20 @@ public class Autos extends SubsystemBase {
   private final CTRESwerveDrivetrain CTREDrivetrain;
   private final SendableChooser<String> autoChooser = new SendableChooser<>();
   private final NetworkTableLogger logger = new NetworkTableLogger(this.getName());
+  private final Indexer indexer;
+  private final ShooterRollers shooterRollers;
+  private final Spindexer spindexer;
 
   private static final Translation2d fieldCenter = new Translation2d(8.770, 4.026); // meters
 
   /**
    * Creates a new Autos.
    */
-  public Autos(CTRESwerveDrivetrain CTREDrivetrain) {
+  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRollers shooterRollers, Spindexer spindexer) {
     this.CTREDrivetrain = CTREDrivetrain;
+    this.indexer = indexer;
+    this.shooterRollers = shooterRollers;
+    this.spindexer = spindexer;
 
     loadPaths();
   }
@@ -47,6 +59,7 @@ public class Autos extends SubsystemBase {
    */
   private void loadPaths() {
     loadPath("bareMinimum");
+    loadPath("StartRight-Outpost");
   }
 
   /**
@@ -71,6 +84,7 @@ public class Autos extends SubsystemBase {
    */
   public void setupAutoChooser() {
     autoChooser.setDefaultOption("BareMinimum", "bareMinimum()");
+    autoChooser.addOption("StartRight-Outpost", "StartRightOutpost()");
   }
 
   /**
@@ -82,6 +96,8 @@ public class Autos extends SubsystemBase {
   public void selectAuto() {
     if (autoChooser.getSelected().equals("bareMinimum()")) {
       CommandScheduler.getInstance().schedule(bareMinimum());
+    } else if (autoChooser.getSelected().equals("StartRightOutpost()")) {
+      CommandScheduler.getInstance().schedule(StartRightOutpost());
     } else {
       System.out.println("something is very wrong if you see this");
     }
@@ -163,6 +179,16 @@ public class Autos extends SubsystemBase {
     return new SequentialCommandGroup(
             new InstantCommand(() -> setStartPose(paths.get("bareMinimum"))),
             alignToPath(paths.get("bareMinimum"))
+    );
+  }
+
+  private  Command StartRightOutpost() {
+    return new SequentialCommandGroup(
+            new InstantCommand(() -> setStartPose(paths.get("StartRight-Outpost"))),
+            alignToPath(paths.get("StartRight-Outpost")),
+            waitSeconds(0.5),
+            alignToPath(paths.get("outpost-shoot")),
+            new Shoot(indexer, spindexer, shooterRollers)
     );
   }
 }
