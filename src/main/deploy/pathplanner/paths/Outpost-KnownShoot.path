@@ -1,0 +1,90 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Final plan Path 3.2.path
+        "x": 7.7301190476190484,
+        "y": 4.920404761904763
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.184012964507387,
+        "y": 4.6877880526379
+========
+        "x": 0.728,
+        "y": 0.666
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.9663481335751469,
+        "y": 1.4095675224886641
+>>>>>>>> fb2c180718fc93a743a4023759bb9ce9f6439ea0:src/main/deploy/pathplanner/paths/Outpost-KnownShoot.path
+      },
+      "isLocked": false,
+      "linkedName": "Outpost"
+    },
+    {
+      "anchor": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Final plan Path 3.2.path
+        "x": 7.7301190476190484,
+        "y": 2.90125
+      },
+      "prevControl": {
+        "x": 7.545091380715658,
+        "y": 2.7331287268657296
+========
+        "x": 2.44,
+        "y": 4.0
+      },
+      "prevControl": {
+        "x": 2.3077808311050187,
+        "y": 3.718939862568684
+>>>>>>>> fb2c180718fc93a743a4023759bb9ce9f6439ea0:src/main/deploy/pathplanner/paths/Outpost-KnownShoot.path
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "KnownShoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": -88.675
+    },
+    {
+      "waypointRelativePos": 0.8160629921259744,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Final plan Path 3.2.path
+    "rotation": -88.12212255271454
+========
+    "rotation": 0.0
+>>>>>>>> fb2c180718fc93a743a4023759bb9ce9f6439ea0:src/main/deploy/pathplanner/paths/Outpost-KnownShoot.path
+  },
+  "reversed": false,
+  "folder": "Depot and Outpost",
+  "idealStartingState": {
+    "velocity": 0,
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Final plan Path 3.2.path
+    "rotation": -90.0
+========
+    "rotation": 180.0
+>>>>>>>> fb2c180718fc93a743a4023759bb9ce9f6439ea0:src/main/deploy/pathplanner/paths/Outpost-KnownShoot.path
+  },
+  "useDefaultConstraints": true
+}

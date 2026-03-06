@@ -3,6 +3,7 @@
   "waypoints": [
     {
       "anchor": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Final plan Path 3.3.path
         "x": 7.7301190476190484,
         "y": 3.041619047619048
       },
@@ -10,22 +11,40 @@
       "nextControl": {
         "x": 8.342516518750575,
         "y": 2.343812345956414
+========
+        "x": 1.1332,
+        "y": 5.967354083755811
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.507921782674516,
+        "y": 5.9630204271593
+>>>>>>>> fb2c180718fc93a743a4023759bb9ce9f6439ea0:src/main/deploy/pathplanner/paths/PreDepot-Depot.path
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "PreDepot"
     },
     {
       "anchor": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Final plan Path 3.3.path
         "x": 7.7301190476190484,
         "y": 2.0266428571428583
       },
       "prevControl": {
         "x": 7.451547548035338,
         "y": 1.8113416726614362
+========
+        "x": 0.728,
+        "y": 5.967354083755811
+      },
+      "prevControl": {
+        "x": 0.4759669824462214,
+        "y": 5.970203971978945
+>>>>>>>> fb2c180718fc93a743a4023759bb9ce9f6439ea0:src/main/deploy/pathplanner/paths/PreDepot-Depot.path
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot"
     }
   ],
   "rotationTargets": [
@@ -50,7 +69,7 @@
     "rotation": -178.76802259736024
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Depot and Outpost",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0

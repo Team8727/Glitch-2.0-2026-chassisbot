@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.08,
-        "y": 7.001
+        "x": 1.1332,
+        "y": 5.967354083755811
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.484375,
-        "y": 5.506029965753425
+        "x": 1.7782715161285618,
+        "y": 5.466693188328504
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "PreDepot"
     },
     {
       "anchor": {
-        "x": 4.98,
-        "y": 5.2
+        "x": 2.1445835117752527,
+        "y": 5.967354083755811
       },
       "prevControl": {
-        "x": 4.838270547945205,
-        "y": 5.42990154109589
+        "x": 1.8312127367929434,
+        "y": 5.824051737787669
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "ShootLeft"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": -38.26522830330433
   },
   "reversed": false,
-  "folder": "ML",
+  "folder": "Depot and Outpost",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -54.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

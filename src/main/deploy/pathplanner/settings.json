@@ -3,10 +3,8 @@
   "robotLength": 0.813,
   "holonomicMode": true,
   "pathFolders": [
-    "L",
-    "ML",
-    "MR",
-    "R"
+    "Depot and Outpost",
+    "NeutralBump"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.5,
