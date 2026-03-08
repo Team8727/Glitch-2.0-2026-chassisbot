@@ -22,6 +22,9 @@ public class IntakeRoller extends Roller {
         setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
     }
 
+    public void stickySetDuty(double speed) {
+        setDefaultCommand(run(() -> setSpeedDutyCycle(speed)));
+    }
     /** This method will be called once per scheduler run */
     @Override
     public void periodic() {

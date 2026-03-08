@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.813,
-  "robotLength": 0.813,
+  "robotWidth": 0.818,
+  "robotLength": 0.818,
   "holonomicMode": true,
   "pathFolders": [
     "Depot and Outpost",
@@ -32,5 +32,7 @@
   "brModuleY": -0.286,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": []
+  "robotFeatures": [
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.509,\"y\":0.0},\"size\":{\"width\":0.657,\"length\":0.2},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+  ]
 }

@@ -208,13 +208,12 @@ public class Autos extends SubsystemBase {
             new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())),
             AutoBuilder.followPath(paths.get("main bump to")),
             new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())),
-            parallel(
-                    run(() -> intakeRoller.setSpeedDutyCycle(.8)),
-                    AutoBuilder.followPath(paths.get("main balls"))),
+            run(() -> intakeRoller.setSpeedDutyCycle(.8))
+                    .withDeadline(AutoBuilder.followPath(paths.get("main balls"))),
             new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())),
             AutoBuilder.followPath(paths.get("main bump back")),
             new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())),
-            new RunCommand(() -> new Shoot(indexer, spindexer, shooterRollers))
+            run(() -> new Shoot(indexer, spindexer, shooterRollers))
                     .withDeadline(waitSeconds(5)));
   }
 }
