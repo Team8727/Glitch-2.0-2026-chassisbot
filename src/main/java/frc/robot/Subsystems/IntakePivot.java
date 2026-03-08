@@ -11,7 +11,7 @@ public class IntakePivot extends Pivot {
   public enum IntakePosition {
     UP(0),//TODO: find values
     MID(100),
-    DOWN(122);
+    DOWN(124);
 
     private final double degrees;
     private IntakePosition(double degrees) { this.degrees = degrees; }
@@ -30,7 +30,7 @@ public class IntakePivot extends Pivot {
       .inverted(false)
       .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .pid(15,0,0);
+        .pid(10,0,0);
   }
 
   public IntakePivot() {
@@ -41,7 +41,7 @@ public class IntakePivot extends Pivot {
         FeedbackSensor.kAbsoluteEncoder),
       0,//TODO: find values
       10000,
-      10000,
+      1000,
       1);
     setPosition(IntakePosition.DOWN.getDegrees());
   }

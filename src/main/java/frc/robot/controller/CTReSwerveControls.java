@@ -2,7 +2,12 @@ package frc.robot.controller;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -10,6 +15,9 @@ import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Robot;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -23,7 +31,7 @@ public class CTReSwerveControls {
   static final double REAL_ROTATION_kP = 8;
 
   // Max speed and angular rate for teleop control, can be tuned for better driver feel
-  public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)*.8; // kSpeedAt12Volts desired top speed
   public static final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
   // Swerve Request for normal driving, is the default command
@@ -123,8 +131,14 @@ public class CTReSwerveControls {
     // NOW MOVED TO Driver1DefaultBindings.java:   controller.a().whileTrue(new PointIndexAndShoot(shooterPivot, shooterRoller, indexer, drivetrain, controller));
 
     controller.a().whileTrue(drivetrain.applyRequest(() -> {
+      double yaw;
+      if (Robot.isRedAlliance()) {
+        yaw = Robot.firing.yaw - 180;
+      } else {
+        yaw = Robot.firing.yaw;
+      }
       return faceTarget
-              .withTargetDirection(Rotation2d.fromDegrees(Robot.firing.yaw)) // face the target with 180-degree offset I had to add for some reason
+              .withTargetDirection(Rotation2d.fromDegrees(yaw)) // face the target with 180-degree offset I had to add for some reason
               .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
               .withVelocityY(-controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
               .withRotationalDeadband(MaxAngularRate * 0.1);

@@ -15,7 +15,7 @@ public class ShooterRoller2 extends Roller {
                 .inverted(true)
                 .follow(7)
                 .closedLoop
-                .pid(.05, 0, 0); //TODO: Tune PID values
+                .pid(.09, 0, 0); //TODO: Tune PID values
     }
 
     public ShooterRoller2() {

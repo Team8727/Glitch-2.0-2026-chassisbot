@@ -17,15 +17,13 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
-import frc.robot.Subsystems.Indexer;
-import frc.robot.Subsystems.ShooterRollers;
-import frc.robot.Subsystems.Spindexer;
+import frc.robot.Subsystems.*;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class Autos extends SubsystemBase {
   //  private final LEDSubsystem m_ledSubsystem = ;
@@ -36,17 +34,21 @@ public class Autos extends SubsystemBase {
   private final Indexer indexer;
   private final ShooterRollers shooterRollers;
   private final Spindexer spindexer;
+  private final IntakePivot intakePivot;
+  private final IntakeRoller intakeRoller;
 
   private static final Translation2d fieldCenter = new Translation2d(8.770, 4.026); // meters
 
   /**
    * Creates a new Autos.
    */
-  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRollers shooterRollers, Spindexer spindexer) {
+  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRollers shooterRollers, Spindexer spindexer, IntakePivot intakePivot, IntakeRoller intakeRoller) {
     this.CTREDrivetrain = CTREDrivetrain;
     this.indexer = indexer;
     this.shooterRollers = shooterRollers;
     this.spindexer = spindexer;
+    this.intakePivot = intakePivot;
+    this.intakeRoller = intakeRoller;
 
     loadPaths();
   }
@@ -60,6 +62,10 @@ public class Autos extends SubsystemBase {
   private void loadPaths() {
     loadPath("bareMinimum");
     loadPath("StartRight-Outpost");
+    loadPath("Final plan 4.1");
+    loadPath("main bump to");
+    loadPath("main bump back");
+    loadPath("main balls");
   }
 
   /**
@@ -85,6 +91,7 @@ public class Autos extends SubsystemBase {
   public void setupAutoChooser() {
     autoChooser.setDefaultOption("BareMinimum", "bareMinimum()");
     autoChooser.addOption("StartRight-Outpost", "StartRightOutpost()");
+    autoChooser.addOption("Final plan 4.1", "finalPath()");
   }
 
   /**
@@ -98,6 +105,8 @@ public class Autos extends SubsystemBase {
       CommandScheduler.getInstance().schedule(bareMinimum());
     } else if (autoChooser.getSelected().equals("StartRightOutpost()")) {
       CommandScheduler.getInstance().schedule(StartRightOutpost());
+    } else if (autoChooser.getSelected().equals("finalPath()")) {
+      CommandScheduler.getInstance().schedule(grabBalls());
     } else {
       System.out.println("something is very wrong if you see this");
     }
@@ -182,13 +191,30 @@ public class Autos extends SubsystemBase {
     );
   }
 
-  private  Command StartRightOutpost() {
+  private Command StartRightOutpost() {
     return new SequentialCommandGroup(
             new InstantCommand(() -> setStartPose(paths.get("StartRight-Outpost"))),
             alignToPath(paths.get("StartRight-Outpost")),
-            waitSeconds(0.5),
+            waitSeconds(5),
             alignToPath(paths.get("outpost-shoot")),
-            new Shoot(indexer, spindexer, shooterRollers)
+            run(()->new Shoot(indexer, spindexer, shooterRollers))
+                    .withDeadline(waitSeconds(4))
     );
+  }
+
+  private Command grabBalls() {
+    return new SequentialCommandGroup(
+            new InstantCommand(() -> setStartPose(paths.get("main bump to"))),
+            new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())),
+            AutoBuilder.followPath(paths.get("main bump to")),
+            new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())),
+            parallel(
+                    run(() -> intakeRoller.setSpeedDutyCycle(.8)),
+                    AutoBuilder.followPath(paths.get("main balls"))),
+            new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())),
+            AutoBuilder.followPath(paths.get("main bump back")),
+            new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())),
+            new RunCommand(() -> new Shoot(indexer, spindexer, shooterRollers))
+                    .withDeadline(waitSeconds(5)));
   }
 }

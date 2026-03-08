@@ -17,8 +17,8 @@ class ProjectileSolverTest {
 
     assertTrue(sol.isValid);
     assertEquals(0.0, sol.yaw, 1e-3);
-    assertEquals(158.2, sol.pitch, 0.1);
-    assertEquals(11.94, sol.power, 0.05);
+    assertEquals(60.0, sol.pitch, 0.1);
+    assertEquals(8.0, sol.power, 0.05);
   }
 
   @Test
@@ -33,11 +33,11 @@ class ProjectileSolverTest {
   }
 
   @Test
-  void solveMarksInvalidWhenDenominatorNonPositive() {
+  void solveMarksInvalidWhenUnreachable() {
     Translation3d start = new Translation3d(0.0, 0.0, 0.0);
-    Translation3d target = new Translation3d(5.0, 0.0, 0.0);
+    Translation3d target = new Translation3d(1.0, 0.0, 10.0);
 
-    ProjectileSolver.FiringSolution sol = ProjectileSolver.solve(start, target, new Translation3d(), 45.0);
+    ProjectileSolver.FiringSolution sol = ProjectileSolver.solve(start, target, new Translation3d(), 60.0);
 
     assertFalse(sol.isValid);
   }

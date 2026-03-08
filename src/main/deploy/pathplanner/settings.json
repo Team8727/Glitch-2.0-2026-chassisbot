@@ -4,7 +4,8 @@
   "holonomicMode": true,
   "pathFolders": [
     "Depot and Outpost",
-    "NeutralBump"
+    "NeutralBump",
+    "New Folder"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.5,

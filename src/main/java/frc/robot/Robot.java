@@ -10,6 +10,7 @@ import Glitch.Lib.NetworkTableLogger;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -20,9 +21,12 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Subsystems.*;
+import frc.robot.controller.CTReSwerveControls;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
 
@@ -30,8 +34,13 @@ import frc.robot.controller.ZoneController;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.urcl.URCL;
 
+import javax.naming.Name;
 import java.awt.*;
 import java.io.IOException;
+
+import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static frc.robot.controller.CTReSwerveControls.MaxAngularRate;
+import static frc.robot.controller.CTReSwerveControls.MaxSpeed;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -40,7 +49,7 @@ import java.io.IOException;
  */
 public class Robot extends TimedRobot {
 
-  private static final double SHOOTER_ANGLE_DEGREES = -60.0;
+  private static final double SHOOTER_ANGLE_DEGREES = 60.0;
   private static final double SHOOTER_HEIGHT_METERS = 0.3;
   private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
   private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
@@ -53,15 +62,14 @@ public class Robot extends TimedRobot {
   private final NetworkTableLogger logger = new NetworkTableLogger("Robot");
   private final CTRESwerveDrivetrain CTREDrivetrain = TunerConstants.createDrivetrain();
   private final Vision vision = new Vision();
-  private final Autos autos = new Autos(CTREDrivetrain);
   private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
   private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
   private final IntakePivot intakePivot = new IntakePivot();
-  private final ShooterPivot shooterPivot = new ShooterPivot();
   private final IntakeRoller intakeRoller = new IntakeRoller();
   private final Indexer indexer = new Indexer();
   private final Spindexer spindexer = new Spindexer();
   private final ShooterRollers shooterRollers = new ShooterRollers();
+  private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRollers, spindexer, intakePivot, intakeRoller);
 
 
 
@@ -76,47 +84,15 @@ public class Robot extends TimedRobot {
    */
   public Robot() {
     CTREDrivetrain.setVision(vision);
-    // Configure PathPlanner's AutoBuilder
-    try {
-      AutoBuilder.configure(
-        () -> CTREDrivetrain.getState().Pose,
-        CTREDrivetrain::resetPose,
-        () -> CTREDrivetrain.getState().Speeds,
-        (chassisSpeeds, driveFF) -> { // drive command
-          final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
-
-          // INVERT IF THINGS ARE GOING BACKWARDS
-          // if (Robot.isRedAlliance()) {
-          //   chassisSpeeds = new ChassisSpeeds(-chassisSpeeds.vxMetersPerSecond, -chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
-          // }
-
-          CTREDrivetrain.applyRequest(() ->
-            drive.withVelocityX(-chassisSpeeds.vyMetersPerSecond) // Drive forward with negative Y (forward)
-              .withVelocityY(-chassisSpeeds.vxMetersPerSecond) // Drive left with negative X (left)
-              .withRotationalRate(-chassisSpeeds.omegaRadiansPerSecond) // Drive counterclockwise with negative X (left)
-          );
-        },
-        new PPHolonomicDriveController(
-          new PIDConstants(
-            80,
-            0,
-            0),
-          new PIDConstants(
-            40,
-            0,
-            0)),
-        RobotConfig.fromGUISettings(),
-        Robot::isRedAlliance,
-        // requirements
-        CTREDrivetrain);
-    } catch (IOException | ParseException e) {
-      System.out.println("ERROR: Could not process pathPlanner config");
-      throw new RuntimeException(e);
-    }
-
     // Load autos into chooser and use SmartDashboard to publish
     autos.setupAutoChooser();
+
+    NamedCommands.registerCommand("intake up", intakePivot.setPositionCommand(IntakePivot.IntakePosition.MID.getDegrees()));
+    NamedCommands.registerCommand("intake down", intakePivot.setPositionCommand(IntakePivot.IntakePosition.DOWN.getDegrees()));
+    NamedCommands.registerCommand("spin rollers", new InstantCommand(() -> intakeRoller.setSpeedDutyCycle(.5)));
+    NamedCommands.registerCommand("shoot", run(() -> new Shoot(indexer, spindexer, shooterRollers)));
+
+
     SmartDashboard.putData("Auto choices", autos.getAutoChooser());
 
     // Set Up PathPlanner to "warm up" the pathPlanning system
@@ -129,6 +105,18 @@ public class Robot extends TimedRobot {
     // Start the URCL logger (logs REV SparkMaxes and SparkFlexes automatically on networkTables)
     URCL.start();
 
+    m_mainController.applyBindings(
+            new Driver1DefaultBindings(
+                    m_mainController.getController(),
+                    autos,
+                    CTREDrivetrain,
+                    spindexer,
+                    intakePivot,
+                    intakeRoller,
+                    indexer,
+                    shooterRollers
+            )
+    );
     // Setup zones
 //    new ZoneController(
 //            CTREDrivetrain,
@@ -145,6 +133,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
     logger.logDouble("voltage", RobotController.getInputVoltage());
     double now = Timer.getFPGATimestamp();
     deltaTime = now - lastTime;
@@ -157,56 +146,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-  }
 
-  /** This function is called once each time the robot enters Disabled mode. */
-  @Override
-  public void disabledInit() {
-  }
-
-  /** This function is called periodically during disabled. */
-  @Override
-  public void disabledPeriodic() {}
-
-  /** This autonomous runs the autonomous command selected by your {@link Autos} class. */
-  @Override
-  public void autonomousInit() {
-    CommandScheduler.getInstance().cancelAll();
-    m_mainController.clearBindings();
-    m_assistController.clearBindings();
-    autos.selectAuto(); //Only enable this if you want the robot to do stuff during autonomous
-  }
-
-  /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {}
-
-  /** This function is called once when teleop is enabled. */
-  @Override
-  public void teleopInit() {
-    // This makes sure that autonomous stops running when teleop starts running.
-    CommandScheduler.getInstance().cancelAll();
-
-    m_mainController.applyBindings(
-            new Driver1DefaultBindings(
-                    m_mainController.getController(),
-                    autos,
-                    CTREDrivetrain,
-                    spindexer,
-                    intakePivot,
-                    shooterPivot,
-                    intakeRoller,
-                    indexer,
-                    shooterRollers
-            )
-    );
-
-    target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
-  }
-
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() {
 
     Translation3d shooterFieldPosition = new Translation3d(
             CTREDrivetrain.getState().Pose.getX(),
@@ -239,6 +179,40 @@ public class Robot extends TimedRobot {
             new Rotation3d()));
 
     logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
+  }
+
+  /** This function is called once each time the robot enters Disabled mode. */
+  @Override
+  public void disabledInit() {
+  }
+
+  /** This function is called periodically during disabled. */
+  @Override
+  public void disabledPeriodic() {}
+
+  /** This autonomous runs the autonomous command selected by your {@link Autos} class. */
+  @Override
+  public void autonomousInit() {
+    CommandScheduler.getInstance().cancelAll();
+    m_mainController.clearBindings();
+    m_assistController.clearBindings();
+    autos.selectAuto(); //Only enable this if you want the robot to do stuff during autonomous
+  }
+
+  /** This function is called periodically during autonomous. */
+  @Override
+  public void autonomousPeriodic() {}
+
+  /** This function is called once when teleop is enabled. */
+  @Override
+  public void teleopInit() {
+    // This makes sure that autonomous stops running when teleop starts running.
+    CommandScheduler.getInstance().cancelAll();
+  }
+
+  /** This function is called periodically during operator control. */
+  @Override
+  public void teleopPeriodic() {
   }
 
   /** This function is called once when test mode is enabled. */

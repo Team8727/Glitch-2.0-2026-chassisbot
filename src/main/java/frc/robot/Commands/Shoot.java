@@ -21,9 +21,9 @@ public class Shoot extends SequentialCommandGroup {
   public Shoot(Indexer indexer, Spindexer spindexer, ShooterRollers shooterRollers) {
     addCommands(
         parallel(
-            run(() -> shooterRollers.setSpeedVelocityM1(Robot.firing.power*4.02985+10), shooterRollers),
+            run(() -> shooterRollers.setSpeedVelocityM1(Robot.firing.power*5.6), shooterRollers),
             sequence(
-                waitSeconds(0.5),
+                waitSeconds(1.5),
                 parallel(
                   run(() -> indexer.setSpeedDutyCycle(1), indexer),
                   run(() -> spindexer.setSpeedDutyCycle(.5), spindexer)
