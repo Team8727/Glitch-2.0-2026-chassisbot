@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Autos;
-import frc.robot.Commands.PointIndexAndShootCmd;
 import frc.robot.Commands.RaiseIntakeCmd;
 import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
@@ -28,7 +27,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
   private final IntakePivot intakePivot;
   private final IntakeRoller intakeRoller;
   public final Indexer indexer;
-  public final ShooterRollers shooterRollers;
+  public final ShooterRoller shooterRoller;
 
   public Driver1DefaultBindings(
           CommandXboxController controller,
@@ -38,7 +37,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
           IntakePivot intakePivot,
           IntakeRoller intakeRoller,
           Indexer indexer,
-          ShooterRollers shooterRollers
+          ShooterRoller shooterRoller
       ) {
     this.autos = autos;
     this.drivetrain = drivetrain;
@@ -46,7 +45,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
     this.intakePivot = intakePivot;
     this.intakeRoller = intakeRoller;
     this.indexer = indexer;
-    this.shooterRollers = shooterRollers;
+    this.shooterRoller = shooterRoller;
 
     swerveControls= new CTReSwerveControls(drivetrain, controller);
 
@@ -57,14 +56,14 @@ public class Driver1DefaultBindings implements ControllerBindings {
   public void bind(CommandXboxController controller) {
     // Put binds here
     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
-    controller.rightTrigger().whileTrue(new Shoot(indexer, spindexer, shooterRollers));
+    controller.rightTrigger().whileTrue(new Shoot(indexer, spindexer, shooterRoller));
     controller.y().whileTrue(
             run(() -> indexer.setSpeedDutyCycle(-1)).alongWith(
             run(() -> spindexer.setSpeedDutyCycle(-.5))));
 
     controller.b().onTrue(new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())));
     controller.x().onTrue(new RaiseIntakeCmd(intakeRoller, intakePivot));
-    
+
 //    controller.povRight().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
 //    controller.povUp().onTrue(new InstantCommand(() -> shooterPivot.setPosition(30)));
 //    controller.povDown().onTrue(new InstantCommand(() -> shooterPivot.setPosition(50)));

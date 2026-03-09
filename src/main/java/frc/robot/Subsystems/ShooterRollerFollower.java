@@ -5,20 +5,20 @@ import Glitch.Lib.Motors.SparkMaxMotor;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-public class ShooterRoller2 extends Roller {
+public class ShooterRollerFollower extends Roller {
     private static final int CANID = 8;
     private static final SparkMaxConfig config = new SparkMaxConfig();
     static {
         config
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kBrake)
-                .inverted(true)
+                .inverted(false)
                 .follow(7)
                 .closedLoop
-                .pid(.09, 0, 0); //TODO: Tune PID values
+                .pid(.07, 0, 0); //TODO: Tune PID values
     }
 
-    public ShooterRoller2() {
+    public ShooterRollerFollower() {
         super(new SparkMaxMotor(config, CANID, FeedbackSensor.kPrimaryEncoder));
         setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
     }

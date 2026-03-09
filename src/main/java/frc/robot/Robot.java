@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
@@ -39,6 +40,7 @@ import java.awt.*;
 import java.io.IOException;
 
 import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static frc.robot.controller.CTReSwerveControls.MaxAngularRate;
 import static frc.robot.controller.CTReSwerveControls.MaxSpeed;
 
@@ -59,6 +61,9 @@ public class Robot extends TimedRobot {
   private double lastTime = Timer.getFPGATimestamp();
   private double deltaTime;
 
+  private final ShooterRoller shooterRoller = new ShooterRoller();
+  private final ShooterRollerFollower shooterRollerFollower = new ShooterRollerFollower();
+
   private final NetworkTableLogger logger = new NetworkTableLogger("Robot");
   private final CTRESwerveDrivetrain CTREDrivetrain = TunerConstants.createDrivetrain();
   private final Vision vision = new Vision();
@@ -68,8 +73,7 @@ public class Robot extends TimedRobot {
   private final IntakeRoller intakeRoller = new IntakeRoller();
   private final Indexer indexer = new Indexer();
   private final Spindexer spindexer = new Spindexer();
-  private final ShooterRollers shooterRollers = new ShooterRollers();
-  private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRollers, spindexer, intakePivot, intakeRoller);
+  private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, spindexer, intakePivot, intakeRoller);
 
 
 
@@ -89,8 +93,8 @@ public class Robot extends TimedRobot {
 
     NamedCommands.registerCommand("intake up", intakePivot.setPositionCommand(IntakePivot.IntakePosition.MID.getDegrees()));
     NamedCommands.registerCommand("intake down", intakePivot.setPositionCommand(IntakePivot.IntakePosition.DOWN.getDegrees()));
-    NamedCommands.registerCommand("spin rollers", new InstantCommand(() -> intakeRoller.setSpeedDutyCycle(.5)));
-    NamedCommands.registerCommand("shoot", run(() -> new Shoot(indexer, spindexer, shooterRollers)));
+    NamedCommands.registerCommand("spin rollers", Commands.run(() -> intakeRoller.setSpeedDutyCycle(.5), intakeRoller));
+    NamedCommands.registerCommand("shoot", new Shoot(indexer, spindexer, shooterRoller));
 
 
     SmartDashboard.putData("Auto choices", autos.getAutoChooser());
@@ -114,7 +118,7 @@ public class Robot extends TimedRobot {
                     intakePivot,
                     intakeRoller,
                     indexer,
-                    shooterRollers
+                    shooterRoller
             )
     );
     // Setup zones
@@ -208,6 +212,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     // This makes sure that autonomous stops running when teleop starts running.
     CommandScheduler.getInstance().cancelAll();
+    intakeRoller.stickySetDuty(0);
   }
 
   /** This function is called periodically during operator control. */
