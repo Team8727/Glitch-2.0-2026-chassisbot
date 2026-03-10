@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -75,8 +76,6 @@ public class Robot extends TimedRobot {
   private final Spindexer spindexer = new Spindexer();
   private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, spindexer, intakePivot, intakeRoller);
 
-
-
 //  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
 
 
@@ -88,17 +87,6 @@ public class Robot extends TimedRobot {
    */
   public Robot() {
     CTREDrivetrain.setVision(vision);
-    // Load autos into chooser and use SmartDashboard to publish
-    autos.setupAutoChooser();
-
-    NamedCommands.registerCommand("intake up", intakePivot.setPositionCommand(IntakePivot.IntakePosition.MID.getDegrees()));
-    NamedCommands.registerCommand("intake down", intakePivot.setPositionCommand(IntakePivot.IntakePosition.DOWN.getDegrees()));
-    NamedCommands.registerCommand("spin rollers", Commands.run(() -> intakeRoller.setSpeedDutyCycle(.5), intakeRoller));
-    NamedCommands.registerCommand("shoot", new Shoot(indexer, spindexer, shooterRoller));
-
-
-    SmartDashboard.putData("Auto choices", autos.getAutoChooser());
-
     // Set Up PathPlanner to "warm up" the pathPlanning system
     CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
@@ -194,13 +182,17 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {}
 
-  /** This autonomous runs the autonomous command selected by your {@link Autos} class. */
   @Override
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
     m_mainController.clearBindings();
     m_assistController.clearBindings();
-    autos.selectAuto(); //Only enable this if you want the robot to do stuff during autonomous
+    
+    // Get the selected autonomous command from the Autos class
+    Command autoCommand = autos.getAutonomousCommand();
+    if (autoCommand != null) {
+      CommandScheduler.getInstance().schedule(autoCommand);
+    }
   }
 
   /** This function is called periodically during autonomous. */

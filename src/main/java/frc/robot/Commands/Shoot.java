@@ -15,16 +15,16 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 public class Shoot extends SequentialCommandGroup {
   public Shoot(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
     addCommands(
-        parallel(
-            run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power*6.6), shooterRoller),
-            sequence(
-                waitSeconds(1.5),
-                parallel(
-                  run(() -> indexer.setSpeedDutyCycle(1), indexer),
-                  run(() -> spindexer.setSpeedDutyCycle(.5), spindexer)
-                )
+            parallel(
+                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * 2 * Math.PI)),
+                    sequence(
+                            waitSeconds(1.5),
+                            parallel(
+                                    indexer.run(() -> indexer.setSpeedDutyCycle(1)),
+                                    spindexer.run(() -> spindexer.setSpeedDutyCycle(.5))
+                            )
+                    )
             )
-        )
     );
   }
 }
