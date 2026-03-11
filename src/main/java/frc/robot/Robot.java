@@ -5,6 +5,7 @@
 package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
+import Glitch.Lib.LEDS.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
@@ -21,12 +22,14 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
+import frc.robot.Subsystems.LEDSubsystem2026;
 import frc.robot.Subsystems.*;
 import frc.robot.controller.CTReSwerveControls;
 import frc.robot.controller.Driver1DefaultBindings;
@@ -75,11 +78,7 @@ public class Robot extends TimedRobot {
   private final Indexer indexer = new Indexer();
   private final Spindexer spindexer = new Spindexer();
   private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, spindexer, intakePivot, intakeRoller);
-
-//  private final LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
-
-
-
+  private final LEDSubsystem2026 m_leds = LEDSubsystem2026.getInstance();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -176,6 +175,8 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    m_leds.setAll(GlitchLEDPatterns.purple);
+    m_leds.initializeLEDS(0);
   }
 
   /** This function is called periodically during disabled. */
@@ -193,6 +194,8 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       CommandScheduler.getInstance().schedule(autoCommand);
     }
+
+    m_leds.setAll(GlitchLEDPatterns.fire(GlitchLEDPatterns.funGradient, Color.kGreen));
   }
 
   /** This function is called periodically during autonomous. */
@@ -205,11 +208,17 @@ public class Robot extends TimedRobot {
     // This makes sure that autonomous stops running when teleop starts running.
     CommandScheduler.getInstance().cancelAll();
     intakeRoller.stickySetDuty(0);
+
+    m_leds.returnAllToBase();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
+    if (firing.isValid) {
+      m_leds.setAll(GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 5, 1), 0.3);
+    }
   }
 
   /** This function is called once when test mode is enabled. */
