@@ -4,7 +4,9 @@ package frc.robot.Subsystems;
 import Glitch.Lib.BaseMechanisms.Pivot;
 import Glitch.Lib.Motors.SparkMaxMotor;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class IntakePivot extends Pivot {
@@ -26,7 +28,7 @@ public class IntakePivot extends Pivot {
   static {
     config
       .smartCurrentLimit(40)
-      .idleMode(SparkMaxConfig.IdleMode.kBrake)
+      .idleMode(SparkMaxConfig.IdleMode.kCoast)
       .inverted(false)
       .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
@@ -43,13 +45,17 @@ public class IntakePivot extends Pivot {
       10000,
       1000,
       1);
-    setPosition(IntakePosition.DOWN.getDegrees());
+    setDisabled(true);
+    setDutyCycle(.5);
   }
 
   /** This method will be called once per scheduler run */
   @Override
   public void periodic() {
     super.periodic();
+    if (getPosition()*360 > 60) {
+      setDutyCycle(0);
+    }
     // Add any additional periodic logic here
   }
 }

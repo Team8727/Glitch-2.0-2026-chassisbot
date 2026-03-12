@@ -1,5 +1,6 @@
 package frc.robot.Commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
 import frc.robot.Subsystems.Indexer;
@@ -16,7 +17,7 @@ public class Shoot extends SequentialCommandGroup {
   public Shoot(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
     addCommands(
             parallel(
-                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * 2 * Math.PI)),
+                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity((int) SmartDashboard.getNumber("Shooter power", 3000))),
                     sequence(
                             waitSeconds(1.5),
                             parallel(

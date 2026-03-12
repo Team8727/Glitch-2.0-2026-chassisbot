@@ -9,12 +9,13 @@ public class ProjectileSolver {
     public double yaw;      // Rotation around Z (degrees) - Standard FRC Gyro frame
     public double pitch;    // Angle above ground (degrees)
     public double power;    // Muzzle velocity magnitude
+    public double horizontalDistance; // 2D horizontal plane distance to target (meters)
     public boolean isValid; // Whether a valid solution was found (e.g. not out of range)
     public Translation3d worldVel;
 
     @Override
     public String toString() {
-      return String.format("Valid: %b | Yaw: %.2f | Pitch: %.2f | Power: %.2f", isValid, yaw, pitch, power);
+      return String.format("Valid: %b | Yaw: %.2f | Pitch: %.2f | Power: %.2f | Dist: %.2f", isValid, yaw, pitch, power, horizontalDistance);
     }
   }
 
@@ -109,6 +110,7 @@ public class ProjectileSolver {
     if (t <= 0.001 || Double.isNaN(t)) {
       sol.isValid = false;
       sol.worldVel = new Translation3d();
+      sol.horizontalDistance = groundDist;
       return sol;
     }
 
@@ -121,11 +123,13 @@ public class ProjectileSolver {
     if (s < 0) {
       sol.isValid = false;
       sol.worldVel = new Translation3d();
+      sol.horizontalDistance = groundDist;
       return sol;
     }
 
     sol.power = s;
     sol.pitch = Math.toDegrees(pitchAngle);
+    sol.horizontalDistance = groundDist;
     
     double vmx = dx / t - vrx;
     double vmy = dy / t - vry;

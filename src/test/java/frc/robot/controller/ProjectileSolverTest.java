@@ -19,6 +19,7 @@ class ProjectileSolverTest {
     assertEquals(0.0, sol.yaw, 1e-3);
     assertEquals(60.0, sol.pitch, 0.1);
     assertEquals(8.0, sol.power, 0.05);
+    assertEquals(5.0, sol.horizontalDistance, 1e-3);
   }
 
   @Test
@@ -30,6 +31,7 @@ class ProjectileSolverTest {
 
     assertTrue(sol.isValid);
     assertEquals(90.0, sol.yaw, 1e-2);
+    assertEquals(5.0, sol.horizontalDistance, 1e-3);
   }
 
   @Test
@@ -40,6 +42,7 @@ class ProjectileSolverTest {
     ProjectileSolver.FiringSolution sol = ProjectileSolver.solve(start, target, new Translation3d(), 60.0);
 
     assertFalse(sol.isValid);
+    assertEquals(1.0, sol.horizontalDistance, 1e-3);
   }
 
   @Test
@@ -53,6 +56,8 @@ class ProjectileSolverTest {
     assertTrue(stationary.isValid);
     assertTrue(moving.isValid);
     assertEquals(0.0, moving.yaw, 1e-3);
+    assertEquals(5.0, stationary.horizontalDistance, 1e-3);
+    assertEquals(5.0, moving.horizontalDistance, 1e-3);
     assertTrue(moving.power < stationary.power);
   }
 }

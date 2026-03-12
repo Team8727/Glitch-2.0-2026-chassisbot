@@ -108,6 +108,8 @@ public class Robot extends TimedRobot {
                     shooterRoller
             )
     );
+
+    SmartDashboard.putNumber("Shooter power", 0);
     // Setup zones
 //    new ZoneController(
 //            CTREDrivetrain,
@@ -160,6 +162,7 @@ public class Robot extends TimedRobot {
     logger.logDouble("shooter yaw radians", Math.toRadians(firing.yaw));
     logger.logDouble("shooter2 pitch", firing.pitch);
     logger.logBoolean("shooter2 valid", firing.isValid);
+    logger.logDouble("shooter2 horizontal distance", firing.horizontalDistance);
 
     logger.logPose3d("shooter2 position", new Pose3d(
             shooterFieldPosition,
