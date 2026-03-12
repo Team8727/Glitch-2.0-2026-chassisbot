@@ -4,10 +4,7 @@ package frc.robot.Subsystems;
 import Glitch.Lib.BaseMechanisms.Pivot;
 import Glitch.Lib.Motors.SparkMaxMotor;
 import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class IntakePivot extends Pivot {
   public enum IntakePosition {
@@ -45,7 +42,7 @@ public class IntakePivot extends Pivot {
       10000,
       1000,
       1);
-    setDisabled(true);
+//    setDisabled(true);
     setDutyCycle(.5);
   }
 
