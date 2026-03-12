@@ -4,8 +4,8 @@
 
 package frc.robot.Subsystems;
 
-import Glitch.Lib.LEDS.AbstractLEDS;
-import Glitch.Lib.LEDS.GlitchLEDPatterns;
+import Glitch.Lib.LEDs.AbstractLEDS;
+import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -77,5 +77,6 @@ public class LEDSubsystem2026 extends AbstractLEDS {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    super.periodic();
   }
 }

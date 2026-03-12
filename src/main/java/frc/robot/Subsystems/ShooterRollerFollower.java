@@ -11,7 +11,7 @@ public class ShooterRollerFollower extends Roller {
     static {
         config
                 .smartCurrentLimit(60)
-                .idleMode(SparkMaxConfig.IdleMode.kBrake)
+                .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(false)
                 .follow(7)
                 .closedLoop

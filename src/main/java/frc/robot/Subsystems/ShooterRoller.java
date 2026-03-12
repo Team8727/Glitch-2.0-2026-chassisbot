@@ -11,7 +11,7 @@ public class ShooterRoller extends Roller {
     static {
         config
                 .smartCurrentLimit(60)
-                .idleMode(SparkMaxConfig.IdleMode.kBrake)
+                .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(false)
                 .closedLoop
                 .pid(.07, 0, 0); //TODO: Tune PID values

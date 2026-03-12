@@ -10,13 +10,13 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.Commands.Shoot;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Subsystems.*;
@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static com.pathplanner.lib.auto.AutoBuilder.followPath;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class Autos extends SubsystemBase {
   //  private final LEDSubsystem m_ledSubsystem = ;
@@ -66,7 +66,7 @@ public class Autos extends SubsystemBase {
             .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)));
     NamedCommands.registerCommand("shoot",
             runOnce(() -> CommandScheduler.getInstance().schedule(parallel(
-                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * 2 * Math.PI))),
+                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * (Math.PI)*1.2))),
                     sequence(
                             waitSeconds(1.5),
                             parallel(
@@ -88,7 +88,8 @@ public class Autos extends SubsystemBase {
       "Final plan 4.1",
       "main bump to",
       "main bump back",
-      "main balls"
+      "main balls",
+      "test"
     ).forEach(this::loadPath);
   }
 
@@ -116,6 +117,7 @@ public class Autos extends SubsystemBase {
     autoChooser.setDefaultOption("bare minimum", bareMinimum());
     autoChooser.addOption("start right outpost", followPathFromStartPose(paths.get("Final plan 4.1")));
     autoChooser.addOption("grab balls", grabBalls());
+    autoChooser.addOption("test", followPathFromStartPose(paths.get("test")));
 
     // You can also use PathPlanner's built-in auto chooser if you have .auto files
     // autoChooser = AutoBuilder.buildAutoChooser();

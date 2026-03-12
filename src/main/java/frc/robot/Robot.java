@@ -5,7 +5,7 @@
 package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
-import Glitch.Lib.LEDS.GlitchLEDPatterns;
+import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -92,6 +92,7 @@ public class Robot extends TimedRobot {
 //            CTREDrivetrain,
 //            new Rectangle(1,1,1,1),
 //            () -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees()));
+    m_leds.initializeLEDS(0);
   }
 
   /**
@@ -156,7 +157,6 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     m_leds.setAll(GlitchLEDPatterns.purple);
-    m_leds.initializeLEDS(0);
   }
 
   /** This function is called periodically during disabled. */

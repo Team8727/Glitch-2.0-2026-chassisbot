@@ -12,7 +12,7 @@ public class Spindexer extends Roller {
   static {
     config
       .smartCurrentLimit(40)
-      .idleMode(SparkMaxConfig.IdleMode.kBrake)
+      .idleMode(SparkMaxConfig.IdleMode.kCoast)
       .inverted(false)
       .closedLoop
         .pid(1, 0, 0)

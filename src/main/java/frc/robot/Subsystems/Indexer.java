@@ -11,7 +11,7 @@ public class Indexer extends Roller {
     static {
         config
                 .smartCurrentLimit(60)
-                .idleMode(SparkMaxConfig.IdleMode.kBrake)
+                .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(true)
                 .closedLoop
                 .pid(0, 0, 0); //TODO: Tune PID values

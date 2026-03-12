@@ -1,23 +1,18 @@
 package frc.robot.Commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.ShooterRoller;
 import frc.robot.Subsystems.Spindexer;
-import frc.robot.controller.CTReSwerveControls;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.run;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class Shoot extends SequentialCommandGroup {
   public Shoot(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
     addCommands(
             parallel(
-                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity((int) SmartDashboard.getNumber("Shooter power", 3000))),
+                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * (Math.PI)*1.2)),
                     sequence(
                             waitSeconds(1.5),
                             parallel(

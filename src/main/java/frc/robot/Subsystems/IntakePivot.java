@@ -42,7 +42,7 @@ public class IntakePivot extends Pivot {
       10000,
       1000,
       1);
-//    setDisabled(true);
+    setDisabled(true);
     setDutyCycle(.5);
   }
 
@@ -52,6 +52,8 @@ public class IntakePivot extends Pivot {
     super.periodic();
     if (getPosition()*360 > 60) {
       setDutyCycle(0);
+    } else {
+      setDutyCycle(.5);
     }
     // Add any additional periodic logic here
   }
