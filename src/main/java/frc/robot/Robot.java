@@ -5,7 +5,7 @@
 package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
-import Glitch.Lib.LEDs.GlitchLEDPatterns;
+//import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
   private final Indexer indexer = new Indexer();
   private final Spindexer spindexer = new Spindexer();
   private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, spindexer, intakePivot, intakeRoller);
-  private final LEDSubsystem2026 m_leds = LEDSubsystem2026.getInstance();
+  //private final LEDSubsystem2026 m_leds = LEDSubsystem2026.getInstance();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -92,7 +92,7 @@ public class Robot extends TimedRobot {
 //            CTREDrivetrain,
 //            new Rectangle(1,1,1,1),
 //            () -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees()));
-    m_leds.initializeLEDS(0);
+    //m_leds.initializeLEDS(0);
   }
 
   /**
@@ -156,7 +156,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    m_leds.setAll(GlitchLEDPatterns.purple);
+    //m_leds.setAll(GlitchLEDPatterns.purple);
   }
 
   /** This function is called periodically during disabled. */
@@ -175,7 +175,7 @@ public class Robot extends TimedRobot {
       CommandScheduler.getInstance().schedule(autoCommand);
     }
 
-    m_leds.setAll(GlitchLEDPatterns.fire(GlitchLEDPatterns.funGradient, Color.kGreen));
+    //m_leds.setAll(GlitchLEDPatterns.fire(GlitchLEDPatterns.funGradient, Color.kGreen));
   }
 
   /** This function is called periodically during autonomous. */
@@ -189,7 +189,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     intakeRoller.stickySetDuty(0);
 
-    m_leds.returnAllToBase();
+    //m_leds.returnAllToBase();
   }
 
   /** This function is called periodically during operator control. */
@@ -197,7 +197,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     if (firing.isValid) {
-      m_leds.setAll(GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 5, 1), 0.3);
+      //m_leds.setAll(GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 5, 1), 0.3);
     }
   }
 
