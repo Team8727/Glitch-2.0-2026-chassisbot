@@ -12,7 +12,7 @@ public class Shoot extends SequentialCommandGroup {
   public Shoot(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
     addCommands(
             parallel(
-                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * (Math.PI)*1.2)),
+                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * Math.PI * 1.2)),
                     sequence(
                             waitSeconds(1.5),
                             parallel(
