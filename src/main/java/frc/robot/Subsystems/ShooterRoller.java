@@ -4,6 +4,10 @@ import Glitch.Lib.BaseMechanisms.Roller;
 import Glitch.Lib.Motors.SparkMaxMotor;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+import static edu.wpi.first.units.Units.Volts;
 
 public class ShooterRoller extends Roller {
     private static final int CANID = 7;
@@ -16,6 +20,20 @@ public class ShooterRoller extends Roller {
                 .closedLoop
                 .pid(.07, 0, 0); //TODO: Tune PID values
     }
+
+    private double kS = 0; // Find using SysID
+    private double kV = 0;
+    private double kA = 0;
+    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+
+    public SysIdRoutine sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(
+                    (voltage) -> setSpeedVoltage(voltage.in(Volts)),
+                    null, // No log consumer, since data is recorded by URCL
+                    this
+            )
+    );
 
     public ShooterRoller() {
         super(new SparkMaxMotor(config, CANID, FeedbackSensor.kPrimaryEncoder));
