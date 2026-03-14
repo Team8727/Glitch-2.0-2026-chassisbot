@@ -86,7 +86,10 @@ public class Autos extends SubsystemBase {
       "Final plan 4.1",
       "test",
       "Close Full Middle",
-      "Close Half Middle"
+      "Close Half Middle",
+      "Far Full Middle",
+      "Far Half Middle",
+      "Shoot In Place"
     ).forEach(this::loadPath);
   }
 
