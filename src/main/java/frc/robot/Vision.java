@@ -74,12 +74,12 @@ public class Vision implements AutoCloseable {
   private static final Transform3d BACK_LEFT_FRONT =
     new Transform3d(
         new Translation3d(Units.inchesToMeters(-9),Units.inchesToMeters(11),Units.inchesToMeters(8.25)), //Translation just for testing
-        new Rotation3d(Math.toRadians(15),Math.toRadians(-17),Math.toRadians(75))
+        new Rotation3d(Math.toRadians(16.6),Math.toRadians(-25),Math.toRadians(78.3))
     );
 //  private static final Transform3d BACK_LEFT_BACK =
 //          new Transform3d(
 //                  new Translation3d(Units.inchesToMeters(-10.75),Units.inchesToMeters(10.25),Units.inchesToMeters(8.25)), //Translation just for testing
-//                  new Rotation3d(Math.toRadians(-15),Math.toRadians(-17),Math.toRadians(160))
+//                  new Rotation3d(Math.toRadians(-18.26),Math.toRadians(-18.34),Math.toRadians(151.7))
 //          );
 
   private static final Transform3d BACK_LEFT_BACK =
@@ -91,12 +91,12 @@ public class Vision implements AutoCloseable {
   private static final Transform3d BACK_RIGHT_FRONT =
           new Transform3d(
                   new Translation3d(Units.inchesToMeters(-9),Units.inchesToMeters(-11),Units.inchesToMeters(8.25)), //Translation just for testing
-                  new Rotation3d(Math.toRadians(-15),Math.toRadians(-17),Math.toRadians(-75))
+                  new Rotation3d(Math.toRadians(-16.6),Math.toRadians(-25),Math.toRadians(-78.3))
           );
   private static final Transform3d BACK_RIGHT_BACK =
           new Transform3d(
                   new Translation3d(Units.inchesToMeters(-10.75),Units.inchesToMeters(-10.25),Units.inchesToMeters(8.25)), //Translation just for testing
-                  new Rotation3d(Math.toRadians(15),Math.toRadians(-17),Math.toRadians(-160))
+                  new Rotation3d(Math.toRadians(18.26),Math.toRadians(-18.34),Math.toRadians(-151.7))
           );
 
   // Thresholds and sim properties
