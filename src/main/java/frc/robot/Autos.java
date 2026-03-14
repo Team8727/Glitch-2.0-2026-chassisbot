@@ -51,6 +51,7 @@ public class Autos extends SubsystemBase {
     this.intakePivot = intakePivot;
     this.intakeRoller = intakeRoller;
 
+    // register commands BEFORE paths
     registerNamedCommands();
     loadPaths();
     setupAutoChooser();
@@ -89,7 +90,8 @@ public class Autos extends SubsystemBase {
       "Close Half Middle",
       "Far Full Middle",
       "Far Half Middle",
-      "Shoot In Place"
+      "Shoot In Place",
+      "Final plan 4.1 jiggle"
     ).forEach(this::loadPath);
   }
 
@@ -120,6 +122,7 @@ public class Autos extends SubsystemBase {
     autoChooser.addOption("Far Half Middle", followPathFromStartPose(paths.get("Far Half Middle")));
     autoChooser.addOption("Shoot In Place", followPathFromStartPose(paths.get("Shoot In Place")));
     autoChooser.addOption("Final plan 4.1", followPathFromStartPose(paths.get("Final plan 4.1")));
+    autoChooser.addOption("Final plan 4.1 jiggle", followPathFromStartPose(paths.get("Final plan 4.1 jiggle")));
     autoChooser.addOption("test", followPathFromStartPose(paths.get("test")));
 
     // You can also use PathPlanner's built-in auto chooser if you have .auto files
