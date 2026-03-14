@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 7.7833187872312,
-        "y": 3.822988326264265
+        "y": 3.8229883262642645
       },
       "isLocked": false,
       "linkedName": "ball top"
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -88.8911878722401
+    "rotation": -88.89118787224011
   },
   "reversed": false,
-  "folder": "New Folder",
+  "folder": "cole stuff",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.52085637450193

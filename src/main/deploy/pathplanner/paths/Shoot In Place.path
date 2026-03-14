@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.29229761904762,
+        "y": 5.589857142857142
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.1322515191314992,
+        "y": 5.781912462756486
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.29229761904762,
+        "y": 5.589857142857142
+      },
+      "prevControl": {
+        "x": 3.452345156656987,
+        "y": 5.397803021044623
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "intakeDown",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "shoot",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 0.1,
+    "maxAcceleration": 0.1,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -50.15558431740623
+  },
+  "reversed": false,
+  "folder": "Strategy and Drive Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -50.156
+  },
+  "useDefaultConstraints": false
+}

@@ -1,0 +1,182 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.270702380952382,
+        "y": 5.730226190476191
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.145309523809525,
+        "y": 5.395499999999999
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.926916666666667,
+        "y": 5.730226190476191
+      },
+      "prevControl": {
+        "x": 4.991040744837541,
+        "y": 5.3778964316699325
+      },
+      "nextControl": {
+        "x": 6.844714285714287,
+        "y": 6.07575
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.147047619047619,
+        "y": 7.058333333333334
+      },
+      "prevControl": {
+        "x": 6.391214285714287,
+        "y": 6.820785714285714
+      },
+      "nextControl": {
+        "x": 7.592730997522115,
+        "y": 7.198405252282462
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.697726190476192,
+        "y": 6.226916666666666
+      },
+      "prevControl": {
+        "x": 7.711707803566705,
+        "y": 6.604420220110518
+      },
+      "nextControl": {
+        "x": 7.643738095238097,
+        "y": 4.769238095238095
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.697726190476192,
+        "y": 4.456107142857142
+      },
+      "prevControl": {
+        "x": 7.686641771590095,
+        "y": 5.232016464884119
+      },
+      "nextControl": {
+        "x": 7.708523809523809,
+        "y": 3.70027380952381
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.697726190476192,
+        "y": 3.376345238095238
+      },
+      "prevControl": {
+        "x": 7.761349515296104,
+        "y": 3.6181138724108997
+      },
+      "nextControl": {
+        "x": 7.634102865656281,
+        "y": 3.134576603779576
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.779928571428573,
+        "y": 2.7176904761904757
+      },
+      "prevControl": {
+        "x": 7.439558763596609,
+        "y": 2.816635005015681
+      },
+      "nextControl": {
+        "x": 5.700166666666668,
+        "y": 2.5557261904761903
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.270702380952382,
+        "y": 2.7176904761904757
+      },
+      "prevControl": {
+        "x": 3.9509523809523817,
+        "y": 2.6205119047619054
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.4831496062992024,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 5.0,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 6.4,
+      "rotationDegrees": -45.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "intakeDown",
+      "waypointRelativePos": 0.05035971223021419,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "spinRollers",
+      "waypointRelativePos": 1.4579136690647543,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "shoot",
+      "waypointRelativePos": 6.040647482014383,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 44.53794727856926
+  },
+  "reversed": false,
+  "folder": "Strategy and Drive Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -52.045769124867526
+  },
+  "useDefaultConstraints": true
+}
