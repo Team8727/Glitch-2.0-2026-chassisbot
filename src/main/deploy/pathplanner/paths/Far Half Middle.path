@@ -134,20 +134,14 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "intakeDown",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
       "name": "spinRollers",
-      "waypointRelativePos": 0.8611510791366718,
-      "endWaypointRelativePos": null,
+      "waypointRelativePos": 1.7214765100671126,
+      "endWaypointRelativePos": 4.560402684563758,
       "command": null
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 5.098630136986286,
+      "waypointRelativePos": 5.657718120805379,
       "endWaypointRelativePos": null,
       "command": null
     }

@@ -84,7 +84,7 @@
         "y": 1.5083571428571427
       },
       "prevControl": {
-        "x": 7.126935851298832,
+        "x": 7.126935851298835,
         "y": 1.4991042277296718
       },
       "nextControl": {
@@ -146,20 +146,14 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "intakeDown",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
       "name": "spinRollers",
-      "waypointRelativePos": 0.936529680365348,
-      "endWaypointRelativePos": null,
+      "waypointRelativePos": 1.6208053691275157,
+      "endWaypointRelativePos": 5.097315436241628,
       "command": null
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 5.500913242009119,
+      "waypointRelativePos": 6.236577181208061,
       "endWaypointRelativePos": null,
       "command": null
     }

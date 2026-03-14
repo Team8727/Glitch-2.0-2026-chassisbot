@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static com.pathplanner.lib.auto.AutoBuilder.followPath;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class Autos extends SubsystemBase {
@@ -84,12 +83,10 @@ public class Autos extends SubsystemBase {
    */
   private void loadPaths() {
     List.of(
-      "StartRight-Outpost",
       "Final plan 4.1",
-      "main bump to",
-      "main bump back",
-      "main balls",
-      "test"
+      "test",
+      "Close Full Middle",
+      "Close Half Middle"
     ).forEach(this::loadPath);
   }
 
@@ -114,9 +111,12 @@ public class Autos extends SubsystemBase {
    *   autoChooser.addOption("Path-Name", "Path_Function()"); </pre>
    */
   public void setupAutoChooser() {
-    autoChooser.setDefaultOption("bare minimum", bareMinimum());
-    autoChooser.addOption("start right outpost", followPathFromStartPose(paths.get("Final plan 4.1")));
-    autoChooser.addOption("grab balls", grabBalls());
+    autoChooser.setDefaultOption("Close Full Middle", followPathFromStartPose(paths.get("Close Full Middle")));
+    autoChooser.addOption("Close Half Middle", followPathFromStartPose(paths.get("Close Half Middle")));
+    autoChooser.addOption("Far Full Middle", followPathFromStartPose(paths.get("Far Full Middle")));
+    autoChooser.addOption("Far Half Middle", followPathFromStartPose(paths.get("Far Half Middle")));
+    autoChooser.addOption("Shoot In Place", followPathFromStartPose(paths.get("Shoot In Place")));
+    autoChooser.addOption("Final plan 4.1", followPathFromStartPose(paths.get("Final plan 4.1")));
     autoChooser.addOption("test", followPathFromStartPose(paths.get("test")));
 
     // You can also use PathPlanner's built-in auto chooser if you have .auto files
@@ -180,62 +180,5 @@ public class Autos extends SubsystemBase {
     } else {
       CTREDrivetrain.resetPose(new Pose2d(startPose.getTranslation(), startPose.getRotation().plus(CTREDrivetrain.getState().Pose.getRotation())));
     }
-  }
-
-  // Commands for different paths
-  private Command bareMinimum() {
-    return sequence(
-            runOnce(() -> setStartPose(paths.get("main bump to"))),
-            parallel(
-                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * 5.6))
-                            .finallyDo(() -> shooterRoller.setSpeedVelocity(0)),
-                    sequence(
-                            waitSeconds(1.5),
-                            parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(1))
-                                            .finallyDo(() -> indexer.setSpeedDutyCycle(0)),
-                                    spindexer.run(() -> spindexer.setSpeedDutyCycle(.5))
-                                            .finallyDo(() -> spindexer.setSpeedDutyCycle(0))
-                            )
-                    )
-            )
-    );
-  }
-
-  private Command grabBalls() {
-    return sequence(
-            runOnce(() -> setStartPose(paths.get("main bump to"))),
-            intakePivot.runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())),
-            followPath(paths.get("main bump to")),
-
-            intakePivot.runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())),
-            parallel(
-                    sequence(
-                            deadline(
-                                    waitSeconds(3),
-                                    intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(.8))
-                            ),
-                            deadline(
-                                    waitSeconds(.5),
-                                    intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(0))
-                            )
-                    ),
-                    followPath(paths.get("main balls")).withDeadline(waitSeconds(3))
-            ),
-            intakePivot.runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())),
-
-            followPath(paths.get("main bump back")),
-            intakePivot.runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())),
-            parallel(
-                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * 6.6)),
-                    sequence(
-                            waitSeconds(1.5),
-                            parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(1)),
-                                    spindexer.run(() -> spindexer.setSpeedDutyCycle(.5))
-                            )
-                    )
-            )
-    );
   }
 }
