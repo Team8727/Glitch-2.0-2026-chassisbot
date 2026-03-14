@@ -27,7 +27,12 @@ public class ShooterRoller extends Roller {
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
     public SysIdRoutine sysIdRoutine = new SysIdRoutine(
-            new SysIdRoutine.Config(),
+            new SysIdRoutine.Config(
+                    null,
+                    null,
+                    null,
+                    state -> logger.logString("SysIdFlywheel_State", state.toString())
+            ),
             new SysIdRoutine.Mechanism(
                     (voltage) -> setSpeedVoltage(voltage.in(Volts)),
                     null, // No log consumer, since data is recorded by URCL

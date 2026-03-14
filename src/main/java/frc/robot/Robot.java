@@ -5,7 +5,6 @@
 package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
-//import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -15,7 +14,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
@@ -36,6 +34,8 @@ public class Robot extends TimedRobot {
   private static final double SHOOTER_HEIGHT_METERS = 0.3;
   private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
   private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
+  public static final double SHOOTER_LOSS_COMPENSATION = 2;
+
   private Translation3d target;
 
   public static ProjectileSolver.FiringSolution firing;

@@ -1,20 +1,12 @@
 package frc.robot.controller;
 
 import Glitch.Lib.Controller.ControllerBindings;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Autos;
-import frc.robot.Commands.RaiseIntakeCmd;
 import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
-import frc.robot.Robot;
 import frc.robot.Subsystems.*;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 
 /**
@@ -62,13 +54,10 @@ public class Driver1DefaultBindings implements ControllerBindings {
             run(() -> indexer.setSpeedDutyCycle(-1)).alongWith(
             run(() -> spindexer.setSpeedDutyCycle(-.5))));
 
-    controller.b().onTrue(new InstantCommand(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())));
-    controller.x().onTrue(new RaiseIntakeCmd(intakeRoller, intakePivot));
-
-    controller.povRight().onTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)); // 3
-    controller.povUp().onTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)); // 3
-    controller.povDown().onTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)); // 2
-    controller.povLeft().onTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)); // 1
+//    controller.povRight().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)); // 4
+//    controller.povUp().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)); // 3
+//    controller.povDown().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)); // 2
+//    controller.povLeft().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)); // 1
 
 //    controller.povRight().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
 //    controller.povUp().onTrue(new InstantCommand(() -> shooterPivot.setPosition(30)));

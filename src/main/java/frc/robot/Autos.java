@@ -66,7 +66,7 @@ public class Autos extends SubsystemBase {
             .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)));
     NamedCommands.registerCommand("shoot",
             runOnce(() -> CommandScheduler.getInstance().schedule(parallel(
-                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * (Math.PI)*1.2))),
+                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION))),
                     sequence(
                             waitSeconds(1.5),
                             parallel(
