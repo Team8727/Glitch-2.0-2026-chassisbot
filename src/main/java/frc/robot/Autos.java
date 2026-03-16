@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
@@ -15,41 +14,61 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Commands.Shoot;
+import frc.robot.Commands.ShootCommand;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
-import frc.robot.Subsystems.*;
+import frc.robot.Subsystems.Indexer;
+import frc.robot.Subsystems.IntakeRoller;
+import frc.robot.Subsystems.ShooterRoller;
+import frc.robot.Subsystems.Spindexer;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-public class Autos extends SubsystemBase {
-  //  private final LEDSubsystem m_ledSubsystem = ;
+/**
+ * The Autos class handles the selection and execution of autonomous routines.
+ * It manages PathPlanner paths, registers named commands for use within paths,
+ * and maintains a chooser for selecting autonomous sequences from the dashboard.
+ */
+public class Autos {
   private final LinkedHashMap<String, PathPlannerPath> paths = new LinkedHashMap<>();
   private final CTRESwerveDrivetrain CTREDrivetrain;
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-  private final NetworkTableLogger logger = new NetworkTableLogger(this.getName());
   private final Indexer indexer;
   private final ShooterRoller shooterRoller;
   private final Spindexer spindexer;
-  private final IntakePivot intakePivot;
   private final IntakeRoller intakeRoller;
 
   /**
-   * Creates a new Autos.
+   * The list of autonomous path names to load and add to the auto chooser.
+   * The first item in this list is set as the default option.
    */
-  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRoller shooterRoller, Spindexer spindexer, IntakePivot intakePivot, IntakeRoller intakeRoller) {
+  private static final List<String> AUTO_NAMES = List.of(
+          "Final plan 4.1",
+          "Final plan 4.1 New",
+          "Final plan 4.1 looong",
+          "test",
+          "Shoot In Place"
+  );
+
+  /**
+   * Constructs an Autos object to manage autonomous routines.
+   *
+   * @param CTREDrivetrain The swerve drivetrain used for autonomous movement and path following.
+   * @param indexer        The indexer subsystem for managing game piece intake to the shooter.
+   * @param shooterRoller  The shooter subsystem for launching game pieces.
+   * @param spindexer      The spindexer subsystem for centering game pieces.
+   * @param intakeRoller   The intake roller subsystem for picking up game pieces.
+   */
+  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRoller shooterRoller, Spindexer spindexer, IntakeRoller intakeRoller) {
     this.CTREDrivetrain = CTREDrivetrain;
     this.indexer = indexer;
     this.shooterRoller = shooterRoller;
     this.spindexer = spindexer;
-    this.intakePivot = intakePivot;
     this.intakeRoller = intakeRoller;
 
     // register commands BEFORE paths
@@ -60,28 +79,21 @@ public class Autos extends SubsystemBase {
     SmartDashboard.putData("Auto choices", autoChooser);
   }
 
+  /**
+   * Registers named commands for use within PathPlanner paths.
+   * These commands can be called by name from the PathPlanner GUI.
+   */
   private void registerNamedCommands() {
-    NamedCommands.registerCommand("intakeUp", runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())));
-    NamedCommands.registerCommand("intakeDown", runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())));
     NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(.5))
             .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)));
-    NamedCommands.registerCommand("shoot", new Shoot(indexer, spindexer, shooterRoller));
+    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, spindexer, shooterRoller));
   }
 
   /**
-   * Loads the paths from the specified path files.
+   * Loads all autonomous paths from the deploy directory into the paths map.
    */
   private void loadPaths() {
-    List.of(
-      "Final plan 4.1",
-      "Final plan 4.1 Reversed",
-      "Final plan 4.1 New",
-      "Final plan 4.1 New Reversed",
-      "Final plan 4.1 looong",
-      "Final plan 4.1 looong Reversed",
-      "test",
-      "Shoot In Place"
-    ).forEach(this::loadPath);
+    AUTO_NAMES.forEach(this::loadPath);
   }
 
   /**
@@ -98,37 +110,48 @@ public class Autos extends SubsystemBase {
   }
 
   /**
-   * Sets up the auto chooser with different autonomous options.
-   * Example:
-   * <pre>
-   *   autoChooser.setDefaultOption("Path-Name", "Path_Function()");
-   *   autoChooser.addOption("Path-Name", "Path_Function()"); </pre>
+   * Sets up the autonomous command chooser for the SmartDashboard.
+   * This populates the chooser with various autonomous path options and their mirrored versions.
    */
   public void setupAutoChooser() {
-    autoChooser.setDefaultOption("Final plan 4.1", followPathFromStartPose(paths.get("Final plan 4.1")));
-    autoChooser.addOption("Final plan 4.1 Reversed", followPathFromStartPose(paths.get("Final plan 4.1 Reversed")));
-    autoChooser.addOption("Final plan 4.1 New", followPathFromStartPose(paths.get("Final plan 4.1 New")));
-    autoChooser.addOption("Final plan 4.1 New Reversed", followPathFromStartPose(paths.get("Final plan 4.1 New Reversed")));
-    autoChooser.addOption("Final plan 4.1 looong", followPathFromStartPose(paths.get("Final plan 4.1 looong")));
-    autoChooser.addOption("Final plan 4.1 looong Reversed", followPathFromStartPose(paths.get("Final plan 4.1 looong Reversed")));
-    autoChooser.addOption("test", followPathFromStartPose(paths.get("test")));
-    autoChooser.addOption("Shoot In Place", followPathFromStartPose(paths.get("Shoot In Place")));
+    AUTO_NAMES.forEach(name -> {
+      PathPlannerPath path = paths.get(name);
+      if (path == null) return;
 
-    // You can also use PathPlanner's built-in auto chooser if you have .auto files
-    // autoChooser = AutoBuilder.buildAutoChooser();
+      Command nonMirrored = followPathFromStartPose(path, false);
+      Command mirrored = followPathFromStartPose(path, true);
+
+      autoChooser.addOption(name, nonMirrored);
+      autoChooser.addOption(name + " Mirrored", mirrored);
+    });
   }
 
   /**
-   * @return The selected autonomous command
+   * Retrieves the currently selected autonomous command from the dashboard chooser.
+   *
+   * @return The selected autonomous {@link Command}.
    */
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
 
-  public Command followPathFromStartPose(PathPlannerPath path) {
+  /**
+   * Follows a PathPlanner path starting from its initial pose.
+   *
+   * @param path   The {@link PathPlannerPath} to follow.
+   * @param mirror Whether to mirror the path based on the alliance side.
+   * @return A command that resets the robot's pose to the path's start and then follows the path.
+   */
+  public Command followPathFromStartPose(PathPlannerPath path, boolean mirror) {
+    PathPlannerPath finalPath;
+    if (mirror) {
+      finalPath = path.mirrorPath();
+    } else {
+      finalPath = path;
+    }
     return sequence(
-            runOnce(() -> setStartPose(path)),
-            AutoBuilder.followPath(path)
+            runOnce(() -> setStartPose(finalPath)),
+            AutoBuilder.followPath(finalPath)
     );
   }
 
@@ -148,6 +171,12 @@ public class Autos extends SubsystemBase {
                     TunerConstants.kMaxAngularAcceleration)).andThen(waitSeconds(0.0001));
   }
 
+  /**
+   * Performs pathfinding to the specified target pose, then follows the path.
+   *
+   * @param goal The target {@link Pose2d} to navigate to.
+   * @return A command that pathfinds and then aligns to the goal pose.
+   */
   public Command align(Pose2d goal) {
     return AutoBuilder.pathfindToPose(
             goal,
@@ -160,7 +189,10 @@ public class Autos extends SubsystemBase {
   }
 
   /**
-   * Sets the starting pose of the robot based on the given path.
+   * Resets the robot's pose to the starting position of the given path.
+   * Accounts for alliance color when determining the initial pose.
+   *
+   * @param path The path to extract the starting pose from.
    */
   private void setStartPose(PathPlannerPath path) {
     Pose2d startPose;
@@ -170,10 +202,6 @@ public class Autos extends SubsystemBase {
       startPose = path.getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
     }
     
-    if (Robot.isReal()) {
-      CTREDrivetrain.resetPose(startPose);
-    } else {
-      CTREDrivetrain.resetPose(new Pose2d(startPose.getTranslation(), startPose.getRotation().plus(CTREDrivetrain.getState().Pose.getRotation())));
-    }
+    CTREDrivetrain.resetPose(startPose);
   }
 }

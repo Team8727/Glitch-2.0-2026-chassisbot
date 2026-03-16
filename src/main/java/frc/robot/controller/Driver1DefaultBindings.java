@@ -3,7 +3,7 @@ package frc.robot.controller;
 import Glitch.Lib.Controller.ControllerBindings;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Autos;
-import frc.robot.Commands.Shoot;
+import frc.robot.Commands.ShootCommand;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Subsystems.*;
 
@@ -49,7 +49,7 @@ public class Driver1DefaultBindings implements ControllerBindings {
   public void bind(CommandXboxController controller) {
     // Put binds here
     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
-    controller.rightTrigger().whileTrue(new Shoot(indexer, spindexer, shooterRoller));
+    controller.rightTrigger().whileTrue(new ShootCommand(indexer, spindexer, shooterRoller));
     controller.y().whileTrue(
             run(() -> indexer.setSpeedDutyCycle(-1)).alongWith(
             run(() -> spindexer.setSpeedDutyCycle(-.5))));

@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
   private final IntakeRoller intakeRoller = new IntakeRoller();
   private final Indexer indexer = new Indexer();
   private final Spindexer spindexer = new Spindexer();
-  private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, spindexer, intakePivot, intakeRoller);
+  private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, spindexer, intakeRoller);
   //private final LEDSubsystem2026 m_leds = LEDSubsystem2026.getInstance();
 
   /**

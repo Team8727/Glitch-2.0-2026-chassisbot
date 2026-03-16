@@ -8,8 +8,8 @@ import frc.robot.Subsystems.Spindexer;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-public class Shoot extends SequentialCommandGroup {
-  public Shoot(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
+public class ShootCommand extends SequentialCommandGroup {
+  public ShootCommand(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
     addCommands(
             parallel(
                     shooterRoller.run(() -> {
