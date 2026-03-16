@@ -31,7 +31,7 @@ public class ShooterRoller extends Roller {
                     null,
                     null,
                     null,
-                    state -> logger.logString("SysIdFlywheel_State", state.toString())
+                    state -> logger.log("SysIdFlywheel_State", state.toString())
             ),
             new SysIdRoutine.Mechanism(
                     (voltage) -> setSpeedVoltage(voltage.in(Volts)),

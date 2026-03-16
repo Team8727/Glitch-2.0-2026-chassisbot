@@ -108,7 +108,7 @@ public class CTReSwerveControls {
 //        new Rotation2d((0.5*Math.PI) - desiredHeadingRadians) // 90-degree offset I had to add for the Pose2d targetRobotPose to point correctly
 //      );
 //
-//      //netLogger.logDouble("desiredHeading: ", desiredHeadingRadians);
+//      //netLogger.log("desiredHeading: ", desiredHeadingRadians);
 //      netLogger.logPose3d("target: ", new Pose3d(target, new Rotation3d()));
 //      netLogger.logPose2d("targetRobotPose: ", targetRobotPose);
 //
