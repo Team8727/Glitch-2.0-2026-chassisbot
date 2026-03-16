@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
   private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
   private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
   public static final double SHOOTER_LOSS_COMPENSATION = 2;
+  public static boolean SHOOT_POWER_OVERRIDE = false;
 
   private Translation3d target;
 

@@ -2,23 +2,13 @@ package frc.robot.controller;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Robot;
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -153,7 +143,7 @@ public class CTReSwerveControls {
 //    controller.povRight().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)); // 3
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=- Reset field-centric heading -=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // reset the field-centric heading on left bumper press    // reset the field-centric heading on left bumper press
+    // reset the field-centric heading on left bumper press
     controller.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Telemetry registration -=-=-=-=-=-=-=-=-=-=-=-=-

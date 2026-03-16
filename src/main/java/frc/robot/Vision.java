@@ -187,17 +187,6 @@ public class Vision implements AutoCloseable {
    */
   public void logCameraPoses(Pose2d robotPose) {
     var robotPose3d = new edu.wpi.first.math.geometry.Pose3d(robotPose);
-
-    // Chassis Bot Cams
-//    var camFrontRight = robotPose3d.transformBy(FRONT_RIGHT_POS);
-//    var camFrontLeft = robotPose3d.transformBy(FRONT_LEFT_POS);
-//    var camBackRight = robotPose3d.transformBy(BACK_RIGHT_POS);
-//    var camBackLeft = robotPose3d.transformBy(BACK_LEFT_POS);
-//    logger.logPose3d("/" + CAM_FRONT_RIGHT + "/Pose", camFrontRight);
-//    logger.logPose3d("/" + CAM_FRONT_LEFT + "/Pose", camFrontLeft);
-//    logger.logPose3d("/" + CAM_BACK_RIGHT + "/Pose", camBackRight);
-//    logger.logPose3d("/" + CAM_BACK_LEFT + "/Pose", camBackLeft);
-
     // Real Bot Cams
     var camBackLeftFront = robotPose3d.transformBy(BACK_LEFT_FRONT);
     logger.logPose3d("/" + CAM_BACK_LEFT_FRONT+ "/Pose", camBackLeftFront);

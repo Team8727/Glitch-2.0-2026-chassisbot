@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Commands.Shoot;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Subsystems.*;
@@ -26,7 +26,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 public class Autos extends SubsystemBase {
   //  private final LEDSubsystem m_ledSubsystem = ;
@@ -64,19 +65,7 @@ public class Autos extends SubsystemBase {
     NamedCommands.registerCommand("intakeDown", runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.DOWN.getDegrees())));
     NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(.5))
             .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)));
-    NamedCommands.registerCommand("shoot",
-            runOnce(() -> CommandScheduler.getInstance().schedule(parallel(
-                    shooterRoller.run(() -> shooterRoller.setSpeedVelocity(Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION))),
-                    sequence(
-                            waitSeconds(1.5),
-                            parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(1)),
-                                    spindexer.run(() -> spindexer.setSpeedDutyCycle(.5))
-                            )
-                    )
-            )
-
-    ));
+    NamedCommands.registerCommand("shoot", new Shoot(indexer, spindexer, shooterRoller));
   }
 
   /**
@@ -85,13 +74,13 @@ public class Autos extends SubsystemBase {
   private void loadPaths() {
     List.of(
       "Final plan 4.1",
+      "Final plan 4.1 Reversed",
+      "Final plan 4.1 New",
+      "Final plan 4.1 New Reversed",
+      "Final plan 4.1 looong",
+      "Final plan 4.1 looong Reversed",
       "test",
-      "Close Full Middle",
-      "Close Half Middle",
-      "Far Full Middle",
-      "Far Half Middle",
-      "Shoot In Place",
-      "Final plan 4.1 jiggle"
+      "Shoot In Place"
     ).forEach(this::loadPath);
   }
 
@@ -116,14 +105,14 @@ public class Autos extends SubsystemBase {
    *   autoChooser.addOption("Path-Name", "Path_Function()"); </pre>
    */
   public void setupAutoChooser() {
-    autoChooser.setDefaultOption("Close Full Middle", followPathFromStartPose(paths.get("Close Full Middle")));
-    autoChooser.addOption("Close Half Middle", followPathFromStartPose(paths.get("Close Half Middle")));
-    autoChooser.addOption("Far Full Middle", followPathFromStartPose(paths.get("Far Full Middle")));
-    autoChooser.addOption("Far Half Middle", followPathFromStartPose(paths.get("Far Half Middle")));
-    autoChooser.addOption("Shoot In Place", followPathFromStartPose(paths.get("Shoot In Place")));
-    autoChooser.addOption("Final plan 4.1", followPathFromStartPose(paths.get("Final plan 4.1")));
-    autoChooser.addOption("Final plan 4.1 jiggle", followPathFromStartPose(paths.get("Final plan 4.1 jiggle")));
+    autoChooser.setDefaultOption("Final plan 4.1", followPathFromStartPose(paths.get("Final plan 4.1")));
+    autoChooser.addOption("Final plan 4.1 Reversed", followPathFromStartPose(paths.get("Final plan 4.1 Reversed")));
+    autoChooser.addOption("Final plan 4.1 New", followPathFromStartPose(paths.get("Final plan 4.1 New")));
+    autoChooser.addOption("Final plan 4.1 New Reversed", followPathFromStartPose(paths.get("Final plan 4.1 New Reversed")));
+    autoChooser.addOption("Final plan 4.1 looong", followPathFromStartPose(paths.get("Final plan 4.1 looong")));
+    autoChooser.addOption("Final plan 4.1 looong Reversed", followPathFromStartPose(paths.get("Final plan 4.1 looong Reversed")));
     autoChooser.addOption("test", followPathFromStartPose(paths.get("test")));
+    autoChooser.addOption("Shoot In Place", followPathFromStartPose(paths.get("Shoot In Place")));
 
     // You can also use PathPlanner's built-in auto chooser if you have .auto files
     // autoChooser = AutoBuilder.buildAutoChooser();

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.754933451641527,
-        "y": 7.121375332741792
+        "x": 3.031,
+        "y": 4.055
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.7833187872312,
-        "y": 3.8229883262642645
+        "x": 4.0310000000000015,
+        "y": 4.055
       },
       "isLocked": false,
-      "linkedName": "ball top"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.754933451641527,
-        "y": 4.537994676131322
+        "x": 0.286,
+        "y": 7.781
       },
       "prevControl": {
-        "x": 7.749580127896684,
-        "y": 7.590742011197042
+        "x": -0.714,
+        "y": 7.781
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ball bottom"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,22 +33,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 0.75,
-    "maxAcceleration": 2.5,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAngularAcceleration": 311.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -88.89118787224011
+    "rotation": -42.6467031338916
   },
   "reversed": false,
-  "folder": "cole stuff",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.52085637450193
+    "rotation": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
