@@ -3,6 +3,7 @@ package frc.robot.controller;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
@@ -134,6 +135,13 @@ public class CTReSwerveControls {
               .withVelocityY(-controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
               .withRotationalDeadband(MaxAngularRate * 0.1);
     }));
+
+    // Oscillate drivetrain command (wiggle)
+    controller.b().toggleOnTrue(drivetrain.applyRequest(() -> faceTarget
+            .withTargetDirection(Rotation2d.fromDegrees(Robot.referenceRotation.getDegrees() - computeOscillation(2, 5))) // face the target with 180-degree offset I had to add for some reason
+            .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+            .withVelocityY(-controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
+            .withRotationalDeadband(MaxAngularRate * 0.1)));
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-= SysID characterization for driving and turning (but not heading controller, unless you add a trigger for that) -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -148,6 +156,31 @@ public class CTReSwerveControls {
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Telemetry registration -=-=-=-=-=-=-=-=-=-=-=-=-
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  /**
+   * Finds the oscillation given value to oscillate back and forth and flips per second. General oscillation method, can be used for many purposes, but is used currently for the drivetrain "wiggle" command
+   * @param amplitude: angle to oscillate back and forth in degrees (peak amplitude, so total oscillation will be 2*amplitude)
+   * @param flipsPerSecond: number of oscillations per second
+   * @return the oscillation value in degrees to add to the reference rotation to get the desired oscillating angle.
+   */
+  public double computeOscillation(double amplitude, double flipsPerSecond) {
+    // Compute time in seconds as a double (do NOT truncate to integer seconds)
+    double timeSeconds = RobotController.getFPGATime() * 1e-6;
+    return computeOscillationAtTime(amplitude, flipsPerSecond, timeSeconds);
+  }
+
+  /**
+   * Pure math helper: compute oscillation (in degrees) for a given time in seconds.
+   * @param amplitudeDeg: peak amplitude in degrees
+   * @param flipsPerSecond: frequency in Hz (cycles per second)
+   * @param timeSeconds: time in seconds
+   * @return the oscillation value in degrees.
+   */
+  static double computeOscillationAtTime(double amplitudeDeg, double flipsPerSecond, double timeSeconds) {
+    // Use angular frequency omega = 2 * PI * f so that f (Hz) produces f cycles per second
+    double phase = 2.0 * Math.PI * flipsPerSecond * timeSeconds;
+    return amplitudeDeg * Math.sin(phase);
   }
 
 //  public Command pointToHub() {

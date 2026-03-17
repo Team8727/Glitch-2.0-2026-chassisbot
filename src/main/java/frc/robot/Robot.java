@@ -8,6 +8,7 @@ import Glitch.Lib.Controller.Controller;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -42,6 +43,9 @@ public class Robot extends TimedRobot {
   public static ProjectileSolver.FiringSolution firing;
   private double lastTime = Timer.getFPGATimestamp();
   private double deltaTime;
+
+  // Used for drivetrain oscillation command (wiggling)
+  public static Rotation2d referenceRotation = new  Rotation2d();
 
   private final ShooterRoller shooterRoller = new ShooterRoller();
   private final ShooterRollerFollower shooterRollerFollower = new ShooterRollerFollower();
@@ -88,6 +92,10 @@ public class Robot extends TimedRobot {
     );
 
     SmartDashboard.putNumber("Shooter power", 0);
+
+    // Used by oscillation command
+    addPeriodic(() -> referenceRotation = CTREDrivetrain.getState().Pose.getRotation().minus(Rotation2d.fromDegrees(180)), 0.01);
+
     // Setup zones
 //    new ZoneController(
 //            CTREDrivetrain,
@@ -118,7 +126,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
 
     Translation3d shooterFieldPosition = new Translation3d(
             CTREDrivetrain.getState().Pose.getX(),
@@ -197,9 +204,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    if (firing.isValid) {
-      //m_leds.setAll(GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 5, 1), 0.3);
-    }
+//    if (firing.isValid) {
+//      m_leds.setAll(GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 5, 1), 0.3);
+//    }
   }
 
   /** This function is called once when test mode is enabled. */
