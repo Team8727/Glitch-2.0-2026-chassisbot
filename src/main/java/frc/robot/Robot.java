@@ -114,7 +114,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
-    logger.logDouble("voltage", RobotController.getInputVoltage());
+    logger.log("voltage", RobotController.getInputVoltage());
     double now = Timer.getFPGATimestamp();
     deltaTime = now - lastTime;
     lastTime = now;
@@ -143,22 +143,22 @@ public class Robot extends TimedRobot {
             drivetrainFOCVelocity,// rotate by robot rotation
             SHOOTER_ANGLE_DEGREES);
 
-    logger.logDouble("shooter vel", firing.power);
-    logger.logDouble("shooter yaw", firing.yaw);
-    logger.logDouble("shooter yaw radians", Math.toRadians(firing.yaw));
-    logger.logDouble("shooter2 pitch", firing.pitch);
-    logger.logBoolean("shooter2 valid", firing.isValid);
-    logger.logDouble("shooter2 horizontal distance", firing.horizontalDistance);
+    logger.log("shooter vel", firing.power);
+    logger.log("shooter yaw", firing.yaw);
+    logger.log("shooter yaw radians", Math.toRadians(firing.yaw));
+    logger.log("shooter2 pitch", firing.pitch);
+    logger.log("shooter2 valid", firing.isValid);
+    logger.log("shooter2 horizontal distance", firing.horizontalDistance);
 
-    logger.logPose3d("shooter2 position", new Pose3d(
+    logger.log("shooter2 position", new Pose3d(
             shooterFieldPosition,
             new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
 
-    logger.logPose3d("target", new Pose3d(
+    logger.log("target", new Pose3d(
             target,
             new Rotation3d()));
 
-    logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
+    logger.log("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
