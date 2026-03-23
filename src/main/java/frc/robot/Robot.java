@@ -60,7 +60,6 @@ public class Robot extends TimedRobot {
   private final Indexer indexer = new Indexer();
   private final Spindexer spindexer = new Spindexer();
   private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, spindexer, intakeRoller);
-  //private final LEDSubsystem2026 m_leds = LEDSubsystem2026.getInstance();
 
   /**
    * This function is run when the robot is first started up and should be used for any
