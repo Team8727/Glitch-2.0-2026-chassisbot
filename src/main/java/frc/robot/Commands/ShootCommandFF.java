@@ -9,22 +9,22 @@ import frc.robot.Subsystems.Spindexer;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
-public class ShootCommand extends SequentialCommandGroup {
-  public ShootCommand(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
+public class ShootCommandFF extends SequentialCommandGroup {
+  public ShootCommandFF(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
     addCommands(
             parallel(
                     shooterRoller.run(() -> {
                       double speed;
                       if (Robot.SHOOT_POWER_OVERRIDE) {
-                        speed = 6.6 * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION; // Old method
+                        speed = 6.6 * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION;
                       } else {
-                        //speed = Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION; // Old Method
+                        //speed = Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION;
                         speed = 0.95 * (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_RADIUS_METERS);
                       }
-                      shooterRoller.setSpeedVelocity(speed);
+                      shooterRoller.setFFVoltageWithVelocity(speed);
                     }),
                     sequence(
-                            waitSeconds(1.5),
+                            waitSeconds(1),
                             parallel(
                                     indexer.run(() -> indexer.setSpeedDutyCycle(1)),
                                     spindexer.run(() -> spindexer.setSpeedDutyCycle(.5))

@@ -4,6 +4,8 @@ import Glitch.Lib.Controller.ControllerBindings;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Autos;
 import frc.robot.Commands.ShootCommand;
+import frc.robot.Commands.ShootCommandFF;
+import frc.robot.Commands.ShootCommandStateSpace;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Subsystems.*;
 
@@ -49,7 +51,8 @@ public class Driver1DefaultBindings implements ControllerBindings {
   public void bind(CommandXboxController controller) {
     // Put binds here
     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
-    controller.rightTrigger().whileTrue(new ShootCommand(indexer, spindexer, shooterRoller));
+    controller.rightTrigger().whileTrue(new ShootCommandFF(indexer, spindexer, shooterRoller));
+    //controller.leftBumper().whileTrue(new ShootCommandFF(indexer, spindexer, shooterRoller));
     controller.y().whileTrue(
             run(() -> indexer.setSpeedDutyCycle(-1)).alongWith(
             run(() -> spindexer.setSpeedDutyCycle(-.5))));
@@ -59,6 +62,21 @@ public class Driver1DefaultBindings implements ControllerBindings {
 //    controller.povDown().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)); // 2
 //    controller.povLeft().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)); // 1
 
+    // Testing flywheel state space control (
+    //controller.rightBumper().whileTrue(new ShootCommandStateSpace(indexer, spindexer, shooterRoller));
+//    controller.rightBumper().whileTrue(run(() -> {
+//      shooterRoller.m_loop.setNextR(VecBuilder.fill(1.125 * Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION)); // In rad/sec
+//      shooterRoller.m_loop.correct(VecBuilder.fill(shooterRoller.getVelocity()));
+//      shooterRoller.m_loop.predict(0.020);
+//      double nextVoltage = shooterRoller.m_loop.getU(0);
+//      shooterRoller.setSpeedVoltage(nextVoltage);
+//    })).whileFalse(run(() -> {
+//      shooterRoller.m_loop.setNextR(VecBuilder.fill(0));
+//      shooterRoller.m_loop.correct(VecBuilder.fill(shooterRoller.getVelocity()));
+//      shooterRoller.m_loop.predict(0.020);
+//      double nextVoltage = shooterRoller.m_loop.getU(0);
+//      shooterRoller.setSpeedVoltage(nextVoltage);
+//    }));
 //    controller.povRight().onTrue(new InstantCommand(shooterPivot::zeroEncoder));
 //    controller.povUp().onTrue(new InstantCommand(() -> shooterPivot.setPosition(30)));
 //    controller.povDown().onTrue(new InstantCommand(() -> shooterPivot.setPosition(50)));

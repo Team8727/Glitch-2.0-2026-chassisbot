@@ -16,6 +16,10 @@ public class ShooterRollerFollower extends Roller {
                 .follow(7)
                 .closedLoop
                 .pid(.07, 0, 0); //TODO: Tune PID values
+        config
+                .encoder
+                .positionConversionFactor(0.017453299835324287)
+                .velocityConversionFactor(0.017453299835324287);
     }
 
     public ShooterRollerFollower() {

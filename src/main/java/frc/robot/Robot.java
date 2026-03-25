@@ -7,11 +7,13 @@ package frc.robot;
 import Glitch.Lib.Controller.Controller;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +35,7 @@ public class Robot extends TimedRobot {
 
   private static final double SHOOTER_ANGLE_DEGREES = 60.0;
   private static final double SHOOTER_HEIGHT_METERS = 0.3;
+  public static final double SHOOTER_FLYWHEEL_RADIUS_METERS = 0.0503555;
   private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
   private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
   public static final double SHOOTER_LOSS_COMPENSATION = 2;
@@ -143,6 +146,8 @@ public class Robot extends TimedRobot {
             SHOOTER_ANGLE_DEGREES);
 
     logger.logDouble("shooter vel", firing.power);
+    logger.logDouble("[OLD] Flywheel setpoint velocity", Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION);
+    logger.logDouble("[NEW] Flywheel setpoint velocity", 2 * ((Robot.firing.power) / (Math.PI * 2 * Robot.SHOOTER_FLYWHEEL_RADIUS_METERS))); // Convert m/s to rpm)
     logger.logDouble("shooter yaw", firing.yaw);
     logger.logDouble("shooter yaw radians", Math.toRadians(firing.yaw));
     logger.logDouble("shooter2 pitch", firing.pitch);
@@ -196,6 +201,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     intakeRoller.stickySetDuty(0);
 
+    shooterRoller.m_loop.reset(VecBuilder.fill(Units.rotationsPerMinuteToRadiansPerSecond(shooterRoller.getVelocity())));
     //m_leds.returnAllToBase();
   }
 
