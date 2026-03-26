@@ -64,6 +64,8 @@ public class Robot extends TimedRobot {
   private final Spindexer spindexer = new Spindexer();
   private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, spindexer, intakeRoller);
 
+  private final LEDSubsystem leds = new LEDSubsystem();
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -103,7 +105,7 @@ public class Robot extends TimedRobot {
 //            CTREDrivetrain,
 //            new Rectangle(1,1,1,1),
 //            () -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees()));
-    //m_leds.initializeLEDS(0);
+    leds.initializeLEDS(0);
   }
 
   /**
@@ -168,7 +170,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    //m_leds.setAll(GlitchLEDPatterns.purple);
+    leds.start();
   }
 
   /** This function is called periodically during disabled. */
