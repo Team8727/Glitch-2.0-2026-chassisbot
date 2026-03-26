@@ -28,13 +28,13 @@ public class ShooterRoller extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(false)
                 .closedLoop
-                .pid(.07, 0, 0); // TODO: Tune PID values
+                .pid(0.09, 0, 0.02); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
-//                .sva(0.351, 0.127, 0.052, ClosedLoopSlot.kSlot0); // Found using sysID
+//                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         config
                 .encoder
                 .positionConversionFactor(0.017453299835324287) // To get output in RPS
-                .velocityConversionFactor(.017453299835324287);
+                .velocityConversionFactor(0.017453299835324287);
                 // 0.017453299835324287 was the conversion factor previously. This value is close to 1/60, so I think using this outputs RPS.
     }
 
@@ -64,7 +64,7 @@ public class ShooterRoller extends Roller {
 
     public static final double kSpinupRadPerSec = 53.0; //Was 500 originally, change to something reasonable for max speed. Will not be a variable, it will be a value from projectile solver multiplied by 2pi + small mech. constant.
 
-    private static final double kFlywheelMomentOfInertia = 0.00193; // kg * m^2
+    private static final double kFlywheelMomentOfInertia = 0.0012112355; // kg * m^2
     // Reduction between motors and encoder, as output over input. If the flywheel spins slower than
     // the motors, this number should be greater than one.
     private static final double kFlywheelGearing = 0.5;
@@ -81,6 +81,7 @@ public class ShooterRoller extends Roller {
     // TODO: Try using this instead of the above to add FF into this system.
     private final LinearSystem<N1, N1, N1> m_flywheelPlant =
             LinearSystemId.identifyVelocitySystem(kV, kA);
+
 
     // The observer fuses our encoder data and voltage inputs to reject noise.
     private final KalmanFilter<N1, N1, N1> m_observer =
