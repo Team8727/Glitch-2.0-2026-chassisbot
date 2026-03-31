@@ -120,7 +120,7 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
 
-  int measurementCount = vision.measurementCount(CTREDrivetrain.getState().Pose);
+  int measurementCount;
   LEDPattern lowConfidence = GlitchLEDPatterns.ripple(LEDPattern.solid(Color.kYellow), 10, 20);
   LEDPattern reasonableConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.ace, 10, 20);
   LEDPattern highConfidence = GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.funGradient);
@@ -128,6 +128,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    measurementCount = vision.measurementCount(CTREDrivetrain.getState().Pose);
+
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
     logger.logDouble("voltage", RobotController.getInputVoltage());
     double now = Timer.getFPGATimestamp();
