@@ -14,7 +14,7 @@ public class Indexer extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(true)
                 .closedLoop
-                .pid(0, 0, 0); //TODO: Tune PID values
+                .pid(0.14, 0, 0); //TODO: Tune PID values
     }
 
     public Indexer() {
