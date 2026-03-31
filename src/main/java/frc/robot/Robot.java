@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Subsystems.Indexer;
-import frc.robot.Subsystems.IntakePivot;
 import frc.robot.Subsystems.IntakeRoller;
 import frc.robot.Subsystems.ShooterRoller;
 import frc.robot.controller.Driver1DefaultBindings;
@@ -58,12 +57,11 @@ public class Robot extends TimedRobot {
   private final NetworkTableLogger logger = new NetworkTableLogger("Robot");
   private final CTRESwerveDrivetrain CTREDrivetrain = TunerConstants.createDrivetrain();
   private final Vision vision = new Vision();
-  private final Controller m_mainController = new Controller(Controller.Operator.MAIN); // Main controller
-  private final Controller m_assistController = new Controller(Controller.Operator.ASSIST); // Assist controller
-  private final IntakePivot intakePivot = new IntakePivot();
   private final IntakeRoller intakeRoller = new IntakeRoller();
   private final Indexer indexer = new Indexer();
   private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, intakeRoller);
+  private final Controller m_mainController;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -81,18 +79,6 @@ public class Robot extends TimedRobot {
     // Start the URCL logger (logs REV SparkMaxes and SparkFlexes automatically on networkTables)
     URCL.start();
 
-    m_mainController.applyBindings(
-            new Driver1DefaultBindings(
-                    m_mainController.getController(),
-                    autos,
-                    CTREDrivetrain,
-                    intakePivot,
-                    intakeRoller,
-                    indexer,
-                    shooterRoller
-            )
-    );
-
     SmartDashboard.putNumber("Shooter power", 0);
 
     // Used by oscillation command
@@ -104,6 +90,13 @@ public class Robot extends TimedRobot {
 //            new Rectangle(1,1,1,1),
 //            () -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees()));
     //m_leds.initializeLEDS(0);
+     m_mainController = new Driver1DefaultBindings(
+            autos,
+            CTREDrivetrain,
+            intakeRoller,
+            indexer,
+            shooterRoller
+    );
   }
 
   /**
@@ -178,9 +171,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
-    m_mainController.clearBindings();
-    m_assistController.clearBindings();
-    
+
     // Get the selected autonomous command from the Autos class
     Command autoCommand = autos.getAutonomousCommand();
     if (autoCommand != null) {

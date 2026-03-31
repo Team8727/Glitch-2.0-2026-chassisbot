@@ -39,8 +39,8 @@ public class ShooterRoller extends Roller {
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M0config
                 .encoder
-                .positionConversionFactor(0.017453299835324287) // To get output in RPS
-                .velocityConversionFactor(0.017453299835324287);
+                .positionConversionFactor(1.0/60) // To get output in RPS
+                .velocityConversionFactor(1.0/60);
                 // 0.017453299835324287 was the conversion factor previously. This value is close to 1/60, so I think using this outputs RPS.
     }
     static {
@@ -55,8 +55,8 @@ public class ShooterRoller extends Roller {
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M1config
                 .encoder
-                .positionConversionFactor(0.017453299835324287) // To get output in RPS
-                .velocityConversionFactor(0.017453299835324287);
+                .positionConversionFactor(1.0/60) // To get output in RPS
+                .velocityConversionFactor(1.0/60);
         // 0.017453299835324287 was the conversion factor previously. This value is close to 1/60, so I think using this outputs RPS.
     }
     static {
@@ -71,8 +71,8 @@ public class ShooterRoller extends Roller {
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M2config
                 .encoder
-                .positionConversionFactor(0.017453299835324287) // To get output in RPS
-                .velocityConversionFactor(0.017453299835324287);
+                .positionConversionFactor(1.0/60) // To get output in RPS
+                .velocityConversionFactor(1.0/60);
         // 0.017453299835324287 was the conversion factor previously. This value is close to 1/60, so I think using this outputs RPS.
     }
     static {
@@ -87,8 +87,8 @@ public class ShooterRoller extends Roller {
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M3config
                 .encoder
-                .positionConversionFactor(0.017453299835324287) // To get output in RPS
-                .velocityConversionFactor(0.017453299835324287);
+                .positionConversionFactor(1.0 /60) // To get output in RPS
+                .velocityConversionFactor(1.0 /60);
         // 0.017453299835324287 was the conversion factor previously. This value is close to 1/60, so I think using this outputs RPS.
     }
 
