@@ -1,5 +1,6 @@
 package frc.robot.Drivetrain;
 
+import Glitch.Lib.NetworkTableLogger;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -44,6 +45,8 @@ public class Telemetry {
     private final DoublePublisher driveTimestamp = driveStateTable.getDoubleTopic("Timestamp").publish();
     private final DoublePublisher driveOdometryFrequency = driveStateTable.getDoubleTopic("OdometryFrequency").publish();
 
+    private final NetworkTableLogger logger = new NetworkTableLogger("Drivetrain");
+
     /* Robot pose for field positioning */
     private final NetworkTable table = inst.getTable("Pose");
     private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
@@ -80,21 +83,29 @@ public class Telemetry {
     /** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
     public void telemeterize(SwerveDriveState state) {
         /* Telemeterize the swerve drive state */
-        drivePose.set(state.Pose);
-        driveSpeeds.set(state.Speeds);
-        driveModuleStates.set(state.ModuleStates);
-        driveModuleTargets.set(state.ModuleTargets);
-        driveModulePositions.set(state.ModulePositions);
-        driveTimestamp.set(state.Timestamp);
-        driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
+//        drivePose.set(state.Pose);
+//        driveSpeeds.set(state.Speeds);
+//        driveModuleStates.set(state.ModuleStates);
+//        driveModuleTargets.set(state.ModuleTargets);
+//        driveModulePositions.set(state.ModulePositions);
+//        driveTimestamp.set(state.Timestamp);
+//        driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
+
+        logger.log("Pose", state.Pose);
+        logger.log("Speeds", state.Speeds);
+        logger.log("ModuleStates", state.ModuleStates);
+        logger.log("ModuleTargets", state.ModuleTargets);
+        logger.log("ModulePositions", state.ModulePositions, SwerveModulePosition.struct);
+        logger.log("Timestamp", state.Timestamp);
+        logger.log("OdometryFrequency", state.OdometryPeriod);
 
         /* Also write to log file */
-        SignalLogger.writeStruct("DriveState/Pose", Pose2d.struct, state.Pose);
-        SignalLogger.writeStruct("DriveState/Speeds", ChassisSpeeds.struct, state.Speeds);
-        SignalLogger.writeStructArray("DriveState/ModuleStates", SwerveModuleState.struct, state.ModuleStates);
-        SignalLogger.writeStructArray("DriveState/ModuleTargets", SwerveModuleState.struct, state.ModuleTargets);
-        SignalLogger.writeStructArray("DriveState/ModulePositions", SwerveModulePosition.struct, state.ModulePositions);
-        SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
+//        SignalLogger.writeStruct("DriveState/Pose", Pose2d.struct, state.Pose);
+//        SignalLogger.writeStruct("DriveState/Speeds", ChassisSpeeds.struct, state.Speeds);
+//        SignalLogger.writeStructArray("DriveState/ModuleStates", SwerveModuleState.struct, state.ModuleStates);
+//        SignalLogger.writeStructArray("DriveState/ModuleTargets", SwerveModuleState.struct, state.ModuleTargets);
+//        SignalLogger.writeStructArray("DriveState/ModulePositions", SwerveModulePosition.struct, state.ModulePositions);
+//        SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
         /* Telemeterize the pose to a Field2d */
         fieldTypePub.set("Field2d");

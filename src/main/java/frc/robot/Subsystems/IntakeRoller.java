@@ -3,7 +3,6 @@ package frc.robot.Subsystems;
 import Glitch.Lib.BaseMechanisms.Roller;
 import Glitch.Lib.Motors.SparkMaxMotor;
 import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class IntakeRoller extends Roller {
