@@ -5,7 +5,10 @@
 package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
+import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
+import Glitch.Lib.BaseMechanisms.Roller;
+
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -17,15 +20,22 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Commands.ShootCommandFF;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.IntakeRoller;
+import frc.robot.Subsystems.LEDSubsystem;
 import frc.robot.Subsystems.ShooterRoller;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
+
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
+
 import org.littletonrobotics.urcl.URCL;
 
 /**
@@ -63,6 +73,8 @@ public class Robot extends TimedRobot {
   private final Controller m_mainController;
 
 
+  private final LEDSubsystem leds = new LEDSubsystem();
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -89,7 +101,8 @@ public class Robot extends TimedRobot {
 //            CTREDrivetrain,
 //            new Rectangle(1,1,1,1),
 //            () -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees()));
-    //m_leds.initializeLEDS(0);
+
+    leds.initializeLEDS(0);
      m_mainController = new Driver1DefaultBindings(
             autos,
             CTREDrivetrain,
@@ -106,6 +119,13 @@ public class Robot extends TimedRobot {
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
+
+  int measurementCount = vision.measurementCount(CTREDrivetrain.getState().Pose);
+  LEDPattern lowConfidence = GlitchLEDPatterns.ripple(LEDPattern.solid(Color.kYellow), 10, 20);
+  LEDPattern reasonableConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.ace, 10, 20);
+  LEDPattern highConfidence = GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.funGradient);
+  double ledRefreshTime = 0.5; // Time in seconds to refresh the LED pattern
+
   @Override
   public void robotPeriodic() {
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
@@ -156,12 +176,14 @@ public class Robot extends TimedRobot {
             new Rotation3d()));
 
     logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
+
+    logger.logInt("vision measurement count", measurementCount);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    //m_leds.setAll(GlitchLEDPatterns.purple);
+    leds.start();
   }
 
   /** This function is called periodically during disabled. */
@@ -178,12 +200,40 @@ public class Robot extends TimedRobot {
       CommandScheduler.getInstance().schedule(autoCommand);
     }
 
-    //m_leds.setAll(GlitchLEDPatterns.fire(GlitchLEDPatterns.funGradient, Color.kGreen));
+    leds.pip.setPattern(LEDPattern.solid(Color.kRed));
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking) {
+      if (measurementCount == 1) {
+        leds.leftSide.setPattern(lowConfidence, ledRefreshTime);
+        leds.pip.setPattern(lowConfidence, ledRefreshTime);
+        leds.rightSide.setPattern(lowConfidence, ledRefreshTime);
+      }
+      if (measurementCount == 2) {
+        leds.leftSide.setPattern(reasonableConfidence, ledRefreshTime);
+        leds.pip.setPattern(reasonableConfidence, ledRefreshTime);
+        leds.rightSide.setPattern(reasonableConfidence, ledRefreshTime);
+      }
+      if (measurementCount > 2) {
+        leds.leftSide.setPattern(highConfidence, ledRefreshTime);
+        leds.pip.setPattern(highConfidence, ledRefreshTime);
+        leds.rightSide.setPattern(highConfidence, ledRefreshTime);
+      }
+    } else {
+      if (IntakeRoller.isIntaking) {
+        leds.leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
+        leds.pip.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(150)), ledRefreshTime);
+        leds.rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
+      } else if (ShooterRoller.isShooting) {
+        leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
+        leds.pip.setPattern(GlitchLEDPatterns.rainbow, ledRefreshTime);
+        leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
+      }
+    }
+  }
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -193,16 +243,40 @@ public class Robot extends TimedRobot {
     intakeRoller.stickySetDuty(0);
 
     shooterRoller.m_loop.reset(VecBuilder.fill(Units.rotationsPerMinuteToRadiansPerSecond(shooterRoller.getVelocity())));
-    //m_leds.returnAllToBase();
+
+    leds.pip.setPattern(LEDPattern.solid(Color.kGreen));
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
-//    if (firing.isValid) {
-//      m_leds.setAll(GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 5, 1), 0.3);
-//    }
+    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking) {
+      if (measurementCount == 1) {
+        leds.leftSide.setPattern(lowConfidence, ledRefreshTime);
+        leds.pip.setPattern(lowConfidence, ledRefreshTime);
+        leds.rightSide.setPattern(lowConfidence, ledRefreshTime);
+      }
+      if (measurementCount == 2) {
+        leds.leftSide.setPattern(reasonableConfidence, ledRefreshTime);
+        leds.pip.setPattern(reasonableConfidence, ledRefreshTime);
+        leds.rightSide.setPattern(reasonableConfidence, ledRefreshTime);
+      }
+      if (measurementCount > 2) {
+        leds.leftSide.setPattern(highConfidence, ledRefreshTime);
+        leds.pip.setPattern(highConfidence, ledRefreshTime);
+        leds.rightSide.setPattern(highConfidence, ledRefreshTime);
+      }
+    } else {
+      if (IntakeRoller.isIntaking) {
+        leds.leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
+        leds.pip.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(150)), ledRefreshTime);
+        leds.rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
+      } else if (ShooterRoller.isShooting) {
+        leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
+        leds.pip.setPattern(GlitchLEDPatterns.rainbow, ledRefreshTime);
+        leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
+      }
+    }
   }
 
   /** This function is called once when test mode is enabled. */

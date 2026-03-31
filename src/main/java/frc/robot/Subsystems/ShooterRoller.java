@@ -189,7 +189,15 @@ public class ShooterRoller extends Roller {
      * @Note: This method is not used for the Flywheel LinearSystem (state-space).
      * To use FF there, a LinearSystem must be instantiated using LinearSystemId.identifyVelocitySystem(double kV, double kA) </p>
      * */
+
+    public static boolean isShooting = false;
+
     public void setFFVoltageWithVelocity(double speed) {
+        if (speed != 0) {
+            isShooting = true;
+        } else {
+            isShooting = false;
+        }
         this.setSpeedVoltage(feedforward.calculate(speed));
     }
 

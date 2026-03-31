@@ -8,6 +8,7 @@ import frc.robot.Subsystems.ShooterRoller;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class ShootCommandFF extends SequentialCommandGroup {
+  public static double setFlywheelSpeed = 0;
   public ShootCommandFF(Indexer indexer, ShooterRoller shooterRoller) {
     addCommands(
             parallel(
@@ -20,6 +21,7 @@ public class ShootCommandFF extends SequentialCommandGroup {
                         speed = 0.95 * (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_RADIUS_METERS);
                       }
                       shooterRoller.setFFVoltageWithVelocity(speed);
+                      setFlywheelSpeed = speed;
                     }),
                     sequence(
                             waitSeconds(1),

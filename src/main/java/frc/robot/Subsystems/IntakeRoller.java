@@ -23,7 +23,14 @@ public class IntakeRoller extends Roller {
         setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
     }
 
+    public static boolean isIntaking = false;
+
     public void stickySetDuty(double speed) {
+        if (speed != 0) {
+            isIntaking = true;
+        } else {
+            isIntaking = false;
+        }
         setDefaultCommand(run(() -> setSpeedDutyCycle(speed)));
     }
 
