@@ -86,7 +86,7 @@ public class Autos {
   private void registerNamedCommands() {
     NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(.5))
             .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)));
-    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, spindexer, shooterRoller));
+    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, spindexer, shooterRoller, 0));
   }
 
   /**

@@ -51,8 +51,9 @@ public class Driver1DefaultBindings implements ControllerBindings {
   public void bind(CommandXboxController controller) {
     // Put binds here
     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
-    controller.rightTrigger().whileTrue(new ShootCommandFF(indexer, spindexer, shooterRoller));
+    controller.rightTrigger().whileTrue(new ShootCommandFF(indexer, spindexer, shooterRoller, 0));
     //controller.leftBumper().whileTrue(new ShootCommandFF(indexer, spindexer, shooterRoller));
+    controller.rightBumper().whileTrue(new ShootCommandFF(indexer, spindexer, shooterRoller, 9));
     controller.y().whileTrue(
             run(() -> indexer.setSpeedDutyCycle(-1)).alongWith(
             run(() -> spindexer.setSpeedDutyCycle(-.5))));
