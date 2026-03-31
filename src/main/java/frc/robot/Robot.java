@@ -21,7 +21,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
-import frc.robot.Subsystems.*;
+import frc.robot.Subsystems.Indexer;
+import frc.robot.Subsystems.IntakePivot;
+import frc.robot.Subsystems.IntakeRoller;
+import frc.robot.Subsystems.ShooterRoller;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
 import org.littletonrobotics.urcl.URCL;
@@ -51,7 +54,6 @@ public class Robot extends TimedRobot {
   public static Rotation2d referenceRotation = new  Rotation2d();
 
   private final ShooterRoller shooterRoller = new ShooterRoller();
-  private final ShooterRollerFollower shooterRollerFollower = new ShooterRollerFollower();
 
   private final NetworkTableLogger logger = new NetworkTableLogger("Robot");
   private final CTRESwerveDrivetrain CTREDrivetrain = TunerConstants.createDrivetrain();
@@ -61,8 +63,7 @@ public class Robot extends TimedRobot {
   private final IntakePivot intakePivot = new IntakePivot();
   private final IntakeRoller intakeRoller = new IntakeRoller();
   private final Indexer indexer = new Indexer();
-  private final Spindexer spindexer = new Spindexer();
-  private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, spindexer, intakeRoller);
+  private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, intakeRoller);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -85,7 +86,6 @@ public class Robot extends TimedRobot {
                     m_mainController.getController(),
                     autos,
                     CTREDrivetrain,
-                    spindexer,
                     intakePivot,
                     intakeRoller,
                     indexer,

@@ -6,10 +6,10 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class Indexer extends Roller {
-    private static final int CANID = 6;
-    private static final SparkMaxConfig config = new SparkMaxConfig();
+    private static final int M1CANID = 5;
+    private static final SparkMaxConfig M1config = new SparkMaxConfig();
     static {
-        config
+        M1config
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(true)
@@ -17,8 +17,25 @@ public class Indexer extends Roller {
                 .pid(0, 0, 0); //TODO: Tune PID values
     }
 
+    private static final int M2CANID = 6;
+    private static final SparkMaxConfig M2config = new SparkMaxConfig();
+    static {
+        M2config
+                .smartCurrentLimit(60)
+                .idleMode(SparkMaxConfig.IdleMode.kCoast)
+                .inverted(true)
+                .follow(M2CANID)
+                .closedLoop
+                .pid(0, 0, 0); //TODO: Tune PID values
+    }
+
+    // Keep a reference so follower stays constructed/configured
+    private final SparkMaxMotor followerMotor;
+
+
     public Indexer() {
-        super(new SparkMaxMotor(config, CANID, FeedbackSensor.kPrimaryEncoder));
+        super(new SparkMaxMotor(M1config, M1CANID, FeedbackSensor.kPrimaryEncoder));
+        followerMotor = new SparkMaxMotor(M2config, M2CANID, FeedbackSensor.kPrimaryEncoder);
         setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
     }
 

@@ -20,7 +20,6 @@ import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.IntakeRoller;
 import frc.robot.Subsystems.ShooterRoller;
-import frc.robot.Subsystems.Spindexer;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -40,7 +39,6 @@ public class Autos {
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
   private final Indexer indexer;
   private final ShooterRoller shooterRoller;
-  private final Spindexer spindexer;
   private final IntakeRoller intakeRoller;
 
   /**
@@ -61,14 +59,12 @@ public class Autos {
    * @param CTREDrivetrain The swerve drivetrain used for autonomous movement and path following.
    * @param indexer        The indexer subsystem for managing game piece intake to the shooter.
    * @param shooterRoller  The shooter subsystem for launching game pieces.
-   * @param spindexer      The spindexer subsystem for centering game pieces.
    * @param intakeRoller   The intake roller subsystem for picking up game pieces.
    */
-  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRoller shooterRoller, Spindexer spindexer, IntakeRoller intakeRoller) {
+  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRoller shooterRoller, IntakeRoller intakeRoller) {
     this.CTREDrivetrain = CTREDrivetrain;
     this.indexer = indexer;
     this.shooterRoller = shooterRoller;
-    this.spindexer = spindexer;
     this.intakeRoller = intakeRoller;
 
     // register commands BEFORE paths
@@ -86,7 +82,7 @@ public class Autos {
   private void registerNamedCommands() {
     NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(.5))
             .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)));
-    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, spindexer, shooterRoller));
+    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller));
   }
 
   /**

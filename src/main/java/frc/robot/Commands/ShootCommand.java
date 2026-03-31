@@ -1,16 +1,14 @@
 package frc.robot.Commands;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.ShooterRoller;
-import frc.robot.Subsystems.Spindexer;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class ShootCommand extends SequentialCommandGroup {
-  public ShootCommand(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
+  public ShootCommand(Indexer indexer, ShooterRoller shooterRoller) {
     addCommands(
             parallel(
                     shooterRoller.run(() -> {
@@ -24,10 +22,9 @@ public class ShootCommand extends SequentialCommandGroup {
                       shooterRoller.setSpeedVelocity(speed);
                     }),
                     sequence(
-                            waitSeconds(1.5),
+                            waitSeconds(1),
                             parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(1)),
-                                    spindexer.run(() -> spindexer.setSpeedDutyCycle(.5))
+                                    indexer.run(() -> indexer.setSpeedDutyCycle(.7))
                             ).withTimeout(1)
                     )
             )//.withTimeout(2.5)

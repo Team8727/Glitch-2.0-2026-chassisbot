@@ -5,25 +5,31 @@ import Glitch.Lib.Motors.SparkMaxMotor;
 import com.ctre.phoenix6.SignalLogger;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import static edu.wpi.first.units.Units.Volts;
 
 public class ShooterRoller extends Roller {
-    private static final int CANID = 7;
-    private static final SparkMaxConfig config = new SparkMaxConfig();
+    private static final int M0CANID = 7;
+    private static final SparkMaxConfig M0config = new SparkMaxConfig();
+    private static final int M1CANID = 8;
+    private static final SparkMaxConfig M1config = new SparkMaxConfig();
+    private static final int M2CANID = 9;
+    private static final SparkMaxConfig M2config = new SparkMaxConfig();
+    private static final int M3CANID = 10;
+    private static final SparkMaxConfig M3config = new SparkMaxConfig();
+
     static {
-        config
+        M0config
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(false)
@@ -31,12 +37,62 @@ public class ShooterRoller extends Roller {
                 .pid(0.09, 0, 0.02); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
-        config
+        M0config
                 .encoder
                 .positionConversionFactor(0.017453299835324287) // To get output in RPS
                 .velocityConversionFactor(0.017453299835324287);
                 // 0.017453299835324287 was the conversion factor previously. This value is close to 1/60, so I think using this outputs RPS.
     }
+    static {
+        M1config
+                .smartCurrentLimit(60)
+                .idleMode(SparkMaxConfig.IdleMode.kCoast)
+                .inverted(false)
+                .follow(M0CANID)
+                .closedLoop
+                .pid(0.09, 0, 0.02); // Tuned using SysID. Previous arb P was 0.07
+//                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
+//                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
+        M1config
+                .encoder
+                .positionConversionFactor(0.017453299835324287) // To get output in RPS
+                .velocityConversionFactor(0.017453299835324287);
+        // 0.017453299835324287 was the conversion factor previously. This value is close to 1/60, so I think using this outputs RPS.
+    }
+    static {
+        M2config
+                .smartCurrentLimit(60)
+                .idleMode(SparkMaxConfig.IdleMode.kCoast)
+                .inverted(true)
+                .follow(M0CANID)
+                .closedLoop
+                .pid(0.09, 0, 0.02); // Tuned using SysID. Previous arb P was 0.07
+//                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
+//                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
+        M2config
+                .encoder
+                .positionConversionFactor(0.017453299835324287) // To get output in RPS
+                .velocityConversionFactor(0.017453299835324287);
+        // 0.017453299835324287 was the conversion factor previously. This value is close to 1/60, so I think using this outputs RPS.
+    }
+    static {
+        M3config
+                .smartCurrentLimit(60)
+                .idleMode(SparkMaxConfig.IdleMode.kCoast)
+                .inverted(true)
+                .follow(M0CANID)
+                .closedLoop
+                .pid(0.09, 0, 0.02); // Tuned using SysID. Previous arb P was 0.07
+//                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
+//                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
+        M3config
+                .encoder
+                .positionConversionFactor(0.017453299835324287) // To get output in RPS
+                .velocityConversionFactor(0.017453299835324287);
+        // 0.017453299835324287 was the conversion factor previously. This value is close to 1/60, so I think using this outputs RPS.
+    }
+
+
 
     private double kS = 0.35091; // Found using SysID
     private double kV = 0.12701;
@@ -112,10 +168,18 @@ public class ShooterRoller extends Roller {
             new LinearSystemLoop<>(m_flywheelPlant, m_controller, m_observer, 12.0, 0.020);
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    private final SparkMaxMotor followerMotor1;
+    private final SparkMaxMotor followerMotor2;
+    private final SparkMaxMotor followerMotor3;
+
 
     public ShooterRoller() {
-        super(new SparkMaxMotor(config, CANID, FeedbackSensor.kPrimaryEncoder));
+        super(new SparkMaxMotor(M0config, M0CANID, FeedbackSensor.kPrimaryEncoder));
+        followerMotor1 = new SparkMaxMotor(M1config, M1CANID, FeedbackSensor.kPrimaryEncoder);
+        followerMotor2 = new SparkMaxMotor(M2config, M2CANID, FeedbackSensor.kPrimaryEncoder);
+        followerMotor3 = new SparkMaxMotor(M3config, M3CANID, FeedbackSensor.kPrimaryEncoder);
         setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
+
     }
 
     /**

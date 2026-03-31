@@ -1,17 +1,15 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.ShooterRoller;
-import frc.robot.Subsystems.Spindexer;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class ShootCommandStateSpace extends SequentialCommandGroup {
-  public ShootCommandStateSpace(Indexer indexer, Spindexer spindexer, ShooterRoller shooterRoller) {
+  public ShootCommandStateSpace(Indexer indexer, ShooterRoller shooterRoller) {
     addCommands(
             parallel(
                     shooterRoller.run(() -> {
@@ -24,8 +22,7 @@ public class ShootCommandStateSpace extends SequentialCommandGroup {
                     sequence(
                             waitSeconds(1.5),
                             parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(1)),
-                                    spindexer.run(() -> spindexer.setSpeedDutyCycle(.5))
+                                    indexer.run(() -> indexer.setSpeedDutyCycle(1))
                             ).withTimeout(1)
                     )
             ).finallyDo(() -> {
