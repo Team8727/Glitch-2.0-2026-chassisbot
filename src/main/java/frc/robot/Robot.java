@@ -120,10 +120,11 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
 
-  int measurementCount;
+  int measurementCount; // Number of vision measurements of each tag per camera
   LEDPattern lowConfidence = GlitchLEDPatterns.ripple(LEDPattern.solid(Color.kYellow), 10, 20);
   LEDPattern reasonableConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.ace, 10, 20);
-  LEDPattern highConfidence = GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.funGradient);
+  LEDPattern highConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 20, 30);
+  LEDPattern confidenceNow;
   double ledRefreshTime = 0.5; // Time in seconds to refresh the LED pattern
 
   @Override
@@ -202,36 +203,33 @@ public class Robot extends TimedRobot {
       CommandScheduler.getInstance().schedule(autoCommand);
     }
 
-    leds.pip.setPattern(LEDPattern.solid(Color.kRed));
+    leds.autoInit();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking) {
-      if (measurementCount == 1) {
-        leds.leftSide.setPattern(lowConfidence, ledRefreshTime);
-        leds.pip.setPattern(lowConfidence, ledRefreshTime);
-        leds.rightSide.setPattern(lowConfidence, ledRefreshTime);
+    if (measurementCount == 1) {
+        confidenceNow = lowConfidence;
       }
       if (measurementCount == 2) {
-        leds.leftSide.setPattern(reasonableConfidence, ledRefreshTime);
-        leds.pip.setPattern(reasonableConfidence, ledRefreshTime);
-        leds.rightSide.setPattern(reasonableConfidence, ledRefreshTime);
+        confidenceNow = reasonableConfidence;
       }
       if (measurementCount > 2) {
-        leds.leftSide.setPattern(highConfidence, ledRefreshTime);
-        leds.pip.setPattern(highConfidence, ledRefreshTime);
-        leds.rightSide.setPattern(highConfidence, ledRefreshTime);
+        confidenceNow = highConfidence;
       }
+    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking) {
+      leds.leftSide.setPattern(confidenceNow, ledRefreshTime);
+      leds.pip.setPattern(confidenceNow, ledRefreshTime);
+      leds.rightSide.setPattern(confidenceNow, ledRefreshTime);
     } else {
       if (IntakeRoller.isIntaking) {
         leds.leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
-        leds.pip.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(150)), ledRefreshTime);
+        leds.pip.setPattern(confidenceNow, ledRefreshTime);
         leds.rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
       } else if (ShooterRoller.isShooting) {
         leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
-        leds.pip.setPattern(GlitchLEDPatterns.rainbow, ledRefreshTime);
+        leds.pip.setPattern(confidenceNow, ledRefreshTime);
         leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
       }
     }
@@ -246,36 +244,33 @@ public class Robot extends TimedRobot {
 
     shooterRoller.m_loop.reset(VecBuilder.fill(Units.rotationsPerMinuteToRadiansPerSecond(shooterRoller.getVelocity())));
 
-    leds.pip.setPattern(LEDPattern.solid(Color.kGreen));
+    leds.teleopInit();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking) {
-      if (measurementCount == 1) {
-        leds.leftSide.setPattern(lowConfidence, ledRefreshTime);
-        leds.pip.setPattern(lowConfidence, ledRefreshTime);
-        leds.rightSide.setPattern(lowConfidence, ledRefreshTime);
+    if (measurementCount == 1) {
+        confidenceNow = lowConfidence;
       }
       if (measurementCount == 2) {
-        leds.leftSide.setPattern(reasonableConfidence, ledRefreshTime);
-        leds.pip.setPattern(reasonableConfidence, ledRefreshTime);
-        leds.rightSide.setPattern(reasonableConfidence, ledRefreshTime);
+        confidenceNow = reasonableConfidence;
       }
       if (measurementCount > 2) {
-        leds.leftSide.setPattern(highConfidence, ledRefreshTime);
-        leds.pip.setPattern(highConfidence, ledRefreshTime);
-        leds.rightSide.setPattern(highConfidence, ledRefreshTime);
+        confidenceNow = highConfidence;
       }
+    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking) {
+      leds.leftSide.setPattern(confidenceNow, ledRefreshTime);
+      leds.pip.setPattern(confidenceNow, ledRefreshTime);
+      leds.rightSide.setPattern(confidenceNow, ledRefreshTime);
     } else {
       if (IntakeRoller.isIntaking) {
         leds.leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
-        leds.pip.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(150)), ledRefreshTime);
+        leds.pip.setPattern(confidenceNow, ledRefreshTime);
         leds.rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
       } else if (ShooterRoller.isShooting) {
         leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
-        leds.pip.setPattern(GlitchLEDPatterns.rainbow, ledRefreshTime);
+        leds.pip.setPattern(confidenceNow, ledRefreshTime);
         leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
       }
     }

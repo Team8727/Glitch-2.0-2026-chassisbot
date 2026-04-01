@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Second;
 import Glitch.Lib.LEDs.AbstractLEDS;
 import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 
 public class LEDSubsystem extends AbstractLEDS {
 
@@ -17,17 +18,30 @@ public class LEDSubsystem extends AbstractLEDS {
         super(67, 30, 7, -30);
 
         leftSide = getSections().get(0);
-        leftSide.setBase(GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.sunsetAce).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
         pip = getSections().get(1);
         pip.setBase(LEDPattern.kOff);
         rightSide = getSections().get(2);
-        rightSide.setBase(GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.sunsetAce).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
     }
     
     public void start() {
+        leftSide.setBase(GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.sunsetAce).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
         leftSide.setPattern(GlitchLEDPatterns.purple, 2);
+        pip.setBase(GlitchLEDPatterns.purple);
         pip.setPattern(GlitchLEDPatterns.purple);
+        rightSide.setBase(GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.sunsetAce).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
         rightSide.setPattern(GlitchLEDPatterns.purple, 2);
+    }
+
+    public void autoInit() {
+        leftSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kRed), Color.kBlack));
+        pip.setBase(LEDPattern.solid(Color.kOrange));
+        rightSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kRed), Color.kBlack));
+    }
+
+    public void teleopInit() {
+        leftSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kRed), Color.kBlack));
+        pip.setBase(LEDPattern.solid(Color.kGreen));
+        rightSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kRed), Color.kBlack));
     }
 
     @Override
