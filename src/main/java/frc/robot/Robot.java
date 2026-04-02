@@ -218,7 +218,7 @@ public class Robot extends TimedRobot {
       if (measurementCount > 2) {
         confidenceNow = highConfidence;
       }
-    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking) {
+    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking && measurementCount > 0) {
       leds.leftSide.setPattern(confidenceNow, ledRefreshTime);
       leds.pip.setPattern(confidenceNow, ledRefreshTime);
       leds.rightSide.setPattern(confidenceNow, ledRefreshTime);
@@ -259,7 +259,7 @@ public class Robot extends TimedRobot {
       if (measurementCount > 2) {
         confidenceNow = highConfidence;
       }
-    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking) {
+    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking && measurementCount > 0) {
       leds.leftSide.setPattern(confidenceNow, ledRefreshTime);
       leds.pip.setPattern(confidenceNow, ledRefreshTime);
       leds.rightSide.setPattern(confidenceNow, ledRefreshTime);

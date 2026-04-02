@@ -34,14 +34,20 @@ public class LEDSubsystem extends AbstractLEDS {
 
     public void autoInit() {
         leftSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kRed), Color.kBlack));
-        pip.setBase(LEDPattern.solid(Color.kOrange));
+        pip.setBase(LEDPattern.solid(Color.kOrangeRed));
         rightSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kRed), Color.kBlack));
+        leftSide.setPattern(LEDPattern.solid(Color.kOrangeRed), 0.5);
+        pip.setPattern(LEDPattern.solid(Color.kOrangeRed), 0.5);
+        rightSide.setPattern(LEDPattern.solid(Color.kOrangeRed), 0.5);
     }
 
     public void teleopInit() {
         leftSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kRed), Color.kBlack));
         pip.setBase(LEDPattern.solid(Color.kGreen));
         rightSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kRed), Color.kBlack));
+        leftSide.setPattern(LEDPattern.solid(Color.kGreen), 0.5);
+        pip.setPattern(LEDPattern.solid(Color.kGreen), 0.5);
+        rightSide.setPattern(LEDPattern.solid(Color.kGreen), 0.5);
     }
 
     @Override
