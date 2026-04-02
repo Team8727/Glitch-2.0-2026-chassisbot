@@ -75,6 +75,9 @@ public class Robot extends TimedRobot {
 
   private final LEDSubsystem leds = new LEDSubsystem();
 
+  public Servo pinServo;
+
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -103,6 +106,8 @@ public class Robot extends TimedRobot {
 //            () -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees()));
 
     leds.initializeLEDS(0);
+    pinServo = new Servo(1);
+    pinServo.setAngle(0);
      m_mainController = new Driver1DefaultBindings(
             autos,
             CTREDrivetrain,
@@ -187,6 +192,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     leds.start();
+    pinServo.setAngle(0);
   }
 
   /** This function is called periodically during disabled. */
@@ -204,6 +210,7 @@ public class Robot extends TimedRobot {
     }
 
     leds.autoInit();
+    pinServo.setAngle(180);
   }
 
   /** This function is called periodically during autonomous. */
@@ -228,9 +235,9 @@ public class Robot extends TimedRobot {
         leds.pip.setPattern(confidenceNow, ledRefreshTime);
         leds.rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
       } else if (ShooterRoller.isShooting) {
-        leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
+        leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.SET_FLYWHEEL_SPEED), ledRefreshTime);
         leds.pip.setPattern(confidenceNow, ledRefreshTime);
-        leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
+        leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.SET_FLYWHEEL_SPEED), ledRefreshTime);
       }
     }
   }
@@ -269,9 +276,9 @@ public class Robot extends TimedRobot {
         leds.pip.setPattern(confidenceNow, ledRefreshTime);
         leds.rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
       } else if (ShooterRoller.isShooting) {
-        leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
+        leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.SET_FLYWHEEL_SPEED), ledRefreshTime);
         leds.pip.setPattern(confidenceNow, ledRefreshTime);
-        leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.setFlywheelSpeed), ledRefreshTime);
+        leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.SET_FLYWHEEL_SPEED), ledRefreshTime);
       }
     }
   }
