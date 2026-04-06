@@ -1,9 +1,8 @@
 package frc.robot.controller;
 
 import Glitch.Lib.Controller.Controller;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Autos;
-import frc.robot.Commands.ShootCommandFF;
+import frc.robot.Commands.ShootCommand;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.IntakeRoller;
@@ -15,6 +14,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.run;
  * Default teleop controller bindings for the robot.
  */
 public class Driver1DefaultBindings extends Controller {
+
   private final Autos autos;
   private final CTRESwerveDrivetrain drivetrain;
   private final IntakeRoller intakeRoller;
@@ -28,7 +28,7 @@ public class Driver1DefaultBindings extends Controller {
           Indexer indexer,
           ShooterRoller shooterRoller
       ) {
-    super(Operator.MAIN);
+    super(0);
 
     this.autos = autos;
     this.drivetrain = drivetrain;
@@ -41,16 +41,17 @@ public class Driver1DefaultBindings extends Controller {
 
   @Override
   protected void configureBindings() {
-    CommandXboxController controller = getController();
-
     new CTReSwerveControls(drivetrain, controller);
 
     // Put binds here
     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
-    controller.rightTrigger().whileTrue(new ShootCommandFF(indexer, shooterRoller));
-    //controller.leftBumper().whileTrue(new ShootCommandFF(indexer, spindexer, shooterRoller));
-    controller.y().whileTrue(
-            run(() -> indexer.setSpeedDutyCycle(-1)));
+    controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller));
+
+    // test systems
+    controller.povDown().whileTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
+    controller.povLeft().whileTrue(run(() -> indexer.setSpeedDutyCycle(-1)));
+    controller.povRight().whileTrue(run(() -> shooterRoller.setSpeedVelocity(40)));
+
 
 //    controller.povRight().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)); // 4
 //    controller.povUp().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)); // 3

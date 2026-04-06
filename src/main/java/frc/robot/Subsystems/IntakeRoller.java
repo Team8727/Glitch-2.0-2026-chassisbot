@@ -3,7 +3,6 @@ package frc.robot.Subsystems;
 import Glitch.Lib.BaseMechanisms.Roller;
 import Glitch.Lib.Motors.SparkMaxMotor;
 import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class IntakeRoller extends Roller {
@@ -25,20 +24,10 @@ public class IntakeRoller extends Roller {
 
     public static boolean isIntaking = false;
 
-    public void stickySetDuty(double speed) {
-        if (speed != 0) {
-            isIntaking = true;
-        } else {
-            isIntaking = false;
-        }
-        setDefaultCommand(run(() -> setSpeedDutyCycle(speed)));
-    }
-
     /** This method will be called once per scheduler run */
     @Override
     public void periodic() {
         super.periodic();
-
         // Add any additional periodic logic here
     }
 }

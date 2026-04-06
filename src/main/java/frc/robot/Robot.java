@@ -7,8 +7,6 @@ package frc.robot;
 import Glitch.Lib.Controller.Controller;
 import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
-import Glitch.Lib.BaseMechanisms.Roller;
-
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -32,11 +30,10 @@ import frc.robot.Subsystems.LEDSubsystem;
 import frc.robot.Subsystems.ShooterRoller;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
+import org.littletonrobotics.urcl.URCL;
 
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Second;
-
-import org.littletonrobotics.urcl.URCL;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -70,8 +67,7 @@ public class Robot extends TimedRobot {
   private final IntakeRoller intakeRoller = new IntakeRoller();
   private final Indexer indexer = new Indexer();
   private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, intakeRoller);
-  private final Controller m_mainController;
-
+  private final Controller mainController = new Driver1DefaultBindings(autos, CTREDrivetrain, intakeRoller, indexer, shooterRoller);
 
   private final LEDSubsystem leds = new LEDSubsystem();
 
@@ -108,13 +104,6 @@ public class Robot extends TimedRobot {
     leds.initializeLEDS(0);
     pinServo = new Servo(1);
     pinServo.setAngle(0);
-     m_mainController = new Driver1DefaultBindings(
-            autos,
-            CTREDrivetrain,
-            intakeRoller,
-            indexer,
-            shooterRoller
-    );
   }
 
   /**
@@ -247,7 +236,6 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     // This makes sure that autonomous stops running when teleop starts running.
     CommandScheduler.getInstance().cancelAll();
-    intakeRoller.stickySetDuty(0);
 
     shooterRoller.m_loop.reset(VecBuilder.fill(Units.rotationsPerMinuteToRadiansPerSecond(shooterRoller.getVelocity())));
 

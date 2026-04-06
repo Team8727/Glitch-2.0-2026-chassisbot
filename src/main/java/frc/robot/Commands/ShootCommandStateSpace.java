@@ -22,7 +22,7 @@ public class ShootCommandStateSpace extends SequentialCommandGroup {
                     sequence(
                             waitSeconds(1.5),
                             parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(1))
+                                    indexer.run(() -> indexer.setSpeedDutyCycle(.7))
                             ).withTimeout(1)
                     )
             ).finallyDo(() -> {

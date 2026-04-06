@@ -19,13 +19,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import static edu.wpi.first.units.Units.Volts;
 
 public class ShooterRoller extends Roller {
-    private static final int M0CANID = 7;
+    private static final int M0CANID = 6;
     private static final SparkMaxConfig M0config = new SparkMaxConfig();
-    private static final int M1CANID = 8;
+    private static final int M1CANID = 7;
     private static final SparkMaxConfig M1config = new SparkMaxConfig();
-    private static final int M2CANID = 9;
+    private static final int M2CANID = 8;
     private static final SparkMaxConfig M2config = new SparkMaxConfig();
-    private static final int M3CANID = 10;
+    private static final int M3CANID = 9;
     private static final SparkMaxConfig M3config = new SparkMaxConfig();
 
     static {
@@ -34,7 +34,7 @@ public class ShooterRoller extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(false)
                 .closedLoop
-                .pid(0.09, 0, 0.02); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.02, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M0config
@@ -50,7 +50,7 @@ public class ShooterRoller extends Roller {
                 .inverted(false)
                 .follow(M0CANID)
                 .closedLoop
-                .pid(0.09, 0, 0.02); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.02, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M1config
@@ -64,9 +64,9 @@ public class ShooterRoller extends Roller {
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(true)
-                .follow(M0CANID)
+                .follow(M0CANID, true)
                 .closedLoop
-                .pid(0.09, 0, 0.02); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.02, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M2config
@@ -80,9 +80,9 @@ public class ShooterRoller extends Roller {
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(true)
-                .follow(M0CANID)
+                .follow(M0CANID, true)
                 .closedLoop
-                .pid(0.09, 0, 0.02); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.02, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M3config
