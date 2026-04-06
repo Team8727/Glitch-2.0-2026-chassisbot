@@ -14,17 +14,16 @@ public class ShootCommand extends SequentialCommandGroup {
                     shooterRoller.run(() -> {
                       double speed;
                       if (Robot.SHOOT_POWER_OVERRIDE) {
-                        speed = 6.6 * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION; // Old method
+                        speed = Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION; // Old method
                       } else {
-                        //speed = Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION; // Old Method
-                        speed = 0.95 * (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_RADIUS_METERS);
+                        speed = 1.95 * (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_RADIUS_METERS);
                       }
                       shooterRoller.setSpeedVelocity(speed);
                     }),
                     sequence(
                             waitSeconds(1),
                             parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(.7))
+                                    indexer.run(() -> indexer.setSpeedDutyCycle(-.9))
                             ).withTimeout(1)
                     )
             )//.withTimeout(2.5)
