@@ -22,9 +22,19 @@ public class LEDSubsystem extends AbstractLEDS {
         pip.setBase(LEDPattern.kOff);
         rightSide = getSections().get(2);
     }
+
+    static LEDSubsystem instance;
+
+    public static LEDSubsystem getInstance() {
+        if (instance == null) {
+            instance = new LEDSubsystem();
+        }
+        return instance;
+    }
     
     public void start() {
-        leftSide.setBase(GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.sunsetAce).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
+        // leftSide.setBase(GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.sunsetAce).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
+        leftSide.setBase(GlitchLEDPatterns.rainDrops(GlitchLEDPatterns.sunsetAce, 1, 1));
         leftSide.setPattern(GlitchLEDPatterns.purple, 2);
         pip.setBase(GlitchLEDPatterns.purple);
         pip.setPattern(GlitchLEDPatterns.purple);
@@ -49,6 +59,17 @@ public class LEDSubsystem extends AbstractLEDS {
         pip.setPattern(LEDPattern.solid(Color.kGreen), 0.5);
         rightSide.setPattern(LEDPattern.solid(Color.kGreen), 0.5);
     }
+
+    public void shootPatterns(double currentFlywheelVelocity, double targetFlywheelVelocity) {
+        leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, currentFlywheelVelocity, targetFlywheelVelocity));
+        rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, currentFlywheelVelocity, targetFlywheelVelocity));
+    }
+
+    public void intakePatterns() {
+        leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)));
+        rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)));
+    }
+
 
     @Override
     public void periodic() {

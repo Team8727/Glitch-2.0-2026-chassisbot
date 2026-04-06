@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
   private final Controller m_mainController;
 
 
-  private final LEDSubsystem leds = new LEDSubsystem();
+  private final LEDSubsystem leds = LEDSubsystem.getInstance();
 
   public Servo pinServo;
 
@@ -98,6 +98,18 @@ public class Robot extends TimedRobot {
 
     // Used by oscillation command
     addPeriodic(() -> referenceRotation = CTREDrivetrain.getState().Pose.getRotation().minus(Rotation2d.fromDegrees(180)), 0.01);
+
+    addPeriodic(() -> {
+      if (measurementCount == 1) {
+        confidenceNow = lowConfidence;
+      }
+      if (measurementCount == 2) {
+        confidenceNow = reasonableConfidence;
+      }
+      if (measurementCount > 2) {
+        confidenceNow = highConfidence;
+      }},
+      0.5);
 
     // Setup zones
 //    new ZoneController(
@@ -216,30 +228,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    if (measurementCount == 1) {
-        confidenceNow = lowConfidence;
-      }
-      if (measurementCount == 2) {
-        confidenceNow = reasonableConfidence;
-      }
-      if (measurementCount > 2) {
-        confidenceNow = highConfidence;
-      }
-    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking && measurementCount > 0) {
-      leds.leftSide.setPattern(confidenceNow, ledRefreshTime);
-      leds.pip.setPattern(confidenceNow, ledRefreshTime);
-      leds.rightSide.setPattern(confidenceNow, ledRefreshTime);
-    } else {
-      if (IntakeRoller.isIntaking) {
-        leds.leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
-        leds.pip.setPattern(confidenceNow, ledRefreshTime);
-        leds.rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
-      } else if (ShooterRoller.isShooting) {
-        leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.SET_FLYWHEEL_SPEED), ledRefreshTime);
-        leds.pip.setPattern(confidenceNow, ledRefreshTime);
-        leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.SET_FLYWHEEL_SPEED), ledRefreshTime);
-      }
-    }
+    leds.leftSide.setBase(confidenceNow);
+    leds.pip.setBase(confidenceNow);
+    leds.rightSide.setBase(confidenceNow);
   }
 
   /** This function is called once when teleop is enabled. */
@@ -257,30 +248,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if (measurementCount == 1) {
-        confidenceNow = lowConfidence;
-      }
-      if (measurementCount == 2) {
-        confidenceNow = reasonableConfidence;
-      }
-      if (measurementCount > 2) {
-        confidenceNow = highConfidence;
-      }
-    if (!ShooterRoller.isShooting && !IntakeRoller.isIntaking && measurementCount > 0) {
-      leds.leftSide.setPattern(confidenceNow, ledRefreshTime);
-      leds.pip.setPattern(confidenceNow, ledRefreshTime);
-      leds.rightSide.setPattern(confidenceNow, ledRefreshTime);
-    } else {
-      if (IntakeRoller.isIntaking) {
-        leds.leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
-        leds.pip.setPattern(confidenceNow, ledRefreshTime);
-        leds.rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), ledRefreshTime);
-      } else if (ShooterRoller.isShooting) {
-        leds.leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.SET_FLYWHEEL_SPEED), ledRefreshTime);
-        leds.pip.setPattern(confidenceNow, ledRefreshTime);
-        leds.rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, shooterRoller.getFlywheelVelocity(), ShootCommandFF.SET_FLYWHEEL_SPEED), ledRefreshTime);
-      }
-    }
+    leds.leftSide.setBase(confidenceNow);
+    leds.pip.setBase(confidenceNow);
+    leds.rightSide.setBase(confidenceNow);
   }
 
   /** This function is called once when test mode is enabled. */
