@@ -57,16 +57,9 @@ public class Driver1DefaultBindings extends Controller {
     controller.povLeft().whileTrue(run(() -> indexer.setSpeedDutyCycle(-1)));
     controller.povRight().whileTrue(run(() -> shooterRoller.setSpeedVelocity(40)));
 
-
 //    controller.povRight().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)); // 4
 //    controller.povUp().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)); // 3
 //    controller.povDown().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)); // 2
 //    controller.povLeft().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)); // 1
-
-//    controller.a().whileTrue(new PointIndexAndShootCmd(indexer, shooterPivot, shooterRollers, drivetrain, controller));
-//    controller.b().whileTrue(new RaiseIntakeCmd(intakeRoller, intakePivot));
-//
-//    new Trigger(() -> intakePivot.getPosition() == IntakePivot.IntakePosition.DOWN.getDegrees() && controller.a().getAsBoolean())
-//            .onTrue(run(() -> intakeRoller.setSpeedDutyCycle(1)));
   }
 }

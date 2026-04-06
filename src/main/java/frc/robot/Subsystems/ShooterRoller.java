@@ -33,6 +33,7 @@ public class ShooterRoller extends Roller {
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(false)
+                .disableFollowerMode()
                 .closedLoop
                 .pid(0.02, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
@@ -47,7 +48,6 @@ public class ShooterRoller extends Roller {
         M1config
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
-                .inverted(false)
                 .follow(M0CANID)
                 .closedLoop
                 .pid(0.02, 0, 0); // Tuned using SysID. Previous arb P was 0.07
@@ -63,7 +63,6 @@ public class ShooterRoller extends Roller {
         M2config
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
-                .inverted(true)
                 .follow(M0CANID, true)
                 .closedLoop
                 .pid(0.02, 0, 0); // Tuned using SysID. Previous arb P was 0.07
@@ -79,7 +78,6 @@ public class ShooterRoller extends Roller {
         M3config
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
-                .inverted(true)
                 .follow(M0CANID, true)
                 .closedLoop
                 .pid(0.02, 0, 0); // Tuned using SysID. Previous arb P was 0.07

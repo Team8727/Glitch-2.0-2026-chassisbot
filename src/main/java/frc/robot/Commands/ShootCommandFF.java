@@ -25,9 +25,8 @@ public class ShootCommandFF extends SequentialCommandGroup {
                     }),
                     sequence(
                             waitSeconds(1),
-                            parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(.7))
-                            ).withTimeout(1)
+                            indexer.run(() -> indexer.setSpeedDutyCycle(.7))
+                                    .withTimeout(1)
                     )
             )//.withTimeout(2.5)
     );

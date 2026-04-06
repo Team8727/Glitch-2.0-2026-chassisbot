@@ -231,8 +231,6 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
         }
     }
 
-
-
     /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
      *

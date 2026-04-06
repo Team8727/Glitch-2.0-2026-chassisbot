@@ -21,9 +21,8 @@ public class ShootCommandStateSpace extends SequentialCommandGroup {
                     }),
                     sequence(
                             waitSeconds(1.5),
-                            parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(.7))
-                            ).withTimeout(1)
+                            indexer.run(() -> indexer.setSpeedDutyCycle(.7))
+                                    .withTimeout(1)
                     )
             ).finallyDo(() -> {
               shooterRoller.m_loop.setNextR(0.95 * (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_RADIUS_METERS));

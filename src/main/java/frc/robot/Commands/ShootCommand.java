@@ -24,10 +24,9 @@ public class ShootCommand extends SequentialCommandGroup {
                       leds.shootPatterns(shooterRoller.getFlywheelVelocity(), speed);
                     }),
                     sequence(
-                            waitSeconds(1),
-                            parallel(
-                                    indexer.run(() -> indexer.setSpeedDutyCycle(.7))
-                            ).withTimeout(1)
+                            waitSeconds(2),
+                            indexer.run(() -> indexer.setSpeedDutyCycle(-.9))
+                                    .withTimeout(1)
                     )
             ).finallyDo(() -> {leds.endCommand();})//.withTimeout(2.5)
     );

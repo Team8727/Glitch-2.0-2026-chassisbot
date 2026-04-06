@@ -1,12 +1,12 @@
 package frc.robot.Subsystems;
 
-import static edu.wpi.first.units.Units.Percent;
-import static edu.wpi.first.units.Units.Second;
-
 import Glitch.Lib.LEDs.AbstractLEDS;
 import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
+
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
 
 public class LEDSubsystem extends AbstractLEDS {
 
@@ -31,14 +31,14 @@ public class LEDSubsystem extends AbstractLEDS {
         }
         return instance;
     }
-    
+
     public void start() {
-        // leftSide.setBase(GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.sunsetAce).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
+        // leftSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kGreen), Color.kBlack));
         leftSide.setBase(GlitchLEDPatterns.rainDrops(GlitchLEDPatterns.sunsetAce, 1, 1));
         leftSide.setPattern(GlitchLEDPatterns.purple, 2);
         pip.setBase(GlitchLEDPatterns.purple);
         pip.setPattern(GlitchLEDPatterns.purple);
-        rightSide.setBase(GlitchLEDPatterns.randomNoise(GlitchLEDPatterns.sunsetAce).scrollAtRelativeSpeed(Percent.per(Second).of(25)));
+        rightSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kGreen), Color.kBlack));
         rightSide.setPattern(GlitchLEDPatterns.purple, 2);
     }
 
