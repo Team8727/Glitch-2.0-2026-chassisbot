@@ -50,7 +50,7 @@ public class Driver1DefaultBindings extends Controller {
     // Put binds here
     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
     controller.leftTrigger().toggleOnTrue(run(() -> leds.intakePatterns()));
-    controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller, leds));
+    controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID));
 
     // test systems
     controller.povDown().whileTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));

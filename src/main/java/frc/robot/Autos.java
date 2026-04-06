@@ -86,7 +86,10 @@ public class Autos {
   private void registerNamedCommands() {
     NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(.5)).alongWith(run(() -> {leds.intakePatterns();}))
             .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)).alongWith(run(() -> {leds.endCommand();})));
-    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, leds));
+    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID));
+    NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(.5))
+            .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)));
+    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID));
   }
 
   /**
