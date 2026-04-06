@@ -33,8 +33,8 @@ public class LEDSubsystem extends AbstractLEDS {
     }
 
     public void start() {
-        // leftSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kGreen), Color.kBlack));
-        leftSide.setBase(GlitchLEDPatterns.rainDrops(GlitchLEDPatterns.sunsetAce, 1, 1));
+         leftSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kGreen), Color.kBlack));
+//        leftSide.setBase(GlitchLEDPatterns.rainDrops(GlitchLEDPatterns.sunsetAce, 1, 1));
         leftSide.setPattern(GlitchLEDPatterns.purple, 2);
         pip.setBase(GlitchLEDPatterns.purple);
         pip.setPattern(GlitchLEDPatterns.purple);
