@@ -30,6 +30,7 @@ import frc.robot.Vision;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -46,6 +47,7 @@ import static edu.wpi.first.units.Units.Volts;
 public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain implements Subsystem {
 
     private Vision m_Vision = null;
+    private int m_lastVisionMeasurementCount = 0;
     private final NetworkTableLogger logger = new NetworkTableLogger("CTRESwerveDrivetrain");
 
     private static final double kSimLoopPeriod = 0.004; // 4 ms
@@ -261,6 +263,11 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
         this.m_Vision = vision;
     }
 
+    /** Returns the number of vision measurements fused on the most recent drivetrain periodic cycle. */
+    public int getLastVisionMeasurementCount() {
+        return m_lastVisionMeasurementCount;
+    }
+
     /**
      * Runs the SysId Dynamic test in the given direction for the routine
      * specified by {@link #m_sysIdRoutineToApply}.
@@ -299,11 +306,15 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
 
             // Use current drivetrain estimate as the reference pose for disambiguation
             Pose2d reference = this.getState().Pose;
+            List<Vision.Measurement> measurements = m_Vision.drainMeasurements(reference);
+            m_lastVisionMeasurementCount = measurements.size();
 
-            for (Vision.Measurement m : m_Vision.drainMeasurements(reference)) {
+            for (Vision.Measurement m : measurements) {
                 // Convert timestamp inside the override to avoid double-shifting the time base
                 addVisionMeasurement(m.pose(), m.timestampSeconds());
             }
+        } else {
+            m_lastVisionMeasurementCount = 0;
         }
     }
 
