@@ -28,7 +28,7 @@ public class ShootCommand extends SequentialCommandGroup {
                             indexer.run(() -> indexer.setSpeedDutyCycle(-.9))
                                     .withTimeout(1)
                     )
-            ).finallyDo(() -> {leds.endCommand();})//.withTimeout(2.5)
+            ).finallyDo(leds::endCommand)//.withTimeout(2.5)
     );
   }
 }
