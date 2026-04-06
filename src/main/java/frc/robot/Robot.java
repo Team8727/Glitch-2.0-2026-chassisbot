@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Commands.ShootCommandFF;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Subsystems.Indexer;
@@ -31,9 +30,6 @@ import frc.robot.Subsystems.ShooterRoller;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
 import org.littletonrobotics.urcl.URCL;
-
-import static edu.wpi.first.units.Units.Percent;
-import static edu.wpi.first.units.Units.Second;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -135,8 +131,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    measurementCount = vision.measurementCount(CTREDrivetrain.getState().Pose);
-
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
     logger.logDouble("voltage", RobotController.getInputVoltage());
     double now = Timer.getFPGATimestamp();
@@ -150,6 +144,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // Vision fusion is done in drivetrain.periodic(); read the most recent fused count here.
+    measurementCount = CTREDrivetrain.getLastVisionMeasurementCount();
 
     Translation3d shooterFieldPosition = new Translation3d(
             CTREDrivetrain.getState().Pose.getX(),

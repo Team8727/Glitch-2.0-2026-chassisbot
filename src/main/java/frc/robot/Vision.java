@@ -39,6 +39,7 @@ public class Vision implements AutoCloseable {
 
   private final Glitch.Lib.Vision.Vision.Provider provider;
   private final NetworkTableLogger logger = new NetworkTableLogger("Vision");
+  private int lastMeasurementCount = 0;
 
   private static final String CAM_BACK_RIGHT_FRONT = "BackRightFront";
   private static final String CAM_BACK_LEFT_FRONT = "BackLeftFront";
@@ -128,14 +129,16 @@ public class Vision implements AutoCloseable {
    * @return Robot-layer measurements (pose, timestamp) suitable for the pose estimator
    */
   public List<Measurement> drainMeasurements(Pose2d referencePose) {
-    return provider.drainMeasurements(referencePose)
+    List<Glitch.Lib.Vision.Vision.Measurement> drained = provider.drainMeasurements(referencePose);
+    lastMeasurementCount = drained.size();
+    return drained
             .stream()
             .map(m -> new Measurement(m.pose, m.timestampSeconds))
             .collect(Collectors.toList());
   }
 
   public int measurementCount(Pose2d referencePose) {
-    return provider.drainMeasurements(referencePose).size();  
+    return lastMeasurementCount;
   }
 
   /**
