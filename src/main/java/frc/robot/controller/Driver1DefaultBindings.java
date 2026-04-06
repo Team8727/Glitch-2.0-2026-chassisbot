@@ -6,6 +6,7 @@ import frc.robot.Commands.ShootCommand;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.IntakeRoller;
+import frc.robot.Subsystems.LEDSubsystem;
 import frc.robot.Subsystems.ShooterRoller;
 
 import static edu.wpi.first.wpilibj2.command.Commands.run;
@@ -20,13 +21,15 @@ public class Driver1DefaultBindings extends Controller {
   private final IntakeRoller intakeRoller;
   public final Indexer indexer;
   public final ShooterRoller shooterRoller;
+  public final LEDSubsystem leds;
 
   public Driver1DefaultBindings(
           Autos autos,
           CTRESwerveDrivetrain drivetrain,
           IntakeRoller intakeRoller,
           Indexer indexer,
-          ShooterRoller shooterRoller
+          ShooterRoller shooterRoller,
+          LEDSubsystem leds
       ) {
     super(0);
 
@@ -35,6 +38,7 @@ public class Driver1DefaultBindings extends Controller {
     this.intakeRoller = intakeRoller;
     this.indexer = indexer;
     this.shooterRoller = shooterRoller;
+    this.leds = leds;
 
     configureBindings();
   }
@@ -45,7 +49,8 @@ public class Driver1DefaultBindings extends Controller {
 
     // Put binds here
     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
-    controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller));
+    controller.leftTrigger().toggleOnTrue(run(() -> leds.intakePatterns()));
+    controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller, leds));
 
     // test systems
     controller.povDown().whileTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));

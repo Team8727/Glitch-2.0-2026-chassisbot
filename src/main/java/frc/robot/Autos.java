@@ -19,6 +19,7 @@ import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.IntakeRoller;
+import frc.robot.Subsystems.LEDSubsystem;
 import frc.robot.Subsystems.ShooterRoller;
 import org.json.simple.parser.ParseException;
 
@@ -40,6 +41,7 @@ public class Autos {
   private final Indexer indexer;
   private final ShooterRoller shooterRoller;
   private final IntakeRoller intakeRoller;
+  private final LEDSubsystem leds;
 
   /**
    * The list of autonomous path names to load and add to the auto chooser.
@@ -60,12 +62,14 @@ public class Autos {
    * @param indexer        The indexer subsystem for managing game piece intake to the shooter.
    * @param shooterRoller  The shooter subsystem for launching game pieces.
    * @param intakeRoller   The intake roller subsystem for picking up game pieces.
+   * @param leds            The LED subsystem for visual feedback.
    */
-  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRoller shooterRoller, IntakeRoller intakeRoller) {
+  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRoller shooterRoller, IntakeRoller intakeRoller, LEDSubsystem leds) {
     this.CTREDrivetrain = CTREDrivetrain;
     this.indexer = indexer;
     this.shooterRoller = shooterRoller;
     this.intakeRoller = intakeRoller;
+    this.leds = leds;
 
     // register commands BEFORE paths
     registerNamedCommands();
@@ -80,9 +84,9 @@ public class Autos {
    * These commands can be called by name from the PathPlanner GUI.
    */
   private void registerNamedCommands() {
-    NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(.5))
-            .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)));
-    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller));
+    NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setSpeedDutyCycle(.5)).alongWith(run(() -> {leds.intakePatterns();}))
+            .finallyDo(() -> intakeRoller.setSpeedDutyCycle(0)).alongWith(run(() -> {leds.endCommand();})));
+    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, leds));
   }
 
   /**

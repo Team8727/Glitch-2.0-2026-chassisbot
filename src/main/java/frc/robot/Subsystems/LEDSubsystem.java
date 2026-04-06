@@ -65,9 +65,22 @@ public class LEDSubsystem extends AbstractLEDS {
         rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, currentFlywheelVelocity, targetFlywheelVelocity));
     }
 
+    public void endCommand() {
+        leftSide.setPattern(GlitchLEDPatterns.blinkyGreen, 0);
+        rightSide.setPattern(GlitchLEDPatterns.blinkyGreen, 0);
+    }
+
+    boolean intakePatternToggle = false;
     public void intakePatterns() {
-        leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)));
-        rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)));
+        intakePatternToggle = !intakePatternToggle;
+        if (intakePatternToggle) {
+            leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)));
+            rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)));
+        } else {
+            leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), 0);
+            rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), 0);
+        }
+        
     }
 
 
