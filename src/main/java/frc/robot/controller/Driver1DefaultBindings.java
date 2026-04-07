@@ -50,12 +50,13 @@ public class Driver1DefaultBindings extends Controller {
     // Put binds here
     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
     controller.leftTrigger().toggleOnTrue(run(() -> leds.intakePatterns()));
-    controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID));
+    //controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID));
 
     // test systems
     controller.povDown().whileTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
-    controller.povLeft().whileTrue(run(() -> indexer.setSpeedDutyCycle(-1)));
-    controller.povRight().whileTrue(run(() -> shooterRoller.setSpeedVelocity(40)));
+    controller.x().whileTrue(run(() -> indexer.setSpeedDutyCycle(1))); // Backwards
+    controller.y().whileTrue(run(() -> indexer.setSpeedDutyCycle(-1))); // Forwards
+    controller.povRight().whileTrue(run(() -> shooterRoller.setSpeedVelocity(45))); // Was 40, 45 is where drum rattling starts
 
 //    controller.povRight().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)); // 4
 //    controller.povUp().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)); // 3
