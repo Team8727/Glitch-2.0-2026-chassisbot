@@ -1,6 +1,5 @@
 package frc.robot.controller;
 
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 
 public class ProjectileSolver {

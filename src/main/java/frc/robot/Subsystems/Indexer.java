@@ -14,7 +14,7 @@ public class Indexer extends Roller {
         M1config
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
-                .inverted(true)
+                .inverted(false)
                 .disableFollowerMode()
                 .closedLoop
                 .pid(0, 0, 0); //TODO: Tune PID values

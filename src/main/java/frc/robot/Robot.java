@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
 
   private static final double SHOOTER_ANGLE_DEGREES = 60.0;
   private static final double SHOOTER_HEIGHT_METERS = 0.3;
-  public static final double SHOOTER_FLYWHEEL_RADIUS_METERS = 0.0503555;
+  public static final double SHOOTER_FLYWHEEL_DIAMETER_METERS = 0.0889;
   private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
   private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
   public static final double SHOOTER_LOSS_COMPENSATION = 2;
@@ -166,7 +166,7 @@ public class Robot extends TimedRobot {
 
     logger.logDouble("shooter vel", firing.power);
     logger.logDouble("[OLD] Flywheel setpoint velocity", Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION);
-    logger.logDouble("[NEW] Flywheel setpoint velocity", 2 * ((Robot.firing.power) / (Math.PI * 2 * Robot.SHOOTER_FLYWHEEL_RADIUS_METERS))); // Convert m/s to rpm)
+    logger.logDouble("[NEW] Flywheel setpoint velocity", 2 * ((Robot.firing.power) / (Math.PI * 2 * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS))); // Convert m/s to rpm)
     logger.logDouble("shooter yaw", firing.yaw);
     logger.logDouble("shooter yaw radians", Math.toRadians(firing.yaw));
     logger.logDouble("shooter2 pitch", firing.pitch);
