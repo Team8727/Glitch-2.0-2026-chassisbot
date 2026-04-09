@@ -40,19 +40,19 @@ public class Vision implements AutoCloseable {
   private final Glitch.Lib.Vision.Vision.Provider provider;
   private final NetworkTableLogger logger = new NetworkTableLogger("Vision");
 
-  private static final String CAM_FRONT_RIGHT = "BackRightFront";
-  private static final String CAM_FRONT_LEFT = "BackLeftFront";
+  private static final String CAM_FRONT_RIGHT = "FrontRight";
+  private static final String CAM_FRONT_LEFT = "FrontLeft";
 
   //New Cameras for Season Robot:
   private static final Transform3d FRONT_RIGHT =
     new Transform3d(
-        new Translation3d(Units.inchesToMeters(2.375),Units.inchesToMeters(2.875),Units.inchesToMeters(28)), //Translation just for testing
-        new Rotation3d(0,0,Math.toRadians(10))
+        new Translation3d(Units.inchesToMeters(2.375),Units.inchesToMeters(-2.875),Units.inchesToMeters(28)), //Translation just for testing
+        new Rotation3d(0,0,Math.toRadians(-10))
     );
   private static final Transform3d FRONT_LEFT =
           new Transform3d(
-                  new Translation3d(Units.inchesToMeters(2.375),Units.inchesToMeters(-3.25),Units.inchesToMeters(28)), //Translation just for testing
-                  new Rotation3d(0,0,Math.toRadians(-10))
+                  new Translation3d(Units.inchesToMeters(2.375),Units.inchesToMeters(3.25),Units.inchesToMeters(28)), //Translation just for testing
+                  new Rotation3d(0,0,Math.toRadians(10))
           );
 
   // Thresholds and sim properties

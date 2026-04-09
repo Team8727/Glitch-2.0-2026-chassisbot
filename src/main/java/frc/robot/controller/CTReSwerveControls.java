@@ -66,8 +66,8 @@ public class CTReSwerveControls {
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                    drive.withVelocityX(-controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                            .withVelocityY(-controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    drive.withVelocityX(controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                            .withVelocityY(controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                             .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
 
@@ -132,16 +132,16 @@ public class CTReSwerveControls {
       }
       return faceTarget
               .withTargetDirection(Rotation2d.fromDegrees(yaw)) // face the target with 180-degree offset I had to add for some reason
-              .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
-              .withVelocityY(-controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
+              .withVelocityX(controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+              .withVelocityY(controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
               .withRotationalDeadband(MaxAngularRate * 0.1);
     }));
 
     // Oscillate drivetrain command (wiggle)
     controller.b().toggleOnTrue(drivetrain.applyRequest(() -> faceTarget
             .withTargetDirection(Rotation2d.fromDegrees(Robot.referenceRotation.getDegrees() - computeOscillation(2, 5))) // face the target with 180-degree offset I had to add for some reason
-            .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
-            .withVelocityY(-controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
+            .withVelocityX(controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+            .withVelocityY(controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
             .withRotationalDeadband(MaxAngularRate * 0.1)));
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-= SysID characterization for driving and turning (but not heading controller, unless you add a trigger for that) -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Run SysId routines when holding back/start and X/Y.
