@@ -1,13 +1,12 @@
 package frc.robot.controller;
 
-import Glitch.Lib.NetworkTableLogger;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
 import frc.robot.Drivetrain.TunerConstants;
@@ -17,13 +16,39 @@ import static edu.wpi.first.units.Units.*;
 
 public class CTReSwerveControls {
 
+  private CTRESwerveDrivetrain drivetrain;
+  private CommandXboxController controller;
+
   // PID gains for whole-robot rotation to face a target - different for sim and real (and different from swerve module PID gains)
-  static final double SIM_ROTATION_kP = 22.711; // Tuned with SysID (yes, simulation of this with CTRE requires PID)
-  static final double SIM_ROTATION_kD = 0.81472; // Tuned with SysID (yes, simulation of this with CTRE requires PID)
+  static final double SIM_ROTATION_kP = 50;
+  static final double REAL_ROTATION_kP = 8;
 
-  static final double REAL_ROTATION_kP = 0.8; // TODO: tune this with SysID
-  static final double REAL_ROTATION_kD = 0; // TODO: tune this with SysID
+  // Max speed and angular rate for teleop control, can be tuned for better driver feel
+  public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)*.8; // kSpeedAt12Volts desired top speed
+  public static final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
+  // Swerve Request for normal driving, is the default command
+  public static final SwerveRequest.FieldCentric drive =
+          new SwerveRequest.FieldCentric()
+                  .withDeadband(MaxSpeed * 0.1)
+                  .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+                  .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
+  // Swerve Request to face a point at (pointX, pointY), not currently used, must place this in a trigger command to use
+  public static final SwerveRequest.FieldCentricFacingAngle facePoint =
+          new SwerveRequest.FieldCentricFacingAngle()
+                  .withDeadband(MaxSpeed * 0.1)
+                  .withRotationalDeadband(MaxAngularRate * 0.1)
+                  .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
+                  .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
+
+  // Swerve Request for use in trigger command to always point towards the target.
+  public static final SwerveRequest.FieldCentricFacingAngle faceTarget =
+          new SwerveRequest.FieldCentricFacingAngle()
+                  .withDeadband(MaxSpeed * 0.1)
+                  .withRotationalDeadband(MaxAngularRate * 0.75)
+                  .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
+                  .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
 
   // Hub positions
 //  private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
@@ -33,45 +58,16 @@ public class CTReSwerveControls {
 //  private Translation3d target;
 
   public CTReSwerveControls(CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
-    double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-    final NetworkTableLogger netLogger = new NetworkTableLogger("CTReSwerveControls");
-
-    // Swerve Request for normal driving, is the default command
-    final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1)
-            .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-
-    // Swerve Request to face a point at (pointX, pointY), not currently used, must place this in a trigger command to use
-    final SwerveRequest.FieldCentricFacingAngle facePoint =
-            new SwerveRequest.FieldCentricFacingAngle()
-                    .withDeadband(MaxSpeed * 0.1)
-                    .withRotationalDeadband(MaxAngularRate * 0.1)
-                    .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                    .withHeadingPID(
-                            Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP,
-                            0,
-                            Robot.isReal() ? REAL_ROTATION_kD : SIM_ROTATION_kD);
-
-    // Swerve Request for use in trigger command to always point towards the target.
-    final SwerveRequest.FieldCentricFacingAngle faceTarget =
-            new SwerveRequest.FieldCentricFacingAngle()
-                    .withDeadband(MaxSpeed * 0.1)
-                    .withRotationalDeadband(MaxAngularRate * 0.75)
-                    .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                    .withHeadingPID(
-                            Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP,
-                            0,
-                            Robot.isReal() ? REAL_ROTATION_kD : SIM_ROTATION_kD);
+    this.drivetrain = drivetrain;
+    this.controller = controller;
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                    drive.withVelocityX(-controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                            .withVelocityY(-controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    drive.withVelocityX(controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                            .withVelocityY(controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                             .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
 
@@ -85,14 +81,14 @@ public class CTReSwerveControls {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
     // Automatically brake (and put wheels in X) when the robot is stopped (within deadband)
-    final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    new Trigger(() -> Math.abs(controller.getLeftY()) < 0.1 && Math.abs(controller.getLeftX()) < 0.1 && Math.abs(controller.getRightX()) < 0.1 && controller.a().negate().getAsBoolean())
-            .whileTrue(drivetrain.applyRequest(() -> brake));
+   final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+   new Trigger(() -> Math.abs(controller.getLeftY()) < 0.1 && Math.abs(controller.getLeftX()) < 0.1 && Math.abs(controller.getRightX()) < 0.1 && controller.a().negate().getAsBoolean())
+           .whileTrue(drivetrain.applyRequest(() -> brake));
 
     // Point wheels in direction of left stick when pressing right trigger and start button together
-    final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    controller.start().and(controller.rightTrigger()).toggleOnTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))));
+//    final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+//    controller.start().and(controller.rightTrigger()).toggleOnTrue(drivetrain.applyRequest(() ->
+//            point.withModuleDirection(new Rotation2d(-controller.getLeftY(), -controller.getLeftX()))));
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to face a fixed target at (targetX, targetY) -=-=-=-=-=-=-=-=-=-=-=-=-
 //    controller.a().whileTrue(drivetrain.applyRequest(() -> {
@@ -125,13 +121,28 @@ public class CTReSwerveControls {
 //    }));
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Trigger Command to point at an angle to hit a target with a projectile using ProjectileSolver -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // NOW MOVED TO Driver1DefaultBindings.java:   controller.a().whileTrue(new PointIndexAndShoot(shooterPivot, shooterRoller, indexer, drivetrain, controller));
+
     controller.a().whileTrue(drivetrain.applyRequest(() -> {
+      double yaw;
+      if (Robot.isRedAlliance()) {
+        yaw = Robot.firing.yaw - 180;
+      } else {
+        yaw = Robot.firing.yaw;
+      }
       return faceTarget
-              .withTargetDirection(Rotation2d.fromDegrees(Robot.firing.yaw)) // face the target with 180-degree offset I had to add for some reason
-              .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
-              .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
+              .withTargetDirection(Rotation2d.fromDegrees(yaw)) // face the target with 180-degree offset I had to add for some reason
+              .withVelocityX(controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+              .withVelocityY(controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
+              .withRotationalDeadband(MaxAngularRate * 0.1);
     }));
 
+    // Oscillate drivetrain command (wiggle)
+    controller.b().toggleOnTrue(drivetrain.applyRequest(() -> faceTarget
+            .withTargetDirection(Rotation2d.fromDegrees(Robot.referenceRotation.getDegrees() - computeOscillation(2, 5))) // face the target with 180-degree offset I had to add for some reason
+            .withVelocityX(controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+            .withVelocityY(controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
+            .withRotationalDeadband(MaxAngularRate * 0.1)));
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-= SysID characterization for driving and turning (but not heading controller, unless you add a trigger for that) -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -141,10 +152,46 @@ public class CTReSwerveControls {
 //    controller.povRight().and(controller.x()).whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)); // 3
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=- Reset field-centric heading -=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // reset the field-centric heading on left bumper press    // reset the field-centric heading on left bumper press
+    // reset the field-centric heading on left bumper press
     controller.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Telemetry registration -=-=-=-=-=-=-=-=-=-=-=-=-
     drivetrain.registerTelemetry(logger::telemeterize);
   }
+
+  /**
+   * Finds the oscillation given value to oscillate back and forth and flips per second. General oscillation method, can be used for many purposes, but is used currently for the drivetrain "wiggle" command
+   * @param amplitude: angle to oscillate back and forth in degrees (peak amplitude, so total oscillation will be 2*amplitude)
+   * @param flipsPerSecond: number of oscillations per second
+   * @return the oscillation value in degrees to add to the reference rotation to get the desired oscillating angle.
+   */
+  public double computeOscillation(double amplitude, double flipsPerSecond) {
+    // Compute time in seconds as a double (do NOT truncate to integer seconds)
+    double timeSeconds = RobotController.getFPGATime() * 1e-6;
+    return computeOscillationAtTime(amplitude, flipsPerSecond, timeSeconds);
+  }
+
+  /**
+   * Pure math helper: compute oscillation (in degrees) for a given time in seconds.
+   * @param amplitudeDeg: peak amplitude in degrees
+   * @param flipsPerSecond: frequency in Hz (cycles per second)
+   * @param timeSeconds: time in seconds
+   * @return the oscillation value in degrees.
+   */
+  static double computeOscillationAtTime(double amplitudeDeg, double flipsPerSecond, double timeSeconds) {
+    // Use angular frequency omega = 2 * PI * f so that f (Hz) produces f cycles per second
+    double phase = 2.0 * Math.PI * flipsPerSecond * timeSeconds;
+    return amplitudeDeg * Math.sin(phase);
+  }
+
+//  public Command pointToHub() {
+//    System.out.println("aligning");
+//    return drivetrain.applyRequest(() -> {
+//      return CTReSwerveControls.faceTarget
+//              .withTargetDirection(Rotation2d.fromDegrees(Robot.firing.yaw)) // face the target with 180-degree offset I had to add for some reason
+//              .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+//              .withVelocityY(-controller.getLeftX() * MaxSpeed); // translate across field (driving from field long wall to other long wall)
+//    });
+//  }
+
 }

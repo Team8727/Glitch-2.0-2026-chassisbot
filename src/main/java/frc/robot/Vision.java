@@ -40,30 +40,20 @@ public class Vision implements AutoCloseable {
   private final Glitch.Lib.Vision.Vision.Provider provider;
   private final NetworkTableLogger logger = new NetworkTableLogger("Vision");
 
-  // Camera names as configured in PhotonVision
   private static final String CAM_FRONT_RIGHT = "FrontRight";
   private static final String CAM_FRONT_LEFT = "FrontLeft";
-  private static final String CAM_BACK_RIGHT = "BackRight";
-  private static final String CAM_BACK_LEFT = "BackLeft";
 
-
-  // Robot-to-camera transforms
-  private static final Transform3d FRONT_RIGHT_POS =
-      new Transform3d(
-          new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
-          new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(-45)));
-  private static final Transform3d FRONT_LEFT_POS =
+  //New Cameras for Season Robot:
+  private static final Transform3d FRONT_RIGHT =
     new Transform3d(
-        new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
-        new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(45)));
-    private static final Transform3d BACK_RIGHT_POS =
-      new Transform3d(
-          new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(-9.75), Units.inchesToMeters(8.25)),
-          new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(225)));
-      private static final Transform3d BACK_LEFT_POS =
-      new Transform3d(
-          new Translation3d(Units.inchesToMeters(-10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(8.25)),
-          new Rotation3d(Math.toRadians(0), Math.toRadians(-15), Math.toRadians(135)));
+        new Translation3d(Units.inchesToMeters(2.375),Units.inchesToMeters(-2.875),Units.inchesToMeters(28)), //Translation just for testing
+        new Rotation3d(0,0,Math.toRadians(-10))
+    );
+  private static final Transform3d FRONT_LEFT =
+          new Transform3d(
+                  new Translation3d(Units.inchesToMeters(2.375),Units.inchesToMeters(3.25),Units.inchesToMeters(28)), //Translation just for testing
+                  new Rotation3d(0,0,Math.toRadians(10))
+          );
 
   // Thresholds and sim properties
   private static final double MAX_AMBIGUITY = 0.2; // ignore -1 (handled in provider)
@@ -83,10 +73,8 @@ public class Vision implements AutoCloseable {
    */
   public Vision() {
     List<Glitch.Lib.Vision.Vision.CameraConfig> cameras = Arrays.asList(
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_RIGHT, FRONT_RIGHT_POS),
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_LEFT, FRONT_LEFT_POS),
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_BACK_RIGHT, BACK_RIGHT_POS),
-        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_BACK_LEFT, BACK_LEFT_POS)
+        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_LEFT, FRONT_LEFT),
+        new Glitch.Lib.Vision.Vision.CameraConfig(CAM_FRONT_RIGHT, FRONT_RIGHT)
     );
 
     Glitch.Lib.Vision.Vision.Config cfg = new Glitch.Lib.Vision.Vision.Config(
@@ -125,6 +113,10 @@ public class Vision implements AutoCloseable {
             .collect(Collectors.toList());
   }
 
+  public int measurementCount(Pose2d referencePose) {
+    return provider.drainMeasurements(referencePose).size();
+  }
+
   /**
    * Attempts to compute an initial robot pose from visible tags (e.g., at boot).
    *
@@ -149,16 +141,11 @@ public class Vision implements AutoCloseable {
    */
   public void logCameraPoses(Pose2d robotPose) {
     var robotPose3d = new edu.wpi.first.math.geometry.Pose3d(robotPose);
-    var camFrontRight = robotPose3d.transformBy(FRONT_RIGHT_POS);
-    var camFrontLeft = robotPose3d.transformBy(FRONT_LEFT_POS);
-    var camBackRight = robotPose3d.transformBy(BACK_RIGHT_POS);
-    var camBackLeft = robotPose3d.transformBy(BACK_LEFT_POS);
-
-
-    logger.logPose3d("/" + CAM_FRONT_RIGHT + "/Pose", camFrontRight);
-    logger.logPose3d("/" + CAM_FRONT_LEFT + "/Pose", camFrontLeft);
-    logger.logPose3d("/" + CAM_BACK_RIGHT + "/Pose", camBackRight);
-    logger.logPose3d("/" + CAM_BACK_LEFT + "/Pose", camBackLeft);
+    // Real Bot Cams
+    var camLeftFront = robotPose3d.transformBy(FRONT_LEFT);
+    logger.logPose3d("/" + CAM_FRONT_LEFT+ "/Pose", camLeftFront);
+    var camRightFront = robotPose3d.transformBy(FRONT_RIGHT);
+    logger.logPose3d("/" + CAM_FRONT_RIGHT + "/Pose", camRightFront);
   }
 
   /**

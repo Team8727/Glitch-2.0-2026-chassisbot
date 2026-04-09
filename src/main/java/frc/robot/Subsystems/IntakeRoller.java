@@ -6,12 +6,12 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class IntakeRoller extends Roller {
-    private static final int CANID = 51;
+    private static final int CANID = 3;
     private static final SparkMaxConfig config = new SparkMaxConfig();
     static {
         config
                 .smartCurrentLimit(60)
-                .idleMode(SparkMaxConfig.IdleMode.kBrake)
+                .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(false)
                 .closedLoop
                 .pid(0, 0, 0); //TODO: Tune PID values
@@ -19,7 +19,10 @@ public class IntakeRoller extends Roller {
 
     public IntakeRoller() {
         super(new SparkMaxMotor(config, CANID, FeedbackSensor.kPrimaryEncoder));
+        setDefaultCommand(run(() -> setDutyCycle(0)));
     }
+
+    public static boolean isIntaking = false;
 
     /** This method will be called once per scheduler run */
     @Override
