@@ -22,7 +22,7 @@ public class ShootCommand extends SequentialCommandGroup {
                       } else if (controlMode == ControlMode.PID) {
                         shooterRoller.setVelocity(motorSpeed / (1 - .268));// .1 = slip percentage
                       } else if (controlMode == ControlMode.FF_AND_PID) {
-                        shooterRoller.setVelocity(motorSpeed / (1 - .268), Roller.ControlMode.FF_AND_PID);
+                        shooterRoller.setVelocity(motorSpeed / (1 - -.1), Roller.ControlMode.FF_AND_PID);
                       } else {
                         shooterRoller.m_loop.setNextR(VecBuilder.fill(0.95 * (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS))); // In rad/sec
                         shooterRoller.m_loop.correct(VecBuilder.fill(shooterRoller.getVelocity()));
@@ -33,7 +33,7 @@ public class ShootCommand extends SequentialCommandGroup {
                     }),
                     sequence(
                             waitSeconds(2),
-                            indexer.run(() -> indexer.setDutyCycle(-.9))
+                            indexer.run(() -> indexer.setDutyCycle(1))
                                     .withTimeout(1)
                     )
             ).finallyDo(() -> {
