@@ -15,7 +15,7 @@ public class LEDSubsystem extends AbstractLEDS {
     public final Section rightSide;
 
     public LEDSubsystem() {
-        super(67, 30, 7, -30);
+        super(91, 40, 11, -40);
 
         leftSide = getSections().get(0);
         pip = getSections().get(1);
