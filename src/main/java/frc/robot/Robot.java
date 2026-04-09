@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Shooter power", 0);
 
     // Used by oscillation command
-    addPeriodic(() -> referenceRotation = CTREDrivetrain.getState().Pose.getRotation().minus(Rotation2d.fromDegrees(180)), 0.01);
+    addPeriodic(() -> referenceRotation = CTREDrivetrain.getState().Pose.getRotation().minus(Rotation2d.fromDegrees(180)), 0.04); // Update period should be a multiple of the loop time: 0.02 seconds
 
     addPeriodic(() -> {
       if (measurementCount == 1) {
