@@ -64,7 +64,7 @@ public class ShooterRoller extends Roller {
         M2config
                 .smartCurrentLimit(60)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
-                .follow(M0CANID, true)
+                .follow(M0CANID, true) // DO NOT CHANGE, TO INVERT THE SPINNING OF THE ROLLERS CHANGE THE LEADER MOTOR ONLY
                 .closedLoop
                 .pid(0.03, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
