@@ -29,9 +29,9 @@ public class ZoneController extends SubsystemBase {
     isInside = zone.contains(currentPose.getX(), currentPose.getY());
 
     boolean commandReady = CommandReady();
-    if (commandReady && !prevCommandReady) {
+    if (commandReady && !prevCommandReady && !commandToManage.isScheduled()) {
       CommandScheduler.getInstance().schedule(commandToManage);
-    } else if (!commandReady && prevCommandReady) {
+    } else if (!commandReady && prevCommandReady && commandToManage.isScheduled()) {
       commandToManage.cancel();
     }
     prevCommandReady = commandReady;
