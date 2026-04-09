@@ -1,5 +1,6 @@
 package frc.robot.Commands;
 
+import Glitch.Lib.BaseMechanisms.Roller;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
@@ -19,18 +20,20 @@ public class ShootCommand extends SequentialCommandGroup {
                       if (controlMode == ControlMode.FEEDFORWARD) {
                         shooterRoller.setFFVoltageWithVelocity(1 * flywheelSpeed);
                       } else if (controlMode == ControlMode.PID) {
-                        shooterRoller.setSpeedVelocity(motorSpeed/(1-.268));// .1 = slip percentage
+                        shooterRoller.setVelocity(motorSpeed / (1 - .268));// .1 = slip percentage
+                      } else if (controlMode == ControlMode.FF_AND_PID) {
+                        shooterRoller.setVelocity(motorSpeed / (1 - .268), Roller.ControlMode.FF_AND_PID);
                       } else {
                         shooterRoller.m_loop.setNextR(VecBuilder.fill(0.95 * (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS))); // In rad/sec
                         shooterRoller.m_loop.correct(VecBuilder.fill(shooterRoller.getVelocity()));
                         shooterRoller.m_loop.predict(0.020);
                         double nextVoltage = shooterRoller.m_loop.getU(0);
-                        shooterRoller.setSpeedVoltage(nextVoltage);
+                        shooterRoller.setVoltage(nextVoltage);
                       }
                     }),
                     sequence(
                             waitSeconds(2),
-                            indexer.run(() -> indexer.setSpeedDutyCycle(1))
+                            indexer.run(() -> indexer.setDutyCycle(-.9))
                                     .withTimeout(1)
                     )
             ).finallyDo(() -> {
@@ -39,7 +42,7 @@ public class ShootCommand extends SequentialCommandGroup {
                 shooterRoller.m_loop.correct(VecBuilder.fill(shooterRoller.getVelocity()));
                 shooterRoller.m_loop.predict(0.020);
                 double nextVoltage = shooterRoller.m_loop.getU(0);
-                shooterRoller.setSpeedVoltage(nextVoltage);
+                shooterRoller.setVoltage(nextVoltage);
               }
             })
     );
@@ -48,6 +51,7 @@ public class ShootCommand extends SequentialCommandGroup {
   public enum ControlMode {
     FEEDFORWARD,
     PID,
+    FF_AND_PID,
     STATE_SPACE
   }
 }

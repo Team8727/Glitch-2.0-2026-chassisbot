@@ -1,5 +1,6 @@
 package frc.robot.controller;
 
+import Glitch.Lib.BaseMechanisms.Roller;
 import Glitch.Lib.Controller.Controller;
 import frc.robot.Autos;
 import frc.robot.Commands.ShootCommand;
@@ -48,15 +49,15 @@ public class Driver1DefaultBindings extends Controller {
     new CTReSwerveControls(drivetrain, controller);
 
     // Put binds here
-    controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
+    controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setDutyCycle(.8)));
     controller.leftTrigger().toggleOnTrue(run(leds::intakePatterns));
     controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller,0, ShootCommand.ControlMode.PID));
 
     // test systems
-    controller.povDown().whileTrue(run(() -> intakeRoller.setSpeedDutyCycle(.8)));
-    controller.y().whileTrue(run(() -> indexer.setSpeedDutyCycle(1))); // Forwards
-    controller.x().whileTrue(run(() -> indexer.setSpeedDutyCycle(-1))); // Backwards
-    controller.povRight().whileTrue(run(() -> shooterRoller.setSpeedVelocity(45)));
+    controller.povDown().whileTrue(run(() -> intakeRoller.setDutyCycle(.8)));
+    controller.y().whileTrue(run(() -> indexer.setDutyCycle(1))); // Forwards
+    controller.x().whileTrue(run(() -> indexer.setDutyCycle(-1))); // Backwards
+    controller.povRight().whileTrue(run(() -> shooterRoller.setVelocity(45, Roller.ControlMode.PID)));
     controller.povRight().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand)); // Was 40, 45 is where drum rattling starts
 
 //    controller.povRight().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)); // 4

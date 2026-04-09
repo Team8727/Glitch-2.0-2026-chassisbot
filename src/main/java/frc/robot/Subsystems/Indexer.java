@@ -34,7 +34,7 @@ public class Indexer extends Roller {
     public Indexer() {
         super(new SparkMaxMotor(M1config, M1CANID, FeedbackSensor.kPrimaryEncoder));
         followerMotor = new SparkMaxMotor(M2config, M2CANID, FeedbackSensor.kPrimaryEncoder);
-        setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
+        setDefaultCommand(run(() -> setDutyCycle(0)));
     }
 
     /** This method will be called once per scheduler run */

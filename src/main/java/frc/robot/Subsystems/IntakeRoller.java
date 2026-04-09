@@ -19,7 +19,7 @@ public class IntakeRoller extends Roller {
 
     public IntakeRoller() {
         super(new SparkMaxMotor(config, CANID, FeedbackSensor.kPrimaryEncoder));
-        setDefaultCommand(run(() -> setSpeedDutyCycle(0)));
+        setDefaultCommand(run(() -> setDutyCycle(0)));
     }
 
     public static boolean isIntaking = false;

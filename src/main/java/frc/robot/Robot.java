@@ -166,7 +166,7 @@ public class Robot extends TimedRobot {
 
     logger.logDouble("shooter vel", firing.power);
     logger.logDouble("[OLD] Flywheel setpoint velocity", Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION);
-    logger.logDouble("[NEW] Flywheel setpoint velocity", 2 * ((Robot.firing.power) / (Math.PI * 2 * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS))); // Convert m/s to rpm)
+    logger.logDouble("[NEW] Flywheel setpoint velocity", (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS)); // rpm to rps
     logger.logDouble("shooter yaw", firing.yaw);
     logger.logDouble("shooter yaw radians", Math.toRadians(firing.yaw));
     logger.logDouble("shooter2 pitch", firing.pitch);
