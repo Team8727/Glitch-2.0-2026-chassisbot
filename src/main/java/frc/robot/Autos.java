@@ -9,8 +9,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,9 +20,13 @@ import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.IntakeRoller;
 import frc.robot.Subsystems.LEDSubsystem;
 import frc.robot.Subsystems.ShooterRoller;
-import org.json.simple.parser.ParseException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
-import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -31,10 +34,11 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 /**
  * The Autos class handles the selection and execution of autonomous routines.
- * It manages PathPlanner paths, registers named commands for use within paths,
+ * It manages PathPlanner autos, registers named commands for use within paths,
  * and maintains a chooser for selecting autonomous sequences from the dashboard.
  */
 public class Autos {
+  private final LinkedHashMap<String, Command> autos = new LinkedHashMap<>();
   private final LinkedHashMap<String, PathPlannerPath> paths = new LinkedHashMap<>();
   private final CTRESwerveDrivetrain CTREDrivetrain;
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -48,6 +52,7 @@ public class Autos {
    * The first item in this list is set as the default option.
    */
   private static final List<String> AUTO_NAMES = List.of(
+          "New Auto",
           "Final plan 4.1",
           "Final plan 4.1 New",
           "Final plan 4.1 looong",
@@ -73,7 +78,7 @@ public class Autos {
 
     // register commands BEFORE paths
     registerNamedCommands();
-    loadPaths();
+    loadAutos();
     setupAutoChooser();
 
     SmartDashboard.putData("Auto choices", autoChooser);
@@ -84,49 +89,187 @@ public class Autos {
    * These commands can be called by name from the PathPlanner GUI.
    */
   private void registerNamedCommands() {
-    NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setDutyCycle(.5))//.alongWith(run(() -> {leds.intakePatterns();}))
-            .finallyDo(() -> intakeRoller.setDutyCycle(0)));//.alongWith(run(() -> {leds.endCommand();})));
-    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID));
     NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setDutyCycle(.5))
             .finallyDo(() -> intakeRoller.setDutyCycle(0)));
     NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID));
   }
 
   /**
-   * Loads all autonomous paths from the deploy directory into the paths map.
+   * Loads all autonomous autos and paths from the deploy directory into the respective maps.
    */
-  private void loadPaths() {
-    AUTO_NAMES.forEach(this::loadPath);
+  private void loadAutos() {
+    AUTO_NAMES.forEach(this::loadRoutine);
   }
 
   /**
-   * Loads a specific path from the given path name.
+   * Loads a specific autonomous routine from the given name.
    *
-   * @param pathName The name of the path file to load.
+   * @param name The name of the routine file (auto or path) to load.
    */
-  private void loadPath(String pathName) {
+  private void loadRoutine(String name) {
+    // try as auto
     try {
-      paths.put(pathName, PathPlannerPath.fromPathFile(pathName));
-    } catch (IOException | ParseException e) {
-      e.printStackTrace();
+      autos.put(name, AutoBuilder.buildAuto(name));
+    } catch (Exception e) {
+      // try as path
+      try {
+        paths.put(name, PathPlannerPath.fromPathFile(name));
+      } catch (Exception ex) {
+        System.out.println("Could not load routine: " + name);
+      }
     }
   }
 
   /**
    * Sets up the autonomous command chooser for the SmartDashboard.
-   * This populates the chooser with various autonomous path options and their mirrored versions.
+   * This populates the chooser with various autonomous auto options and mirrored routines.
    */
   public void setupAutoChooser() {
     AUTO_NAMES.forEach(name -> {
-      PathPlannerPath path = paths.get(name);
-      if (path == null) return;
+      Command auto = autos.get(name);
+      if (auto != null) {
+        autoChooser.addOption(name, auto);
+        autoChooser.addOption(name + " Mirrored", buildAuto(name, true));
+      } else {
+        PathPlannerPath path = paths.get(name);
+        if (path == null) return;
 
-      Command nonMirrored = followPathFromStartPose(path, false);
-      Command mirrored = followPathFromStartPose(path, true);
+        Command nonMirrored = followPathFromStartPose(path, false);
+        Command mirrored = followPathFromStartPose(path, true);
 
-      autoChooser.addOption(name, nonMirrored);
-      autoChooser.addOption(name + " Mirrored", mirrored);
+        autoChooser.addOption(name, nonMirrored);
+        autoChooser.addOption(name + " Mirrored", mirrored);
+      }
     });
+  }
+
+  /**
+   * Builds an autonomous command from an .auto file, with an option to mirror all paths.
+   *
+   * @param name   The name of the auto file to load.
+   * @param mirror Whether to mirror all paths within the auto.
+   * @return A {@link Command} representing the autonomous sequence.
+   */
+  private Command buildAuto(String name, boolean mirror) {
+    try {
+      String filePath = Filesystem.getDeployDirectory().getPath() + "/pathplanner/autos/" + name + ".auto";
+      String content = Files.readString(Path.of(filePath));
+      JSONObject json = (JSONObject) new JSONParser().parse(content);
+      JSONObject commandData = (JSONObject) json.get("command");
+      Object resetOdomObj = json.get("resetOdom");
+      boolean resetOdom = resetOdomObj != null && (boolean) resetOdomObj;
+
+      Command autoCommand = parseCommand(commandData, mirror);
+
+      if (resetOdom) {
+        PathPlannerPath firstPath = findFirstPath(commandData);
+        if (firstPath != null) {
+          PathPlannerPath pathForPose = mirror ? firstPath.mirrorPath() : firstPath;
+          return sequence(
+                  runOnce(() -> setStartPose(pathForPose)),
+                  autoCommand
+          );
+        }
+      }
+      return autoCommand;
+    } catch (Exception e) {
+      System.out.println("Error building auto " + name + " (mirror=" + mirror + "): " + e.getMessage());
+      return none();
+    }
+  }
+
+  /**
+   * Recursively parses a command JSON object from a PathPlanner .auto file.
+   *
+   * @param commandJson The JSON object representing the command.
+   * @param mirror      Whether to mirror any paths found within the command.
+   * @return The corresponding {@link Command}.
+   */
+  private Command parseCommand(JSONObject commandJson, boolean mirror) {
+    String type = (String) commandJson.get("type");
+    JSONObject data = (JSONObject) commandJson.get("data");
+
+    switch (type) {
+      case "path":
+        String pathName = (String) data.get("pathName");
+        PathPlannerPath path = safeLoadPath(pathName);
+        if (path == null) return none();
+        return AutoBuilder.followPath(mirror ? path.mirrorPath() : path);
+      case "named":
+        String name = (String) data.get("name");
+        return NamedCommands.getCommand(name);
+      case "wait":
+        double waitTime = ((Number) data.get("waitTime")).doubleValue();
+        return waitSeconds(waitTime);
+      case "sequential":
+        return sequence(parseCommandList((JSONArray) data.get("commands"), mirror));
+      case "parallel":
+        return parallel(parseCommandList((JSONArray) data.get("commands"), mirror));
+      case "race":
+        return race(parseCommandList((JSONArray) data.get("commands"), mirror));
+      case "deadline":
+        JSONArray commands = (JSONArray) data.get("commands");
+        Command deadline = parseCommand((JSONObject) commands.get(0), mirror);
+        List<Command> otherCommands = new ArrayList<>();
+        for (int i = 1; i < commands.size(); i++) {
+          otherCommands.add(parseCommand((JSONObject) commands.get(i), mirror));
+        }
+        return deadline(deadline, otherCommands.toArray(new Command[0]));
+      default:
+        return none();
+    }
+  }
+
+  /**
+   * Parses a list of command JSON objects.
+   *
+   * @param commandsJson The JSON array of commands.
+   * @param mirror       Whether to mirror paths.
+   * @return A list of {@link Command}s.
+   */
+  private Command[] parseCommandList(JSONArray commandsJson, boolean mirror) {
+    List<Command> commands = new ArrayList<>();
+    for (Object cmdObj : commandsJson) {
+      commands.add(parseCommand((JSONObject) cmdObj, mirror));
+    }
+    return commands.toArray(new Command[0]);
+  }
+
+  /**
+   * Finds the first path in a command JSON structure.
+   *
+   * @param commandJson The command JSON object.
+   * @return The first {@link PathPlannerPath} found, or null if none.
+   */
+  private PathPlannerPath findFirstPath(JSONObject commandJson) {
+    String type = (String) commandJson.get("type");
+    JSONObject data = (JSONObject) commandJson.get("data");
+
+    if ("path".equals(type)) {
+      return safeLoadPath((String) data.get("pathName"));
+    } else if (data.containsKey("commands")) {
+      JSONArray commands = (JSONArray) data.get("commands");
+      for (Object cmdObj : commands) {
+        PathPlannerPath path = findFirstPath((JSONObject) cmdObj);
+        if (path != null) return path;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Safely loads a PathPlanner path from its file name.
+   *
+   * @param pathName The name of the path file.
+   * @return The loaded {@link PathPlannerPath}, or null if loading failed.
+   */
+  private PathPlannerPath safeLoadPath(String pathName) {
+    try {
+      return PathPlannerPath.fromPathFile(pathName);
+    } catch (Exception e) {
+      System.out.println("Could not load path: " + pathName);
+      return null;
+    }
   }
 
   /**
@@ -137,6 +280,7 @@ public class Autos {
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
+
 
   /**
    * Follows a PathPlanner path starting from its initial pose.
@@ -199,12 +343,12 @@ public class Autos {
    */
   private void setStartPose(PathPlannerPath path) {
     Pose2d startPose;
-    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+    if (Robot.isRedAlliance()) {
       startPose = path.flipPath().getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
     } else {
       startPose = path.getStartingHolonomicPose().orElse(path.getStartingDifferentialPose());
     }
-    
+
     CTREDrivetrain.resetPose(startPose);
   }
 }

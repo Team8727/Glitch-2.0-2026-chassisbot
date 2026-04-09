@@ -22,8 +22,6 @@ public class IntakeRoller extends Roller {
         setDefaultCommand(run(() -> setDutyCycle(0)));
     }
 
-    public static boolean isIntaking = false;
-
     /** This method will be called once per scheduler run */
     @Override
     public void periodic() {

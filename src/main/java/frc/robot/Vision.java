@@ -57,7 +57,7 @@ public class Vision implements AutoCloseable {
 
   // Thresholds and sim properties
   private static final double MAX_AMBIGUITY = 0.2; // ignore -1 (handled in provider)
-  private static final double MAX_DISTANCE_METERS = 3.5;
+  private static final double MAX_DISTANCE_METERS = 300.5; // meters (set high to read tags from all distances)
   private static final int SIM_WIDTH = 640;
   private static final int SIM_HEIGHT = 480;
   private static final double SIM_FOV_DEG = 70; // TODO: Change if using 120 degree lenses (which we have in stock) on cameras!!!

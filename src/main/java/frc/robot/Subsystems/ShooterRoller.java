@@ -193,7 +193,7 @@ public class ShooterRoller extends Roller {
     }
 
     /**
-     * Sets the speed of the motor using one of three control modes (PID, FF, PID_AND_FF). Basically this is what we want to use if it works.
+     * Sets the speed of the motor using one of three control modes (PID, FF, PID_AND_FF). Basically, this is what we want to use if it works.
      * @param speed the speed to set the motor to (uses PID)
      * @param mode the control mode (PID, FF, FF_AND_PID)
      */

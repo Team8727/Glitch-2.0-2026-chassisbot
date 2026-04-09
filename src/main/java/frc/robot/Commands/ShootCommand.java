@@ -37,6 +37,8 @@ public class ShootCommand extends SequentialCommandGroup {
                                     .withTimeout(1)
                     )
             ).finallyDo(() -> {
+              shooterRoller.setDutyCycle(0);
+              indexer.setDutyCycle(0);
               if (controlMode == ControlMode.STATE_SPACE) {
                 shooterRoller.m_loop.setNextR(0.95 * (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS));
                 shooterRoller.m_loop.correct(VecBuilder.fill(shooterRoller.getVelocity()));
