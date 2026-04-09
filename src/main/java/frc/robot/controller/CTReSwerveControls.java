@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Drivetrain.Telemetry;
 import frc.robot.Drivetrain.TunerConstants;
@@ -80,9 +81,9 @@ public class CTReSwerveControls {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
     // Automatically brake (and put wheels in X) when the robot is stopped (within deadband)
-//    final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-//    new Trigger(() -> Math.abs(controller.getLeftY()) < 0.1 && Math.abs(controller.getLeftX()) < 0.1 && Math.abs(controller.getRightX()) < 0.1 && controller.a().negate().getAsBoolean())
-//            .whileTrue(drivetrain.applyRequest(() -> brake));
+   final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+   new Trigger(() -> Math.abs(controller.getLeftY()) < 0.1 && Math.abs(controller.getLeftX()) < 0.1 && Math.abs(controller.getRightX()) < 0.1 && controller.a().negate().getAsBoolean())
+           .whileTrue(drivetrain.applyRequest(() -> brake));
 
     // Point wheels in direction of left stick when pressing right trigger and start button together
 //    final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
