@@ -1,6 +1,8 @@
 package frc.robot.controller;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 
@@ -12,13 +14,13 @@ public class ZoneController extends SubsystemBase {
   private final Rectangle2D zone;
   private boolean isInside;
   private boolean isEnabled = true;
-  private final Runnable commandToManage;
+  private boolean prevCommandReady = false;
+  private final Command commandToManage;
 
-  public ZoneController(CTRESwerveDrivetrain drivetrain, Rectangle2D zone, Runnable command) {
+  public ZoneController(CTRESwerveDrivetrain drivetrain, Rectangle2D zone, Command command) {
     this.drivetrain = drivetrain;
     this.zone = zone;
     this.commandToManage = command;
-
   }
 
   @Override
@@ -26,9 +28,13 @@ public class ZoneController extends SubsystemBase {
     Pose2d currentPose = drivetrain.getState().Pose;
     isInside = zone.contains(currentPose.getX(), currentPose.getY());
 
-    if (CommandReady()) {
-      run(commandToManage);
+    boolean commandReady = CommandReady();
+    if (commandReady && !prevCommandReady) {
+      CommandScheduler.getInstance().schedule(commandToManage);
+    } else if (!commandReady && prevCommandReady) {
+      commandToManage.cancel();
     }
+    prevCommandReady = commandReady;
   }
 
   /**

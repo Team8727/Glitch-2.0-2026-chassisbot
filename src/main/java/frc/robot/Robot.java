@@ -107,7 +107,7 @@ public class Robot extends TimedRobot {
 //    new ZoneController(
 //            CTREDrivetrain,
 //            new Rectangle(1,1,1,1),
-//            () -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees()));
+//            Commands.runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())));
 
     leds.initializeLEDS(0);
     pinServo = new Servo(1);
