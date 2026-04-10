@@ -52,11 +52,11 @@ public class Autos {
    * The first item in this list is set as the default option.
    */
   private static final List<String> AUTO_NAMES = List.of(
-          "New Auto",
+          "Double Cycle Depot",
+          "Far Half Mid 1st Cycle",
           "Final plan 4.1",
           "Final plan 4.1 New",
           "Final plan 4.1 looong",
-          "test",
           "Shoot In Place"
   );
 
@@ -92,6 +92,7 @@ public class Autos {
     NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setDutyCycle(.5))
             .finallyDo(() -> intakeRoller.setDutyCycle(0)));
     NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID));
+    NamedCommands.registerCommand("stopShoot", runOnce(() -> shooterRoller.setDutyCycle(0)).alongWith(runOnce(() -> indexer.setDutyCycle(0))));
   }
 
   /**

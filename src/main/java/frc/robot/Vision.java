@@ -113,10 +113,6 @@ public class Vision implements AutoCloseable {
             .collect(Collectors.toList());
   }
 
-  public int measurementCount(Pose2d referencePose) {
-    return provider.drainMeasurements(referencePose).size();
-  }
-
   /**
    * Attempts to compute an initial robot pose from visible tags (e.g., at boot).
    *

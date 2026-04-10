@@ -32,7 +32,7 @@ public class ShootCommand extends SequentialCommandGroup {
                       }
                     }),
                     sequence(
-                            waitSeconds(2),
+                            waitSeconds(1.5),
                             indexer.run(() -> indexer.setDutyCycle(1))
                                     .withTimeout(1)
                     )

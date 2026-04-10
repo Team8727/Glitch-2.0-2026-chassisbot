@@ -9,7 +9,6 @@ import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -17,7 +16,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -43,14 +41,10 @@ public class Robot extends TimedRobot {
   public static final double SHOOTER_FLYWHEEL_DIAMETER_METERS = 0.0889;
   private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
   private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
-  public static final double SHOOTER_LOSS_COMPENSATION = 2;
-  public static boolean SHOOT_POWER_OVERRIDE = false;
 
   private Translation3d target;
 
   public static ProjectileSolver.FiringSolution firing;
-  private double lastTime = Timer.getFPGATimestamp();
-  private double deltaTime;
 
   // Used for drivetrain oscillation command (wiggling)
   public static Rotation2d referenceRotation = new  Rotation2d();
@@ -85,8 +79,6 @@ public class Robot extends TimedRobot {
 
     // Start the URCL logger (logs REV SparkMaxes and SparkFlexes automatically on networkTables)
     URCL.start();
-
-    SmartDashboard.putNumber("Shooter power", 0);
 
     // Used by oscillation command
     addPeriodic(() -> referenceRotation = CTREDrivetrain.getState().Pose.getRotation().minus(Rotation2d.fromDegrees(180)), 0.04); // Update period should be a multiple of the loop time: 0.02 seconds
@@ -133,11 +125,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
     logger.logDouble("voltage", RobotController.getInputVoltage());
-    double now = Timer.getFPGATimestamp();
-    deltaTime = now - lastTime;
-    lastTime = now;
     vision.logCameraPoses(CTREDrivetrain.getState().Pose);
-
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
@@ -165,21 +153,19 @@ public class Robot extends TimedRobot {
             SHOOTER_ANGLE_DEGREES);
 
     logger.logDouble("shooter vel", firing.power);
-    logger.logDouble("[OLD] Flywheel setpoint velocity", Robot.firing.power * Math.PI * Robot.SHOOTER_LOSS_COMPENSATION);
-    logger.logDouble("[NEW] Flywheel setpoint velocity", (Robot.firing.power) / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS)); // rpm to rps
+    logger.logDouble("Flywheel setpoint velocity", (Robot.firing.power * (24.0 /15)) / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS)); // rpm to rps
     logger.logDouble("shooter yaw", firing.yaw);
     logger.logDouble("shooter yaw radians", Math.toRadians(firing.yaw));
-    logger.logDouble("shooter2 pitch", firing.pitch);
     logger.logBoolean("shooter2 valid", firing.isValid);
     logger.logDouble("shooter2 horizontal distance", firing.horizontalDistance);
 
-    logger.logPose3d("shooter2 position", new Pose3d(
-            shooterFieldPosition,
-            new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
+//    logger.logPose3d("shooter2 position", new Pose3d(
+//            shooterFieldPosition,
+//            new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
 
-    logger.logPose3d("target", new Pose3d(
-            target,
-            new Rotation3d()));
+//    logger.logPose3d("target", new Pose3d(
+//            target,
+//            new Rotation3d()));
 
     logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
 
