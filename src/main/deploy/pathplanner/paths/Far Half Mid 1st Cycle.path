@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.606,
+        "x": 3.5055180722891555,
         "y": 5.357253012048193
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.667954047472748,
+        "x": 4.567472119761904,
         "y": 5.705542404629576
       },
       "isLocked": false,
@@ -137,8 +137,8 @@
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 5.4161073825503365,
-      "endWaypointRelativePos": 5.99,
+      "waypointRelativePos": 5.25,
+      "endWaypointRelativePos": 5.989041095890413,
       "command": null
     }
   ],
@@ -158,7 +158,7 @@
   "folder": "Strategy and Drive Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.509743537784
+    "rotation": 125.8082739948201
   },
   "useDefaultConstraints": true
 }
