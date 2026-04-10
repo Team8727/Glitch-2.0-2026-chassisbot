@@ -49,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -50.15558431740623
+    "rotation": 129.844
   },
   "reversed": false,
   "folder": "Strategy and Drive Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -50.156
+    "rotation": 129.844
   },
   "useDefaultConstraints": false
 }
