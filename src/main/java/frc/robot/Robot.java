@@ -192,9 +192,9 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       CommandScheduler.getInstance().schedule(autoCommand);
     }
+    pinServo.setAngle(125);
 
     leds.autoInit();
-    pinServo.setAngle(180);
   }
 
   /** This function is called periodically during autonomous. */
@@ -210,6 +210,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     // This makes sure that autonomous stops running when teleop starts running.
     CommandScheduler.getInstance().cancelAll();
+    pinServo.setAngle(125);
 
     shooterRoller.m_loop.reset(VecBuilder.fill(Units.rotationsPerMinuteToRadiansPerSecond(shooterRoller.getVelocity())));
 
