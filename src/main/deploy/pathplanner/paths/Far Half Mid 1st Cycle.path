@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.953325301204817,
-        "y": 5.991060240963854
+        "x": 6.168854166666666,
+        "y": 5.881659226190477
       },
       "prevControl": {
-        "x": 5.490069328113888,
-        "y": 5.5146683861519765
+        "x": 5.705598193575737,
+        "y": 5.405267371378599
       },
       "nextControl": {
-        "x": 6.989072753209699,
-        "y": 7.056176890156919
+        "x": 7.204601618671548,
+        "y": 6.946775875383541
       },
       "isLocked": false,
       "linkedName": null
@@ -36,12 +36,12 @@
         "y": 7.0820542082738935
       },
       "prevControl": {
-        "x": 6.380955777460769,
-        "y": 7.120870185449359
+        "x": 7.506540178571427,
+        "y": 7.480357142857144
       },
       "nextControl": {
-        "x": 8.329046796532001,
-        "y": 7.074073150694764
+        "x": 8.365568383840694,
+        "y": 6.782465137248582
       },
       "isLocked": false,
       "linkedName": null
@@ -111,22 +111,36 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 2.0088188976377874,
-      "rotationDegrees": -100.0
+      "rotationDegrees": 80.66599187493665
     },
     {
       "waypointRelativePos": 2.85543307086613,
-      "rotationDegrees": -115.0
+      "rotationDegrees": 61.02259963273264
     },
     {
       "waypointRelativePos": 4.019527559055054,
-      "rotationDegrees": 119.70536062467738
+      "rotationDegrees": -78.09779948568031
     },
     {
       "waypointRelativePos": 5.1,
-      "rotationDegrees": 111.15663402710042
+      "rotationDegrees": -55.32396241377183
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.3808219178082164,
+      "maxWaypointRelativePos": 2.3753424657534277,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 311.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -152,13 +166,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 127.465
+    "rotation": -49.62471124901727
   },
   "reversed": false,
   "folder": "Strategy and Drive Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 125.8082739948201
+    "rotation": -49.89205730215917
   },
   "useDefaultConstraints": true
 }

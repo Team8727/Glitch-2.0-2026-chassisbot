@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 6.4236071428571435,
-        "y": 6.669619047619047
+        "x": 6.625625,
+        "y": 6.566815476190477
       },
       "prevControl": {
-        "x": 5.398686131437957,
-        "y": 5.644698036199861
+        "x": 5.600703988580814,
+        "y": 5.541894464771291
       },
       "nextControl": {
-        "x": 6.639559523809524,
-        "y": 6.885571428571428
+        "x": 6.841577380952381,
+        "y": 6.782767857142858
       },
       "isLocked": false,
       "linkedName": null
@@ -84,12 +84,12 @@
         "y": 5.427892857142857
       },
       "prevControl": {
-        "x": 6.159065476190476,
-        "y": 5.076970238095238
+        "x": 6.184350852754214,
+        "y": 5.142794570781761
       },
       "nextControl": {
-        "x": 4.528625000000001,
-        "y": 5.778815476190476
+        "x": 4.583206845238095,
+        "y": 5.685900297619048
       },
       "isLocked": false,
       "linkedName": null
@@ -100,8 +100,8 @@
         "y": 5.633047619047619
       },
       "prevControl": {
-        "x": 4.072425595238096,
-        "y": 5.7059315476190475
+        "x": 4.283043154761905,
+        "y": 5.633697916666668
       },
       "nextControl": null,
       "isLocked": false,
@@ -111,23 +111,19 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.5,
-      "rotationDegrees": -47.646164788665594
-    },
-    {
-      "waypointRelativePos": 1.1,
-      "rotationDegrees": -72.80815040690592
+      "rotationDegrees": -65.25629815615525
     },
     {
       "waypointRelativePos": 2.0999999999999996,
-      "rotationDegrees": -90.0
+      "rotationDegrees": 94.66758373280241
     },
     {
       "waypointRelativePos": 3.8359322033898433,
-      "rotationDegrees": -79.34671678491075
+      "rotationDegrees": 101.53985690573634
     },
     {
       "waypointRelativePos": 4.470508474576265,
-      "rotationDegrees": 16.9040379413502
+      "rotationDegrees": -169.4268619500569
     }
   ],
   "constraintZones": [],
@@ -156,7 +152,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 128.175
+    "rotation": -54.04711250065318
   },
   "reversed": false,
   "folder": "Strategy and Drive Paths",

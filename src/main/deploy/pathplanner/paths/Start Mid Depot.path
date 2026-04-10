@@ -52,7 +52,7 @@
         "y": 7.236819277108435
       },
       "prevControl": {
-        "x": 0.3957812981549997,
+        "x": 0.39578129815499963,
         "y": 7.127500007430288
       },
       "nextControl": {
@@ -95,11 +95,11 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.609133858267703,
-      "rotationDegrees": 125.00000000000001
+      "rotationDegrees": -38.49726436161805
     },
     {
       "waypointRelativePos": 2.572913385826775,
-      "rotationDegrees": 95.0
+      "rotationDegrees": -88.72563357353513
     }
   ],
   "constraintZones": [],
@@ -134,13 +134,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 173.59564727361584
+    "rotation": -4.123023750290565
   },
   "reversed": false,
   "folder": "Strategy and Drive Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.54164354199955
+    "rotation": -0.2533989785487736
   },
   "useDefaultConstraints": true
 }

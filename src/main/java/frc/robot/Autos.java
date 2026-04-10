@@ -53,12 +53,9 @@ public class Autos {
    */
   private static final List<String> AUTO_NAMES = List.of(
           "Double Cycle Depot",
-          "Far Half Mid 1st Cycle",
           "Start Mid Depot auto",
-          "Final plan 4.1",
-          "Final plan 4.1 New",
-          "Final plan 4.1 looong",
-          "Shoot In Place"
+          "final plan",
+          "shoot"
   );
 
   /**
