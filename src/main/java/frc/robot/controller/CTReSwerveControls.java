@@ -66,9 +66,9 @@ public class CTReSwerveControls {
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                    drive.withVelocityX(-controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                            .withVelocityY(-controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                            .withRotationalRate(controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                    drive.withVelocityX(controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                            .withVelocityY(controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                            .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
 
     final Telemetry logger = new Telemetry(MaxSpeed);
@@ -131,10 +131,10 @@ public class CTReSwerveControls {
         yaw = Robot.firing.yaw;
       }
       return faceTarget
-              .withTargetDirection(Rotation2d.fromDegrees(yaw)) // face the target with 180-degree offset I had to add for some reason
+              .withTargetDirection(Rotation2d.fromDegrees(yaw))
               .withVelocityX(controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
               .withVelocityY(controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
-              .withRotationalDeadband(MaxAngularRate * 1);
+              .withRotationalDeadband(MaxAngularRate * .1);
     }));
 
     // Oscillate drivetrain command (wiggle)
