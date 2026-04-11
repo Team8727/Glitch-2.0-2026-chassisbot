@@ -45,7 +45,7 @@ public class Autos {
   private final Indexer indexer;
   private final ShooterRoller shooterRoller;
   private final IntakeRoller intakeRoller;
-  private final LEDSubsystem leds;
+  private final LEDSubsystem leds = LEDSubsystem.getInstance();
 
   /**
    * The list of autonomous path names to load and add to the auto chooser.
@@ -68,14 +68,12 @@ public class Autos {
    * @param indexer        The indexer subsystem for managing game piece intake to the shooter.
    * @param shooterRoller  The shooter subsystem for launching game pieces.
    * @param intakeRoller   The intake roller subsystem for picking up game pieces.
-   * @param leds            The LED subsystem for visual feedback.
    */
-  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRoller shooterRoller, IntakeRoller intakeRoller, LEDSubsystem leds) {
+  public Autos(CTRESwerveDrivetrain CTREDrivetrain, Indexer indexer, ShooterRoller shooterRoller, IntakeRoller intakeRoller) {
     this.CTREDrivetrain = CTREDrivetrain;
     this.indexer = indexer;
     this.shooterRoller = shooterRoller;
     this.intakeRoller = intakeRoller;
-    this.leds = leds;
 
     // register commands BEFORE paths
     registerNamedCommands();
@@ -90,10 +88,10 @@ public class Autos {
    * These commands can be called by name from the PathPlanner GUI.
    */
   private void registerNamedCommands() {
-    NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setDutyCycle(.5))
-            .finallyDo(() -> intakeRoller.setDutyCycle(0)));
-    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID));
-    NamedCommands.registerCommand("stopShoot", runOnce(() -> shooterRoller.setDutyCycle(0)).alongWith(runOnce(() -> indexer.setDutyCycle(0))));
+    NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setDutyCycle(.5)).alongWith(run(leds::intakePatterns))
+            .finallyDo(() -> intakeRoller.setDutyCycle(0)).alongWith(run(leds::endCommand)));
+    NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID).alongWith(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), leds.motorSpeed / (1 - .268)))));
+    NamedCommands.registerCommand("stopShoot", runOnce(() -> shooterRoller.setDutyCycle(0)).alongWith(runOnce(() -> indexer.setDutyCycle(0))).alongWith(run(leds::endCommand)));
   }
 
   /**

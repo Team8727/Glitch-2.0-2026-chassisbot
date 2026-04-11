@@ -57,8 +57,8 @@ public class Robot extends TimedRobot {
   private final IntakeRoller intakeRoller = new IntakeRoller();
   private final Indexer indexer = new Indexer();
   private final LEDSubsystem leds = LEDSubsystem.getInstance();
-  private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, intakeRoller, leds);
-  private final Controller mainController = new Driver1DefaultBindings(autos, CTREDrivetrain, intakeRoller, indexer, shooterRoller, leds);
+  private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, intakeRoller);
+  private final Controller mainController = new Driver1DefaultBindings(autos, CTREDrivetrain, intakeRoller, indexer, shooterRoller);
 
 
   public Servo pinServo;

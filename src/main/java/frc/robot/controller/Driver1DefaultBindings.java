@@ -22,15 +22,14 @@ public class Driver1DefaultBindings extends Controller {
   private final IntakeRoller intakeRoller;
   public final Indexer indexer;
   public final ShooterRoller shooterRoller;
-  public final LEDSubsystem leds;
+  private final LEDSubsystem leds = LEDSubsystem.getInstance();
 
   public Driver1DefaultBindings(
           Autos autos,
           CTRESwerveDrivetrain drivetrain,
           IntakeRoller intakeRoller,
           Indexer indexer,
-          ShooterRoller shooterRoller,
-          LEDSubsystem leds
+          ShooterRoller shooterRoller
       ) {
     super(0);
 
@@ -39,7 +38,6 @@ public class Driver1DefaultBindings extends Controller {
     this.intakeRoller = intakeRoller;
     this.indexer = indexer;
     this.shooterRoller = shooterRoller;
-    this.leds = leds;
 
     configureBindings();
   }
@@ -50,16 +48,21 @@ public class Driver1DefaultBindings extends Controller {
 
     // Put binds here
     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setDutyCycle(.8)));
+    controller.leftTrigger().toggleOnTrue(run(() -> leds.intakePatterns()));
+    controller.leftTrigger().onTrue(run(() -> leds.endCommand()));
+    // controller.leftTrigger().toggleOnTrue(new IntakeCommand(intakeRoller, 0.8));
     // controller.leftTrigger().onTrue(run(leds::intakePatterns));
     controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller,0, ShootCommand.ControlMode.PID));
-    controller.rightTrigger().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand));
+    controller.rightTrigger().whileTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), leds.motorSpeed / (1 - .268))));
+    controller.rightTrigger().onFalse(run(() -> leds.endCommand()));
+    // controller.rightTrigger().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand));
 
     // test systems
     controller.povDown().whileTrue(run(() -> intakeRoller.setDutyCycle(.8)));
     controller.y().whileTrue(run(() -> indexer.setDutyCycle(1))); // Forwards
     controller.x().whileTrue(run(() -> indexer.setDutyCycle(-1))); // Backwards
     controller.povRight().whileTrue(run(() -> shooterRoller.setVelocity(45, Roller.ControlMode.PID)));
-    controller.povRight().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand)); // Was 40, 45 is where drum rattling starts
+    // controller.povRight().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand)); // Was 40, 45 is where drum rattling starts
 
 //    controller.povRight().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)); // 4
 //    controller.povUp().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)); // 3

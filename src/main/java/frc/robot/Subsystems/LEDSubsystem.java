@@ -3,7 +3,9 @@ package frc.robot.Subsystems;
 import Glitch.Lib.LEDs.AbstractLEDS;
 import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.Robot;
 
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Second;
@@ -34,11 +36,12 @@ public class LEDSubsystem extends AbstractLEDS {
 
     public void start() {
          leftSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kGreen), Color.kBlack));
-//        leftSide.setBase(GlitchLEDPatterns.rainDrops(GlitchLEDPatterns.sunsetAce, 1, 1));
+        // leftSide.setBase(GlitchLEDPatterns.rainDrops(LEDPattern.solid(Color.kBlue), 1, 1));
         leftSide.setPattern(GlitchLEDPatterns.purple, 2);
         pip.setBase(GlitchLEDPatterns.purple);
         pip.setPattern(GlitchLEDPatterns.purple);
         rightSide.setBase(GlitchLEDPatterns.fire(LEDPattern.solid(Color.kGreen), Color.kBlack));
+        // rightSide.setBase(GlitchLEDPatterns.rainDrops(LEDPattern.solid(Color.kBlue), 1, 1));
         rightSide.setPattern(GlitchLEDPatterns.purple, 2);
     }
 
@@ -61,28 +64,24 @@ public class LEDSubsystem extends AbstractLEDS {
     }
 
     public void shootPatterns(double currentFlywheelVelocity, double targetFlywheelVelocity) {
-        leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, currentFlywheelVelocity, targetFlywheelVelocity));
-        rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.elevatorProgress, currentFlywheelVelocity, targetFlywheelVelocity));
+        leftSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.sunsetAce.scrollAtRelativeSpeed(Percent.per(Second).of(100)), currentFlywheelVelocity, targetFlywheelVelocity));
+        rightSide.setPattern(GlitchLEDPatterns.linearProgress(GlitchLEDPatterns.sunsetAce.scrollAtRelativeSpeed(Percent.per(Second).of(100)), currentFlywheelVelocity, targetFlywheelVelocity));
     }
 
     public void endCommand() {
         leftSide.setPattern(GlitchLEDPatterns.blinkyGreen, 0);
         rightSide.setPattern(GlitchLEDPatterns.blinkyGreen, 0);
     }
-
-    boolean intakePatternToggle = false;
+    
     public void intakePatterns() {
-        intakePatternToggle = !intakePatternToggle;
-        if (intakePatternToggle) {
-            leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)));
-            rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)));
-        } else {
-            leftSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), 0);
-            rightSide.setPattern(GlitchLEDPatterns.algaePickup.scrollAtRelativeSpeed(Percent.per(Second).of(75)), 0);
-        }
-        
+        leftSide.setPattern(LEDPattern.gradient(GradientType.kContinuous, Color.kGreen, Color.kWhite).scrollAtRelativeSpeed(Percent.per(Second).of(100)));
+        rightSide.setPattern(LEDPattern.gradient(GradientType.kContinuous, Color.kGreen, Color.kWhite).scrollAtRelativeSpeed(Percent.per(Second).of(100)));
     }
 
+    // Stuff I stole from ShootComand so the LEDs would be accurate :|
+    double speedCoefficient = 1 / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS);
+    double flywheelSpeed = speedCoefficient * (Robot.firing != null ? Robot.firing.power : 45);
+    public double motorSpeed = flywheelSpeed * (24.0 /15);
 
     @Override
     public void periodic() {
