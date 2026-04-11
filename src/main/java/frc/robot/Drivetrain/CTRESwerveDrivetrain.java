@@ -156,7 +156,12 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
                     this::resetPose,
                     () -> getState().Speeds,
                     (chassisSpeeds, driveFF) -> { // drive command
-                        ChassisSpeeds finalChassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
+                        ChassisSpeeds finalChassisSpeeds;
+                        if (Robot.isReal()) {
+                            finalChassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, -chassisSpeeds.omegaRadiansPerSecond);
+                        } else {
+                            finalChassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
+                        }
                         CommandScheduler.getInstance().schedule(
                                 applyRequest(() -> new SwerveRequest.ApplyRobotSpeeds().withSpeeds(finalChassisSpeeds)));
                     },

@@ -95,11 +95,11 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.609133858267703,
-      "rotationDegrees": -38.49726436161805
+      "rotationDegrees": -51.824577534954805
     },
     {
       "waypointRelativePos": 2.572913385826775,
-      "rotationDegrees": -88.72563357353513
+      "rotationDegrees": -91.62988065633853
     }
   ],
   "constraintZones": [],
@@ -122,13 +122,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -4.123023750290565
+    "rotation": -27.349875780069905
   },
   "reversed": false,
   "folder": "Strategy and Drive Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -0.2533989785487736
+    "rotation": 0.21890658074829897
   },
   "useDefaultConstraints": true
 }
