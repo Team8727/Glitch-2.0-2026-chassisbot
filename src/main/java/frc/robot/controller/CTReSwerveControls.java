@@ -126,9 +126,9 @@ public class CTReSwerveControls {
     controller.a().whileTrue(drivetrain.applyRequest(() -> {
       double yaw;
       if (Robot.isRedAlliance()) {
-        yaw = Robot.firing.yaw;
+        yaw = Robot.firing.yaw - 180 ;
       } else {
-        yaw = Robot.firing.yaw - 180;
+        yaw = Robot.firing.yaw;
       }
       return faceTarget
               .withTargetDirection(Rotation2d.fromDegrees(yaw)) // face the target with 180-degree offset I had to add for some reason
