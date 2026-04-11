@@ -48,7 +48,7 @@ public class CTReSwerveControls {
                   .withDeadband(MaxSpeed * 0.1)
                   .withRotationalDeadband(MaxAngularRate * 0.75)
                   .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                  .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
+                  .withHeadingPID(Robot.isReal() ? -REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
 
   // Hub positions
 //  private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
@@ -66,9 +66,9 @@ public class CTReSwerveControls {
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                    drive.withVelocityX(controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                            .withVelocityY(controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                            .withRotationalRate(-controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                    drive.withVelocityX(-controller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                            .withVelocityY(-controller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                            .withRotationalRate(controller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
 
     final Telemetry logger = new Telemetry(MaxSpeed);

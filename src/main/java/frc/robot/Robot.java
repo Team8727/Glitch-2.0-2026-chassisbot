@@ -8,6 +8,7 @@ import Glitch.Lib.Controller.Controller;
 import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -16,6 +17,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -36,7 +39,7 @@ import org.littletonrobotics.urcl.URCL;
  */
 public class Robot extends TimedRobot {
 
-  private static final double SHOOTER_ANGLE_DEGREES = 60.0;
+  private static final double SHOOTER_ANGLE_DEGREES = 73.0;
   private static final double SHOOTER_HEIGHT_METERS = 0.3;
   public static final double SHOOTER_FLYWHEEL_DIAMETER_METERS = 0.0889;
   private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
@@ -59,6 +62,7 @@ public class Robot extends TimedRobot {
   private final LEDSubsystem leds = LEDSubsystem.getInstance();
   private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, intakeRoller);
   private final Controller mainController = new Driver1DefaultBindings(autos, CTREDrivetrain, intakeRoller, indexer, shooterRoller);
+  public static final Field2d field = new Field2d();
 
 
   public Servo pinServo;
@@ -76,6 +80,8 @@ public class Robot extends TimedRobot {
     // Log data to a log file using WPILib's DataLogManager
     DataLogManager.logNetworkTables(true);
     DataLogManager.start();
+
+    SmartDashboard.putData("Field", field);
 
     // Start the URCL logger (logs REV SparkMaxes and SparkFlexes automatically on networkTables)
     URCL.start();
@@ -104,6 +110,9 @@ public class Robot extends TimedRobot {
     leds.initializeLEDS(0);
     pinServo = new Servo(1);
     pinServo.setAngle(0);
+    PathPlannerLogging.setLogActivePathCallback((poses) -> {
+      field.getObject("Path").setPoses(poses);
+    });
   }
 
   /**

@@ -52,7 +52,7 @@
         "y": 7.236819277108435
       },
       "prevControl": {
-        "x": 0.39578129815499963,
+        "x": 0.3957812981549996,
         "y": 7.127500007430288
       },
       "nextControl": {
@@ -80,12 +80,12 @@
     },
     {
       "anchor": {
-        "x": 3.1592296718972896,
-        "y": 4.183794579172611
+        "x": 2.4352617568766637,
+        "y": 4.208030168589175
       },
       "prevControl": {
-        "x": 2.9115549533446794,
-        "y": 4.443497726849653
+        "x": 2.1875870383240534,
+        "y": 4.467733316266217
       },
       "nextControl": null,
       "isLocked": false,
@@ -106,21 +106,9 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "shoot",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": 0,
-      "command": null
-    },
-    {
       "name": "spinRollers",
       "waypointRelativePos": 0.40107913669065415,
       "endWaypointRelativePos": 3.444244604316547,
-      "command": null
-    },
-    {
-      "name": "shoot",
-      "waypointRelativePos": 4.2,
-      "endWaypointRelativePos": 5.0,
       "command": null
     }
   ],

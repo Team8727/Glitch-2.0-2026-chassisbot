@@ -316,6 +316,8 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
         } else {
             m_lastVisionMeasurementCount = 0;
         }
+
+        Robot.field.setRobotPose(getState().Pose);
     }
 
     private void startSimThread() {
