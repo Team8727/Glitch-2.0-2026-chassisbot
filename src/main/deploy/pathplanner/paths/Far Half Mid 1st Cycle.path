@@ -127,7 +127,7 @@
     },
     {
       "waypointRelativePos": 5.1,
-      "rotationDegrees": -132.70537268628482
+      "rotationDegrees": -132.70537268628485
     }
   ],
   "constraintZones": [
@@ -149,14 +149,8 @@
   "eventMarkers": [
     {
       "name": "spinRollers",
-      "waypointRelativePos": 1.0356164383561646,
-      "endWaypointRelativePos": 4.334246575342467,
-      "command": null
-    },
-    {
-      "name": "shoot",
-      "waypointRelativePos": 5.25,
-      "endWaypointRelativePos": 5.989041095890413,
+      "waypointRelativePos": 0.9664429530201344,
+      "endWaypointRelativePos": 4.489932885906043,
       "command": null
     }
   ],

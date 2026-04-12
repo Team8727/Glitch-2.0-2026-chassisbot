@@ -135,14 +135,8 @@
   "eventMarkers": [
     {
       "name": "spinRollers",
-      "waypointRelativePos": 1.7214765100671126,
+      "waypointRelativePos": 1.9328859060402683,
       "endWaypointRelativePos": 4.560402684563758,
-      "command": null
-    },
-    {
-      "name": "shoot",
-      "waypointRelativePos": 5.657718120805379,
-      "endWaypointRelativePos": null,
       "command": null
     }
   ],
