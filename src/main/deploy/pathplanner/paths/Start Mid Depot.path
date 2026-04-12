@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 0.6549776785714285,
-        "y": 5.9664880952380965
+        "x": 0.6083850931677013,
+        "y": 5.962475598935225
       },
       "prevControl": {
-        "x": 0.4065750555248622,
-        "y": 5.938272197882431
+        "x": 0.35998247012113493,
+        "y": 5.93425970157956
       },
       "nextControl": {
-        "x": 1.1204272726173432,
-        "y": 6.01935822120039
+        "x": 1.073834687213616,
+        "y": 6.015345724897519
       },
       "isLocked": false,
       "linkedName": null
@@ -121,9 +121,14 @@
   "eventMarkers": [
     {
       "name": "spinRollers",
-      "waypointRelativePos": 2.1164383561643834,
-      "endWaypointRelativePos": 4.2054794520548,
-      "command": null
+      "waypointRelativePos": 1.686241610738251,
+      "endWaypointRelativePos": 4.068791946308744,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "spinRollers"
+        }
+      }
     }
   ],
   "globalConstraints": {

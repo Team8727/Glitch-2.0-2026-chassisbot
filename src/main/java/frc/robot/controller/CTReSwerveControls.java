@@ -132,8 +132,8 @@ public class CTReSwerveControls {
       }
       return faceTarget
               .withTargetDirection(Rotation2d.fromDegrees(yaw))
-              .withVelocityX(controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
-              .withVelocityY(controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
+              .withVelocityX(-controller.getLeftY() * MaxSpeed) // translate across field (driving from red to blue alliance sides)
+              .withVelocityY(-controller.getLeftX() * MaxSpeed) // translate across field (driving from field long wall to other long wall)
               .withRotationalDeadband(MaxAngularRate * .1);
     }));
 

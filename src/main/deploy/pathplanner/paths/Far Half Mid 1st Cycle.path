@@ -151,7 +151,12 @@
       "name": "spinRollers",
       "waypointRelativePos": 0.9664429530201344,
       "endWaypointRelativePos": 4.489932885906043,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "spinRollers"
+        }
+      }
     }
   ],
   "globalConstraints": {

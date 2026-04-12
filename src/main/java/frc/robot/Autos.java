@@ -52,10 +52,11 @@ public class Autos {
    * The first item in this list is set as the default option.
    */
   private static final List<String> AUTO_NAMES = List.of(
-          "Double Cycle Depot",
+          "Single Mid Cycle",
           "Start Mid Depot auto",
-          "final plan",
-          "shoot"
+          "Single Mid Cycle Close",
+          "Single Mid Cycle Very Close",
+          "Shoot"
   );
 
   /**
@@ -85,7 +86,7 @@ public class Autos {
    * These commands can be called by name from the PathPlanner GUI.
    */
   private void registerNamedCommands() {
-    NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setDutyCycle(.5)).alongWith(run(leds::intakePatterns))
+    NamedCommands.registerCommand("spinRollers", intakeRoller.run(() -> intakeRoller.setDutyCycle(.8)).alongWith(run(leds::intakePatterns))
             .finallyDo(() -> intakeRoller.setDutyCycle(0)).alongWith(run(leds::endCommand)));
     NamedCommands.registerCommand("shoot", new ShootCommand(indexer, shooterRoller, 0, ShootCommand.ControlMode.PID).alongWith(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), leds.motorSpeed / (1 - .268)))));
     NamedCommands.registerCommand("stopShoot", runOnce(() -> shooterRoller.setDutyCycle(0)).alongWith(runOnce(() -> indexer.setDutyCycle(0))).alongWith(run(leds::endCommand)));
