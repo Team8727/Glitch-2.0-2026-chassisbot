@@ -5,6 +5,7 @@
 package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
+import Glitch.Lib.LEDs.AbstractLEDS;
 import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -27,9 +28,14 @@ import frc.robot.Drivetrain.TunerConstants;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.IntakeRoller;
 import frc.robot.Subsystems.LEDSubsystem;
+import frc.robot.Subsystems.LEDTraining;
 import frc.robot.Subsystems.ShooterRoller;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
+
+import static edu.wpi.first.units.Units.Microseconds;
+import static edu.wpi.first.units.Units.Seconds;
+
 import org.littletonrobotics.urcl.URCL;
 
 /**
@@ -59,7 +65,7 @@ public class Robot extends TimedRobot {
   private final Vision vision = new Vision();
   private final IntakeRoller intakeRoller = new IntakeRoller();
   private final Indexer indexer = new Indexer();
-  private final LEDSubsystem leds = LEDSubsystem.getInstance();
+  private final LEDTraining leds = LEDTraining.getInstance();
   private final Autos autos = new Autos(CTREDrivetrain, indexer, shooterRoller, intakeRoller);
   private final Controller mainController = new Driver1DefaultBindings(autos, CTREDrivetrain, intakeRoller, indexer, shooterRoller);
   public static final Field2d field = new Field2d();
@@ -179,12 +185,13 @@ public class Robot extends TimedRobot {
     logger.logChassisSpeeds("world velocity", new ChassisSpeeds(firing.worldVel.getX(), firing.worldVel.getY(), 0));
 
     logger.logInt("vision measurement count", measurementCount);
+
+    leds.ledStrip.setPattern(LEDPattern.solid(leds.stripColor(Microseconds.of(AbstractLEDS.getTime()).in(Seconds))));
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    leds.start();
     pinServo.setAngle(0);
   }
 
@@ -202,17 +209,11 @@ public class Robot extends TimedRobot {
       CommandScheduler.getInstance().schedule(autoCommand);
     }
     pinServo.setAngle(125);
-
-    leds.autoInit();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-    leds.leftSide.setBase(confidenceNow);
-    leds.pip.setBase(confidenceNow);
-    leds.rightSide.setBase(confidenceNow);
-  }
+  public void autonomousPeriodic() {}
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -222,17 +223,11 @@ public class Robot extends TimedRobot {
     pinServo.setAngle(125);
 
     shooterRoller.m_loop.reset(VecBuilder.fill(Units.rotationsPerMinuteToRadiansPerSecond(shooterRoller.getVelocity())));
-
-    leds.teleopInit();
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    leds.leftSide.setBase(confidenceNow);
-    leds.pip.setBase(confidenceNow);
-    leds.rightSide.setBase(confidenceNow);
-  }
+  public void teleopPeriodic() {}
 
   /** This function is called once when test mode is enabled. */
   @Override
