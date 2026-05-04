@@ -30,6 +30,7 @@ import frc.robot.Subsystems.IntakeRoller;
 import frc.robot.Subsystems.LEDSubsystem;
 import frc.robot.Subsystems.LEDTraining;
 import frc.robot.Subsystems.ShooterRoller;
+import frc.robot.Subsystems.LEDTraining.MyTestPattern;
 import frc.robot.controller.Driver1DefaultBindings;
 import frc.robot.controller.ProjectileSolver;
 
@@ -186,7 +187,10 @@ public class Robot extends TimedRobot {
 
     logger.logInt("vision measurement count", measurementCount);
 
-    leds.ledStrip.setPattern(LEDPattern.solid(leds.stripColor(Microseconds.of(AbstractLEDS.getTime()).in(Seconds))));
+    // leds.ledStrip.setPattern(LEDPattern.solid(leds.stripColor(Microseconds.of(AbstractLEDS.getTime()).in(Seconds))));
+    // LEDPattern pattern = leds.new MyTestPattern();
+    LEDPattern pattern = leds.twoDPattern;
+    leds.ledStrip.setPattern(pattern);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
