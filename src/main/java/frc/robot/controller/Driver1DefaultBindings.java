@@ -46,28 +46,33 @@ public class Driver1DefaultBindings extends Controller {
   protected void configureBindings() {
     new CTReSwerveControls(drivetrain, controller);
 
-    // Put binds here
-    controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setDutyCycle(.8)));
-    controller.leftTrigger().toggleOnTrue(run(leds::intakePatterns));
-    controller.leftTrigger().onTrue(run(leds::endCommand));
-    // controller.leftTrigger().toggleOnTrue(new IntakeCommand(intakeRoller, 0.8));
-    // controller.leftTrigger().onTrue(run(leds::intakePatterns));
-    controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller,0, ShootCommand.ControlMode.FF_AND_PID));
-//    controller.rightTrigger().onTrue(run(() -> intakeRoller.setDutyCycle(0)));
-    controller.rightTrigger().whileTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), leds.motorSpeed / (1 - .268))));
-    controller.rightTrigger().onFalse(run(leds::endCommand));
-    // controller.rightTrigger().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand));
+//     // Put binds here
+//     controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setDutyCycle(.8)));
+//     controller.leftTrigger().toggleOnTrue(run(leds::intakePatterns));
+//     controller.leftTrigger().onTrue(run(leds::endCommand));
+//     // controller.leftTrigger().toggleOnTrue(new IntakeCommand(intakeRoller, 0.8));
+//     // controller.leftTrigger().onTrue(run(leds::intakePatterns));
+//     controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller,0, ShootCommand.ControlMode.FF_AND_PID));
+// //    controller.rightTrigger().onTrue(run(() -> intakeRoller.setDutyCycle(0)));
+//     controller.rightTrigger().whileTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), leds.motorSpeed / (1 - .268))));
+//     controller.rightTrigger().onFalse(run(leds::endCommand));
+//     // controller.rightTrigger().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand));
 
-    // test systems
-    controller.povDown().whileTrue(run(() -> intakeRoller.setDutyCycle(.8)));
-    controller.y().whileTrue(run(() -> indexer.setDutyCycle(1))); // Forwards
-    controller.x().whileTrue(run(() -> indexer.setDutyCycle(-1))); // Backwards
-    controller.povRight().whileTrue(run(() -> shooterRoller.setVelocity(45, Roller.ControlMode.PID)));
-    // controller.povRight().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand)); // Was 40, 45 is where drum rattling starts
+//     // test systems
+//     controller.povDown().whileTrue(run(() -> intakeRoller.setDutyCycle(.8)));
+//     controller.y().whileTrue(run(() -> indexer.setDutyCycle(1))); // Forwards
+//     controller.x().whileTrue(run(() -> indexer.setDutyCycle(-1))); // Backwards
+//     controller.povRight().whileTrue(run(() -> shooterRoller.setVelocity(45, Roller.ControlMode.PID)));
+//     // controller.povRight().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand)); // Was 40, 45 is where drum rattling starts
 
-//    controller.povRight().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)); // 4
-//    controller.povUp().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)); // 3
-//    controller.povDown().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)); // 2
-//    controller.povLeft().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)); // 1
+// //    controller.povRight().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)); // 4
+// //    controller.povUp().whileTrue(shooterRoller.sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)); // 3
+// //    controller.povDown().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)); // 2
+// //    controller.povLeft().whileTrue(shooterRoller.sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)); // 1
+
+
+    // Student edits here.
+    controller.leftTrigger().toggleOnTrue(null);
+    controller.rightTrigger().onTrue(null);
   }
 }
