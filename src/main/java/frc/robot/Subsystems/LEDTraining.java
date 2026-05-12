@@ -3,8 +3,8 @@ package frc.robot.Subsystems;
 import java.util.ArrayList;
 
 import Glitch.Lib.LEDs.AbstractLEDS;
-import Glitch.Lib.LEDs.GlitchLEDInterfaces.LEDArrayPattern;
-import Glitch.Lib.LEDs.GlitchLEDInterfaces.TwoDArrayPattern;
+import Glitch.Lib.LEDs.Interfaces.LEDArrayPattern;
+import Glitch.Lib.LEDs.Interfaces.TwoDArrayPattern;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
