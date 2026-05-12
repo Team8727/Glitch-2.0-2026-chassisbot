@@ -8,6 +8,7 @@ import frc.robot.Drivetrain.CTRESwerveDrivetrain;
 import frc.robot.Subsystems.Indexer;
 import frc.robot.Subsystems.IntakeRoller;
 import frc.robot.Subsystems.LEDSubsystem;
+import frc.robot.Subsystems.LEDTraining;
 import frc.robot.Subsystems.ShooterRoller;
 
 import static edu.wpi.first.wpilibj2.command.Commands.run;
@@ -22,7 +23,7 @@ public class Driver1DefaultBindings extends Controller {
   private final IntakeRoller intakeRoller;
   public final Indexer indexer;
   public final ShooterRoller shooterRoller;
-  private final LEDSubsystem leds = LEDSubsystem.getInstance();
+  // private final LEDSubsystem leds = LEDSubsystem.getInstance();
 
   public Driver1DefaultBindings(
           Autos autos,
@@ -72,6 +73,7 @@ public class Driver1DefaultBindings extends Controller {
 
 
     // Student edits here.
+    LEDTraining leds = LEDTraining.getInstance();
     controller.leftTrigger().toggleOnTrue(null);
     controller.rightTrigger().onTrue(null);
   }
