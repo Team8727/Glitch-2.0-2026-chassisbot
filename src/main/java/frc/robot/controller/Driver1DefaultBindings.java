@@ -2,6 +2,7 @@ package frc.robot.controller;
 
 import Glitch.Lib.BaseMechanisms.Roller;
 import Glitch.Lib.Controller.Controller;
+import Glitch.Lib.LEDs.LEDCommand;
 import frc.robot.Autos;
 import frc.robot.Commands.ShootCommand;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
@@ -53,7 +54,7 @@ public class Driver1DefaultBindings extends Controller {
 //     controller.leftTrigger().onTrue(run(leds::endCommand));
 //     // controller.leftTrigger().toggleOnTrue(new IntakeCommand(intakeRoller, 0.8));
 //     // controller.leftTrigger().onTrue(run(leds::intakePatterns));
-//     controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller,0, ShootCommand.ControlMode.FF_AND_PID));
+    // controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller,0, ShootCommand.ControlMode.FF_AND_PID));
 // //    controller.rightTrigger().onTrue(run(() -> intakeRoller.setDutyCycle(0)));
 //     controller.rightTrigger().whileTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), leds.motorSpeed / (1 - .268))));
 //     controller.rightTrigger().onFalse(run(leds::endCommand));
@@ -74,7 +75,7 @@ public class Driver1DefaultBindings extends Controller {
 
     // Student edits here.
     LEDTraining leds = LEDTraining.getInstance();
-    controller.leftTrigger().toggleOnTrue(null);
-    controller.rightTrigger().onTrue(null);
+    controller.leftTrigger().toggleOnTrue(new LEDCommand(null, null));
+    controller.rightTrigger().onTrue(new LEDCommand(null, null));
   }
 }
