@@ -188,9 +188,9 @@ public class Robot extends TimedRobot {
     logger.logInt("vision measurement count", measurementCount);
 
     // leds.ledStrip.setPattern(LEDPattern.solid(leds.stripColor(Microseconds.of(AbstractLEDS.getTime()).in(Seconds))));
-    LEDPattern pattern = leds.new MyTestPattern();
+    // LEDPattern pattern = leds.new MyTestPattern();
     // LEDPattern pattern = leds.twoDPattern;
-    leds.ledStrip.setPattern(pattern);
+    // leds.ledStrip.setPattern(pattern);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
