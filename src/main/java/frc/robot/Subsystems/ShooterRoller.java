@@ -184,7 +184,7 @@ public class ShooterRoller extends Roller {
     /**
      * Sets the voltage of the motor by using the SimpleMotorFeedForward for the flywheel to compute the required voltage for the desired velocity
      *
-     * @param speed the speed to set the motor to, in RPM
+     * @param speed the speed to set the motor to, in RPS (revolutions per second) — must be consistent with the feedforward kV units
      * @Note: This method is not used for the Flywheel LinearSystem (state-space).
      * To use FF there, a LinearSystem must be instantiated using LinearSystemId.identifyVelocitySystem(double kV, double kA) </p>
      * */

@@ -22,16 +22,11 @@ public class ProjectileSolver {
     FiringSolution sol = new FiringSolution();
     double g = 9.81;
 
-    // The user requested the shooter pitch be locked at 60 degrees.
-    // However, we use the parameter as requested, defaulting to 60 if needed.
+    // Use the passed-in muzzle pitch parameter, defaulting to 60 degrees if invalid.
     // In this project, pitch is measured above the horizontal.
-    double pitchAngle = Math.toRadians(muzzlePitchDegrees);
-    
-    // Safety: if the user passes 0 or something weird, we stick to 60 as requested by the issue.
-    if (Math.abs(muzzlePitchDegrees) < 0.1) pitchAngle = Math.toRadians(60.0);
-    
-    // We lock it to 60 as per the requirement "it should shoot at 60 degrees always"
-    pitchAngle = Math.toRadians(60.0);
+    double pitchAngle = (Math.abs(muzzlePitchDegrees) < 0.1)
+            ? Math.toRadians(60.0)
+            : Math.toRadians(muzzlePitchDegrees);
     double sinTheta = Math.sin(pitchAngle);
     double cosTheta = Math.cos(pitchAngle);
     double tanTheta = Math.tan(pitchAngle);

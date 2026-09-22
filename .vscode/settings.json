@@ -14,6 +14,14 @@
     "**/.factorypath": true,
     "**/*~": true
   },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/build/**": true,
+    "**/bin/**": true,
+    "**/.gradle/**": true,
+    "**/GlitchLib/**": true
+  },
   "java.test.config": [
     {
       "name": "WPIlibUnitTests",
