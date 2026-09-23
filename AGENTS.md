@@ -1,22 +1,129 @@
 # Glitch 2.0 Agents Documentation
 
-This document serves to provide instructions and guidelines for agents to write, alter, suggest, and test code within this Glitch 2.0 project. All agents should adhere to the following sections to ensure consistency and quality in contributions, unless the user specifies otherwise (by explicitly requesting a different approach).
+## ⚠️ Important: You Must Use an Implementation Agent
 
-## Project overview
+This repository requires all work to be done using an **implementation agent** (one that has write/edit file permissions). Do NOT use a plan-only agent — it cannot make changes. If you are in Plan mode, tell the user to switch you to an implementation agent immediately.
 
-This project is the repository for FRC (FIRST Robotics Competition) Team 8727 (Glitch 2.0)'s 2026 codebase. It is built using the WPILib framework and is designed to run on the FRC robots. The codebase includes subsystems, commands, and other files and configurations necessary for robot operation in simulation and real time during the season, during competitions, and during the off-season.
+## Project Overview
 
-## Build and test commands
-To build and test the project, agents should use the following commands:
-- To build the project: `./gradlew build`
-- To run tests: `./gradlew :test`
+This repository is the 2026 competition codebase for **FRC Team 8727 (Glitch 2.0)**. It is built using the WPILib framework (GradleRIO 2026.2.1, Java 17) and runs on the team's chassis robot during the 2026 season.
 
-## Guidelines for contributing
+The robot is a **swerve drive chassis** (CTRE TalonFX-based, Phoenix 6) with:
+- A **4-motor flywheel shooter** (REV SparkMax NEOs) for scoring
+- An **intake roller** for collecting game pieces
+- An **indexer** to feed game pieces to the shooter
+- **PhotonVision** cameras for AprilTag localization
+- **Addressable LEDs** (3 sections, 91 total) for driver feedback
+- **PathPlanner** for autonomous routines
 
-Please read the file GLITCHDOCS.md for advice before suggesting advice. All contributions must pass all tests, the project should be able to build successfully, and agents should adhere to the project's coding standards (unless the user explicitly requests a different approach). Agents should ensure that their code is well-documented through commenting in the code, logical formatting, and explanation to the user and follows best practices for readability and maintainability.
+All robot subsystems extend base classes from **GlitchLib**, a shared team library included as a git submodule (`GlitchLib/`). GlitchLib provides Motor, Roller, Pivot, LED, Controller, Vision, and NetworkTableLogger abstractions.
 
-## Code style guidelines
+## 2026 Game: REBUILT™ presented by Haas
 
-## Testing instructions
+### Game Overview
+- **Objective**: Score FUEL (foam balls, 5.91" diameter, ~0.45-0.5 lb) into your ALLIANCE's HUB and climb the TOWER for end-game points.
+- **Alliances**: 3 teams per alliance (up to 4 at Championships)
+- **Match length**: 2 minutes 40 seconds total
 
-## Security considerations
+### Match Timeline
+| Period | Duration | Timer | Key Rules |
+|--------|----------|-------|-----------|
+| **AUTO** | 20 seconds | 0:20 → 0:00 | Robots autonomous. Score FUEL in HUB. Can climb TOWER LEVEL 1 (15 pts, max 2 robots). |
+| **TRANSITION SHIFT** | 10 seconds | 2:20 → 2:10 | Both HUBS active. Drivers take control. |
+| **SHIFT 1-4** | 25 seconds each | 2:10 → 0:30 | Only one alliance's HUB active at a time. Status alternates based on AUTO results. |
+| **END GAME** | 30 seconds | 0:30 → 0:00 | Both HUBS active. Tower climbing counts. |
+
+### Hub Status Rules
+- During AUTO, TRANSITION SHIFT, and END GAME: **both HUBS are active**
+- During ALLIANCE SHIFTS: Only one HUB is active. The alliance that scored more FUEL in AUTO has their HUB **inactive** for SHIFT 1, then statuses alternate.
+- FUEL scored in an **active** HUB = 1 point each. FUEL scored in an **inactive** HUB = 0 points.
+
+### Scoring Summary
+- **FUEL in active HUB**: 1 point each (AUTO and TELEOP)
+- **TOWER LEVEL 1** (AUTO only): 15 points per robot (max 2 robots)
+- **TOWER LEVEL 2** (TELEOP): 20 points per robot
+- **TOWER LEVEL 3** (TELEOP): 30 points per robot
+
+### Ranking Points (RP)
+- **ENERGIZED RP**: Score ≥ threshold of FUEL in active HUB (varies by event level)
+- **SUPERCHARGED RP**: Score ≥ higher threshold of FUEL in active HUB
+- **TRAVERSAL RP**: Score ≥ 50 TOWER points
+- **Win**: 3 RP | **Tie**: 1 RP
+
+### Field Landmarks
+- **HUB**: 47" × 47" structure with hexagonal opening 72" off carpet. Has exits that distribute FUEL back into NEUTRAL ZONE.
+- **TOWER**: Climbing structure with LEVEL 1, 2, 3 rungs.
+- **DEPOT**: Contains 24 FUEL at match start.
+- **OUTPOST**: Contains 24 FUEL in CHUTE. Has HUMAN PLAYER area.
+- **NEUTRAL ZONE**: Center of field, 72" × 206" area, contains remaining FUEL.
+- **ALLIANCE ZONE**: Area around each alliance's TOWER and DEPOT.
+
+### AprilTags (32 total, 36h11 family, IDs 1-32)
+- **HUB**: 4 faces × 2 tags each (IDs 2,3,4,5,8,9,10,11,18,19,20,21,24,25,26,27) — centered 44.25" off floor
+- **TOWER WALL**: 2 tags each tower (IDs 15,16,31,32) — centered 21.75" off floor
+- **OUTPOST**: 2 tags each outpost (IDs 13,14,29,30) — centered 21.75" off floor
+- **TRENCH**: 2 tags each trench (IDs 1,6,7,12,17,22,23,28) — centered 35" off floor
+
+## Codebase Architecture
+
+### Directory Structure
+```
+src/main/java/frc/robot/
+├── Commands/
+│   └── ShootCommand.java            — 4-mode shooter command (PID, FF, FF+PID, STATE_SPACE)
+├── controller/
+│   ├── CTReSwerveControls.java      — Swerve drive controls, target-facing, oscillation
+│   ├── Driver1DefaultBindings.java  — Xbox controller bindings (extends GlitchLib Controller)
+│   ├── ProjectileSolver.java        — Solves projectile motion for shooter aim
+│   └── ZoneController.java          — Zone-based auto-command triggers (currently unused)
+├── Drivetrain/
+│   ├── CTRESwerveDrivetrain.java    — Phoenix 6 swerve drive (extends TunerSwerveDrivetrain)
+│   ├── Telemetry.java               — NetworkTables swerve state publisher
+│   └── TunerConstants.java          — Generated by Tuner X, module geometry & gains
+├── Subsystems/
+│   ├── Indexer.java                 — Feeder roller (2 NEOs, CAN 4-5)
+│   ├── IntakeRoller.java            — Intake roller (1 NEO, CAN 3)
+│   ├── LEDSubsystem.java            — 91 LEDs in 3 sections, custom patterns
+│   └── ShooterRoller.java           — 4-motor flywheel with state-space control
+├── Autos.java                       — PathPlanner auto routines (23 paths)
+├── Main.java                        — Entry point
+├── Robot.java                       — Main TimedRobot loop
+└── Vision.java                      — PhotonVision camera config & provider
+```
+
+### GlitchLib (git submodule)
+```
+GlitchLib/Glitch/Lib/
+├── BaseMechanisms/  — Roller, Pivot, SimplePivot, LinearMechanism
+├── Controller/      — Base Controller class for bindings
+├── LEDs/            — AbstractLEDS, GlitchLEDPatterns, GlitchColors
+├── Motors/          — Motor interface, SparkMaxMotor, SparkConfigurator
+├── Vision/          — PhotonVision provider (real & sim)
+├── Autos.java       — Auto path loader
+└── NetworkTableLogger.java — Custom logging utility
+```
+
+## Build & Test Commands
+- Build: `./gradlew build`
+- Run tests: `./gradlew :test`
+- All changes must compile and all tests must pass before submitting.
+
+## Known Issues & TODOs
+1. **IntakeRoller** and **Indexer** have PID values set to (0,0,0) — needs SysID tuning before velocity mode will work.
+2. **Flywheel gearing** (`kFlywheelGearing = 0.5` in ShooterRoller) — verify this matches the physical gearbox ratio. If the flywheel actually spins slower than the motor, this should be > 1.0.
+3. **Encoder conversion factor** (1.0/60) — the comment says "I think this outputs RPS" but units should be verified against the actual encoder.
+4. **ZoneController** is instantiated but commented out in Robot.java (dead code).
+5. **GlitchLib** uses deprecated `PhotonPoseEstimator.update()` API — will need upgrading eventually.
+
+## Code Style Guidelines
+- Follow standard Java/FRC conventions.
+- Document all public methods with Javadoc comments.
+- Extract magic numbers into named constants with explanatory comments.
+- Keep subsystem periodic() methods lean — telemetry logging is inherited from GlitchLib.
+- Use GlitchLib abstractions (Roller, Motor, Controller) rather than raw hardware calls.
+- All trigger bindings go in Driver1DefaultBindings via configureBindings().
+
+## Security Considerations
+- This is FRC robot code running on a closed field network. No external network access.
+- Do not hardcode secrets or credentials.
+- All vendor dependencies are managed through vendordeps/ JSON files.
