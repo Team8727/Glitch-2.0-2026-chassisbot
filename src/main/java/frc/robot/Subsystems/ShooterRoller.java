@@ -36,7 +36,7 @@ public class ShooterRoller extends Roller {
                 .inverted(false)
                 .disableFollowerMode()
                 .closedLoop
-                .pid(0.03, 0, 0); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.07, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M0config
@@ -51,7 +51,7 @@ public class ShooterRoller extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .follow(M0CANID, false)
                 .closedLoop
-                .pid(0.03, 0, 0); // Tuned using SysID. Previous a  rb P was 0.07
+                .pid(0.07, 0, 0); // Tuned using SysID. Previous a  rb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M1config
@@ -66,7 +66,7 @@ public class ShooterRoller extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .follow(M0CANID, true) // DO NOT CHANGE, TO INVERT THE SPINNING OF THE ROLLERS CHANGE THE LEADER MOTOR ONLY
                 .closedLoop
-                .pid(0.03, 0, 0); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.07, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M2config
@@ -81,7 +81,7 @@ public class ShooterRoller extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .follow(M0CANID, true)
                 .closedLoop
-                .pid(0.03, 0, 0); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.07, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M3config

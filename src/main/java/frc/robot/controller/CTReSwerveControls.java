@@ -21,7 +21,8 @@ public class CTReSwerveControls {
 
   // PID gains for whole-robot rotation to face a target - different for sim and real (and different from swerve module PID gains)
   static final double SIM_ROTATION_kP = 50;
-  static final double REAL_ROTATION_kP = 8;
+  static final double REAL_ROTATION_kP = 25;
+  static final double ROTATION_kD = 0.15;
 
   // Max speed and angular rate for teleop control, can be tuned for better driver feel
   public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)*.8; // kSpeedAt12Volts desired top speed
@@ -40,7 +41,7 @@ public class CTReSwerveControls {
                   .withDeadband(MaxSpeed * 0.1)
                   .withRotationalDeadband(MaxAngularRate * 0.1)
                   .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                  .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
+                  .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, ROTATION_kD);
 
   // Swerve Request for use in trigger command to always point towards the target.
   public static final SwerveRequest.FieldCentricFacingAngle faceTarget =
@@ -48,7 +49,7 @@ public class CTReSwerveControls {
                   .withDeadband(MaxSpeed * 0.1)
                   .withRotationalDeadband(MaxAngularRate * 0.75)
                   .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                  .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, 0);
+                  .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, ROTATION_kD);
 
   // Hub positions
 //  private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);

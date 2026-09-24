@@ -1,0 +1,665 @@
+{
+  "version": 1.0,
+  "grid_size": 128,
+  "tabs": [
+    {
+      "name": "Teleop",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "Shooter Info",
+            "x": 1024,
+            "y": 0,
+            "width": 256,
+            "height": 384,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Shooter Velocity",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/shooter vel",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Shooter Yaw",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/shooter yaw",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Shooter Pitch",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/shooter2 pitch",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Solution Valid",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Robot/shooter2 valid",
+                  "period": 0.033,
+                  "true_color": 4278255615,
+                  "false_color": 4294901760
+                }
+              },
+              {
+                "title": "Distance To Target",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/shooter2 horizontal distance",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Vision Count",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/vision measurement count",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "Robot Voltage",
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 128,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/Robot/voltage",
+              "period": 0.033,
+              "min_value": 4.0,
+              "max_value": 13.0,
+              "divisions": 9,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Field",
+            "x": 0,
+            "y": 128,
+            "width": 512,
+            "height": 512,
+            "type": "Field",
+            "properties": {
+              "topic": "/Pose",
+              "period": 0.033,
+              "field_game": "Rebuilt",
+              "robot_width": 0.82,
+              "robot_length": 0.82,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295,
+              "show_robot_outside_widget": true
+            }
+          },
+          {
+            "title": "Match Time",
+            "x": 512,
+            "y": 128,
+            "width": 128,
+            "height": 128,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/FMSInfo/MatchTime",
+              "period": 0.033,
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 15,
+              "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "FMS Info",
+            "x": 512,
+            "y": 256,
+            "width": 256,
+            "height": 128,
+            "type": "FMSInfo",
+            "properties": {
+              "topic": "/FMSInfo",
+              "period": 0.033
+            }
+          },
+          {
+            "title": "Swerve Drive",
+            "x": 512,
+            "y": 384,
+            "width": 256,
+            "height": 256,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/DriveState",
+              "period": 0.033,
+              "show_robot_rotation": true,
+              "rotation_unit": "Degrees"
+            }
+          },
+          {
+            "title": "Battery Voltage Graph",
+            "x": 768,
+            "y": 0,
+            "width": 256,
+            "height": 256,
+            "type": "Graph",
+            "properties": {
+              "topic": "/Robot/voltage",
+              "period": 0.1,
+              "time_displayed": 30.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Shooter Flywheel Speed",
+            "x": 768,
+            "y": 256,
+            "width": 256,
+            "height": 128,
+            "type": "Graph",
+            "properties": {
+              "topic": "/Robot/[NEW] Flywheel setpoint velocity",
+              "period": 0.1,
+              "time_displayed": 15.0,
+              "color": 4283215696,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Auto Chooser",
+            "x": 1280,
+            "y": 0,
+            "width": 256,
+            "height": 128,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto choices",
+              "period": 0.5,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "Command Scheduler",
+            "x": 1280,
+            "y": 128,
+            "width": 256,
+            "height": 256,
+            "type": "Scheduler",
+            "properties": {
+              "topic": "/Scheduler",
+              "period": 0.033
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Autonomous",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Auto Chooser",
+            "x": 0,
+            "y": 0,
+            "width": 384,
+            "height": 128,
+            "type": "Split Button Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto choices",
+              "period": 0.5
+            }
+          },
+          {
+            "title": "Command Scheduler",
+            "x": 0,
+            "y": 128,
+            "width": 384,
+            "height": 256,
+            "type": "Scheduler",
+            "properties": {
+              "topic": "/Scheduler",
+              "period": 0.033
+            }
+          },
+          {
+            "title": "Field",
+            "x": 384,
+            "y": 0,
+            "width": 640,
+            "height": 640,
+            "type": "Field",
+            "properties": {
+              "topic": "/Pose",
+              "period": 0.033,
+              "field_game": "Rebuilt",
+              "robot_width": 0.82,
+              "robot_length": 0.82,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295,
+              "show_robot_outside_widget": true
+            }
+          },
+          {
+            "title": "Vision Measurement Count",
+            "x": 1024,
+            "y": 0,
+            "width": 256,
+            "height": 128,
+            "type": "Number Bar",
+            "properties": {
+              "topic": "/Robot/vision measurement count",
+              "period": 0.033,
+              "min_value": 0.0,
+              "max_value": 10.0,
+              "divisions": 10,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Robot Voltage",
+            "x": 1024,
+            "y": 128,
+            "width": 256,
+            "height": 128,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/Robot/voltage",
+              "period": 0.033,
+              "min_value": 4.0,
+              "max_value": 13.0,
+              "divisions": 9,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Match Time",
+            "x": 1024,
+            "y": 256,
+            "width": 256,
+            "height": 128,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/FMSInfo/MatchTime",
+              "period": 0.033,
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 15,
+              "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "FMS Info",
+            "x": 1024,
+            "y": 384,
+            "width": 256,
+            "height": 128,
+            "type": "FMSInfo",
+            "properties": {
+              "topic": "/FMSInfo",
+              "period": 0.033
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Debug",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "Shooter Motors",
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 384,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Shooter Velocity",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/ShooterRoller/velocity",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Shooter Current",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/ShooterRoller/current",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Required Flywheel Speed",
+                "x": 0,
+                "y": 0,
+                "width": 256,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/[NEW] Flywheel setpoint velocity",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Intake & Indexer",
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Intake Current",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/IntakeRoller/current",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Indexer Current",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Indexer/current",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Intake Speed",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/IntakeRoller/velocity",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Indexer Speed",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Indexer/velocity",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "Robot Voltage",
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 128,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/Robot/voltage",
+              "period": 0.033,
+              "min_value": 4.0,
+              "max_value": 13.0,
+              "divisions": 9,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Shooter Flywheel",
+            "x": 768,
+            "y": 0,
+            "width": 256,
+            "height": 128,
+            "type": "Graph",
+            "properties": {
+              "topic": "/ShooterRoller/velocity",
+              "period": 0.033,
+              "time_displayed": 15.0,
+              "color": 4283215696,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Shooter Required Speed",
+            "x": 768,
+            "y": 128,
+            "width": 256,
+            "height": 128,
+            "type": "Graph",
+            "properties": {
+              "topic": "/Robot/[NEW] Flywheel setpoint velocity",
+              "period": 0.033,
+              "time_displayed": 15.0,
+              "color": 4286611456,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Field",
+            "x": 1024,
+            "y": 0,
+            "width": 512,
+            "height": 512,
+            "type": "Field",
+            "properties": {
+              "topic": "/Pose",
+              "period": 0.033,
+              "field_game": "Rebuilt",
+              "robot_width": 0.82,
+              "robot_length": 0.82,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295,
+              "show_robot_outside_widget": true
+            }
+          },
+          {
+            "title": "Swerve Drive",
+            "x": 512,
+            "y": 128,
+            "width": 256,
+            "height": 256,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/DriveState",
+              "period": 0.033,
+              "show_robot_rotation": true,
+              "rotation_unit": "Degrees"
+            }
+          },
+          {
+            "title": "Module 0",
+            "x": 512,
+            "y": 384,
+            "width": 256,
+            "height": 128,
+            "type": "Subsystem",
+            "properties": {
+              "topic": "/SmartDashboard/Module 0",
+              "period": 0.033
+            }
+          },
+          {
+            "title": "Module 1",
+            "x": 768,
+            "y": 384,
+            "width": 256,
+            "height": 128,
+            "type": "Subsystem",
+            "properties": {
+              "topic": "/SmartDashboard/Module 1",
+              "period": 0.033
+            }
+          },
+          {
+            "title": "Module 2",
+            "x": 1024,
+            "y": 512,
+            "width": 256,
+            "height": 128,
+            "type": "Subsystem",
+            "properties": {
+              "topic": "/SmartDashboard/Module 2",
+              "period": 0.033
+            }
+          },
+          {
+            "title": "Module 3",
+            "x": 1280,
+            "y": 512,
+            "width": 256,
+            "height": 128,
+            "type": "Subsystem",
+            "properties": {
+              "topic": "/SmartDashboard/Module 3",
+              "period": 0.033
+            }
+          },
+          {
+            "title": "Command Scheduler",
+            "x": 0,
+            "y": 384,
+            "width": 512,
+            "height": 256,
+            "type": "Scheduler",
+            "properties": {
+              "topic": "/Scheduler",
+              "period": 0.033
+            }
+          },
+          {
+            "title": "Gyro",
+            "x": 0,
+            "y": 640,
+            "width": 256,
+            "height": 256,
+            "type": "Gyro",
+            "properties": {
+              "topic": "/DriveState/Pose",
+              "period": 0.033,
+              "counter_clockwise_positive": false
+            }
+          },
+          {
+            "title": "Auto Chooser",
+            "x": 256,
+            "y": 640,
+            "width": 256,
+            "height": 128,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto choices",
+              "period": 0.5,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "Shooter Power Override",
+            "x": 256,
+            "y": 768,
+            "width": 256,
+            "height": 128,
+            "type": "Number Slider",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter power",
+              "period": 0.033,
+              "min_value": 0.0,
+              "max_value": 100.0,
+              "divisions": 100,
+              "update_continuously": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

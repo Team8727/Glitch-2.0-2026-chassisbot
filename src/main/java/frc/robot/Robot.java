@@ -38,9 +38,18 @@ import org.littletonrobotics.urcl.URCL;
  */
 public class Robot extends TimedRobot {
 
-  private static final double SHOOTER_ANGLE_DEGREES = 60.0;
-  private static final double SHOOTER_HEIGHT_METERS = 0.3;
+  /**
+   * Shooter launch pitch angle (degrees above horizontal). The shooter is mechanically fixed,
+   * so software adjusts only flywheel speed.
+   */
+  public static final double SHOOTER_ANGLE_DEGREES = 45.0;
+
+  /** Shooter centerline height (meters above carpet). */
+  public static final double SHOOTER_HEIGHT_METERS = 0.3;
   public static final double SHOOTER_FLYWHEEL_DIAMETER_METERS = 0.0889;
+
+  /** Hub opening height (meters above carpet). */
+  public static final double HUB_Z_METERS = 1.8;
   private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
   private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
   public static final double SHOOTER_LOSS_COMPENSATION = 2;
