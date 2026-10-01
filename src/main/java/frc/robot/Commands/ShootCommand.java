@@ -10,48 +10,29 @@ import frc.robot.Subsystems.ShooterRoller;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 public class ShootCommand extends SequentialCommandGroup {
-  // Gear ratio between the flywheel and the motor (output/input)
+  // Gear ratio between the motor and flywheel (output/input)
   private static final double FLYWHEEL_GEAR_RATIO = 24.0 / 15.0;
-  // Slip compensation percentage for PID control mode (26.8%)
+  // Slip compensation percentages
   private static final double SLIP_PERCENTAGE_PID = 0.268;
-  // Slip compensation percentage for FF+PID control mode (15%)
   private static final double SLIP_PERCENTAGE_FF_PID = 0.15;
   // Speed factor for STATE_SPACE control mode
   private static final double STATE_SPACE_SPEED_FACTOR = 0.95;
-  // Fallback muzzle velocity (m/s) used when the projectile solver has no valid solution.
-  // Instead of a constant, we estimate from horizontal distance so the power still varies
-  // with how far the robot is from the hub — copied into each lambda below.
-  private static final double GRAVITY_MPS2 = 9.81;
-
-  /**
-   * Estimate the required muzzle velocity (m/s) for the fixed shooter angle at a given horizontal
-   * distance.  Uses the standard projectile-motion equation:
-   * <pre>
-   *   v² = g·d² / (2·cos²θ·(d·tanθ − Δz))
-   * </pre>
-   * Falls back to a reasonable minimum if the target is too close.
-   */
-  private static double estimateMuzzleVelocity(double horizontalDistanceMeters) {
-    double dz = Robot.HUB_Z_METERS - Robot.SHOOTER_HEIGHT_METERS;
-    double theta = Math.toRadians(Robot.SHOOTER_ANGLE_DEGREES);
-    double cosTheta = Math.cos(theta);
-    double tanTheta = Math.tan(theta);
-
-    double denom = horizontalDistanceMeters * tanTheta - dz;
-    if (denom <= 0.001) return 8.0;               // target too close for the line-of-sight
-    double vSq = GRAVITY_MPS2 * horizontalDistanceMeters * horizontalDistanceMeters
-               / (2.0 * cosTheta * cosTheta * denom);
-    return Math.sqrt(Math.max(vSq, 36.0));        // floor = 6 m/s (never return 0)
-  }
 
   public ShootCommand(Indexer indexer, ShooterRoller shooterRoller, double fixedLinearVelocity, ControlMode controlMode) {
     addCommands(
             parallel(
                     shooterRoller.run(() -> {
-                      double speedCoefficient = 1 / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS); // Used to convert to rps with multiplier
+                      // The projectile solver now always produces a valid, distance-varying power
                       double muzzleVelocity = (fixedLinearVelocity == 0)
-                              ? (Robot.firing.isValid ? Robot.firing.power : estimateMuzzleVelocity(Robot.firing.horizontalDistance))
-                              : fixedLinearVelocity; // Manual shoot override
+                              ? Robot.firing.power
+                              : fixedLinearVelocity;
+
+                      if (!Robot.firing.isValid && fixedLinearVelocity == 0) {
+                        // Solver couldn't find a perfect solution — use its best estimate instead
+                        muzzleVelocity = Math.max(muzzleVelocity, 6.0);
+                      }
+
+                      double speedCoefficient = 1 / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS);
                       double flywheelSpeed = speedCoefficient * muzzleVelocity;
                       double motorSpeed = flywheelSpeed * FLYWHEEL_GEAR_RATIO;
                       if (controlMode == ControlMode.FEEDFORWARD) {
@@ -77,8 +58,8 @@ public class ShootCommand extends SequentialCommandGroup {
               if (controlMode == ControlMode.STATE_SPACE) {
                 double speedCoefficient = 1 / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS);
                 double muzzleVelocity = (fixedLinearVelocity == 0)
-                        ? (Robot.firing.isValid ? Robot.firing.power : estimateMuzzleVelocity(Robot.firing.horizontalDistance))
-                        : fixedLinearVelocity; // Manual shoot override
+                        ? Robot.firing.power
+                        : fixedLinearVelocity;
                 double flywheelSpeed = speedCoefficient * muzzleVelocity;
                 double motorSpeed = flywheelSpeed * FLYWHEEL_GEAR_RATIO;
                 shooterRoller.m_loop.setNextR(VecBuilder.fill(STATE_SPACE_SPEED_FACTOR * flywheelSpeed));

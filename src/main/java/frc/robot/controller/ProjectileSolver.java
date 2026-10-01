@@ -2,137 +2,180 @@ package frc.robot.controller;
 
 import edu.wpi.first.math.geometry.Translation3d;
 
+/**
+ * Solves for projectile motion parameters to hit a target from a moving shooter
+ * at a fixed launch pitch angle.
+ *
+ * <p>Uses Newton-Raphson iteration to solve the full quartic time-of-flight equation
+ * when the robot is moving, with a direct analytic fallback for stationary shots and
+ * a distance-based estimate when convergence fails — ensuring power always varies
+ * with distance.
+ */
 public class ProjectileSolver {
 
   public static class FiringSolution {
-    public double yaw;      // Rotation around Z (degrees) - Standard FRC Gyro frame
-    public double pitch;    // Angle above ground (degrees)
-    public double power;    // Muzzle velocity magnitude
-    public double horizontalDistance; // 2D horizontal plane distance to target (meters)
-    public boolean isValid; // Whether a valid solution was found (e.g. not out of range)
+    /** Horizontal aim direction (degrees, 0 = +X, 90 = +Y). */
+    public double yaw;
+    /** Pitch angle above horizontal (degrees). */
+    public double pitch;
+    /** Required muzzle velocity magnitude (m/s). */
+    public double power;
+    /** Horizontal distance to target (m). */
+    public double horizontalDistance;
+    /** Whether a usable firing solution was found. */
+    public boolean isValid;
+    /** Projectile velocity in world frame (m/s). */
     public Translation3d worldVel;
 
     @Override
     public String toString() {
-      return String.format("Valid: %b | Yaw: %.2f | Pitch: %.2f | Power: %.2f | Dist: %.2f", isValid, yaw, pitch, power, horizontalDistance);
+      return String.format("Valid: %b | Yaw: %.2f | Pitch: %.2f | Power: %.2f | Dist: %.2f",
+          isValid, yaw, pitch, power, horizontalDistance);
     }
   }
 
-  public static FiringSolution solve(Translation3d start, Translation3d target, Translation3d shooterVel, double muzzlePitchDegrees) {
+  private static final double G = 9.81;
+  /** Safety cap — unrealistic to need more. */
+  private static final double MAX_POWER_MPS = 20.0;
+
+  /**
+   * Analytic muzzle velocity for a <em>stationary</em> shooter at the given pitch.
+   * <pre>
+   *   v² = g·d² / (2·cos²θ·(d·tanθ − Δz))
+   * </pre>
+   * Returns NaN when {@code d·tanθ ≤ Δz} (target below line of sight).
+   */
+  private static double stationaryVelocity(double d, double dz, double pitchRad) {
+    double cos = Math.cos(pitchRad);
+    double tan = Math.tan(pitchRad);
+    double denom = d * tan - dz;
+    if (denom <= 0.0) return Double.NaN;
+    return Math.sqrt(G * d * d / (2.0 * cos * cos * denom));
+  }
+
+  /**
+   * Core solve: computes muzzle velocity & time-of-flight for a moving/stationary shooter.
+   */
+  public static FiringSolution solve(
+      Translation3d start,
+      Translation3d target,
+      Translation3d shooterVel,
+      double muzzlePitchDegrees) {
+
     FiringSolution sol = new FiringSolution();
-    double g = 9.81;
-
-    // Use the passed-in muzzle pitch parameter, defaulting to 60 degrees if invalid.
-    // In this project, pitch is measured above the horizontal.
-    double pitchAngle = (Math.abs(muzzlePitchDegrees) < 0.1)
-            ? Math.toRadians(60.0)
-            : Math.toRadians(muzzlePitchDegrees);
-    double sinTheta = Math.sin(pitchAngle);
-    double cosTheta = Math.cos(pitchAngle);
-    double tanTheta = Math.tan(pitchAngle);
-    double cotTheta = 1.0 / tanTheta;
-    double cot2Theta = cotTheta * cotTheta;
-
-    // Target relative to shooter at t=0
-    Translation3d diff = target.minus(start);
+    Translation3d diff  = target.minus(start);
     double dx = diff.getX();
     double dy = diff.getY();
     double dz = diff.getZ();
 
-    // Robot velocity (field frame)
     double vrx = shooterVel.getX();
     double vry = shooterVel.getY();
     double vrz = shooterVel.getZ();
 
-    // Projectile motion with moving platform:
-    // We need to find time of flight 't' such that the muzzle velocity vector
-    // (relative to the robot) has the required pitch (60 deg).
-    //
-    // Components of muzzle velocity Vm:
-    // vmx = dx/t - vrx
-    // vmy = dy/t - vry
-    // vmz = (dz + 0.5*g*t^2)/t - vrz
-    //
-    // Constraint: vmz / sqrt(vmx^2 + vmy^2) = tan(60)
-    // or: vmx^2 + vmy^2 = cot^2(60) * vmz^2
-    //
-    // Multiply by t^2:
-    // (dx - vrx*t)^2 + (dy - vry*t)^2 = cot^2(60) * (dz + 0.5*g*t^2 - vrz*t)^2
-    
-    double a = 0.5 * g;
+    double d = Math.sqrt(dx * dx + dy * dy);
+    sol.horizontalDistance = d;
+
+    // --- Determine pitch ---
+    double pitchRad = (Math.abs(muzzlePitchDegrees) < 0.1)
+        ? Math.toRadians(45.0)
+        : Math.toRadians(muzzlePitchDegrees);
+    double sinTheta = Math.sin(pitchRad);
+    double cosTheta = Math.cos(pitchRad);
+    double tanTheta = Math.tan(pitchRad);
+    double cotTheta = 1.0 / tanTheta;
+    double cot2Theta = cotTheta * cotTheta;
+
+    // --- Initial guess for time of flight (stationary approximation) ---
+    double t;
+    if (d * tanTheta > dz) {
+      t = Math.sqrt(2.0 * (d * tanTheta - dz) / G);
+    } else {
+      t = 0.5;
+    }
+
+    // --- Quartic coefficients (moving shooter) ---
+    // (dx - vrx·t)² + (dy - vry·t)² = cot²θ·(dz + ½g·t² − vrz·t)²
+    double a = 0.5 * G;
     double b = -vrz;
     double c = dz;
     double k = cot2Theta;
 
-    // Coefficients for the quartic: A*t^4 + B*t^3 + C*t^2 + D*t + E = 0
-    // RHS = k * (a*t^2 + b*t + c)^2 = k*(a^2 t^4 + 2ab t^3 + (b^2 + 2ac) t^2 + 2bc t + c^2)
-    // LHS = (vrx^2 + vry^2) t^2 - 2(dx*vrx + dy*vry) t + (dx^2 + dy^2)
-    
     double A = k * (a * a);
-    double B = k * (2 * a * b);
-    double C = k * (b * b + 2 * a * c) - (vrx * vrx + vry * vry);
-    double D = k * (2 * b * c) + 2 * (dx * vrx + dy * vry);
+    double B = k * (2.0 * a * b);
+    double C = k * (b * b + 2.0 * a * c) - (vrx * vrx + vry * vry);
+    double D = k * (2.0 * b * c) + 2.0 * (dx * vrx + dy * vry);
     double E = k * (c * c) - (dx * dx + dy * dy);
 
-    // Initial guess: Static shot time of flight
-    double groundDist = Math.sqrt(dx * dx + dy * dy);
-    double t;
-    if (groundDist * tanTheta > dz) {
-      t = Math.sqrt(2 * (groundDist * tanTheta - dz) / g);
-    } else {
-      t = 0.5; // Reasonable default for typical distances
-    }
-
-    // Newton-Raphson iteration
-    for (int i = 0; i < 25; i++) {
+    // --- Newton-Raphson (up to 40 iterations, more tolerant) ---
+    boolean converged = false;
+    for (int i = 0; i < 40; i++) {
       double t2 = t * t;
       double t3 = t2 * t;
       double t4 = t3 * t;
 
-      double f = A * t4 + B * t3 + C * t2 + D * t + E;
-      double fp = 4 * A * t3 + 3 * B * t2 + 2 * C * t + D;
+      double f  = A * t4 + B * t3 + C * t2 + D * t + E;
+      double fp = 4.0 * A * t3 + 3.0 * B * t2 + 2.0 * C * t + D;
 
-      if (Math.abs(fp) < 1e-9) break;
-
+      if (Math.abs(fp) < 1e-12) break;
       double delta = f / fp;
       t -= delta;
-
-      if (Math.abs(delta) < 1e-7) break;
       if (t < 0.001) t = 0.001;
+      if (Math.abs(delta) < 1e-8) { converged = true; break; }
     }
 
-    if (t <= 0.001 || Double.isNaN(t)) {
+    // --- Compute muzzle velocity ---
+    // Try the full moving-shooter solution; fall back to stationary analytic value.
+    double vMuzzle;
+    if (converged && t > 0.001 && !Double.isNaN(t)) {
+      double vmz = (dz + 0.5 * G * t * t) / t - vrz;
+      vMuzzle = vmz / sinTheta;
+    } else {
+      // Use analytic stationary formula — always works when d·tanθ > dz
+      double vs = stationaryVelocity(d, dz, pitchRad);
+      if (!Double.isNaN(vs) && vs <= MAX_POWER_MPS) {
+        vMuzzle = vs;
+        // Compute a crude time-of-flight from the stationary solution
+        t = d / (vMuzzle * cosTheta);
+      } else {
+        // Even analytic failed — fall back to a distance-based estimate
+        sol.isValid = false;
+        sol.power   = estimateFallbackPower(d, dz, pitchRad);
+        sol.pitch   = Math.toDegrees(pitchRad);
+        sol.yaw     = Math.toDegrees(Math.atan2(dy, dx));
+        sol.worldVel = new Translation3d();
+        return sol;
+      }
+    }
+
+    // --- Clamp to sane range ---
+    if (vMuzzle > MAX_POWER_MPS) {
+      // Best-effort: cap it and recalc time
+      vMuzzle = MAX_POWER_MPS;
       sol.isValid = false;
-      sol.worldVel = new Translation3d();
-      sol.horizontalDistance = groundDist;
-      return sol;
+    } else {
+      sol.isValid = true;
     }
 
-    // Muzzle vertical speed relative to robot
-    double vmz = (dz + 0.5 * g * t * t) / t - vrz;
-    
-    // Muzzle speed magnitude
-    double s = vmz / sinTheta;
-
-    if (s < 0) {
-      sol.isValid = false;
-      sol.worldVel = new Translation3d();
-      sol.horizontalDistance = groundDist;
-      return sol;
-    }
-
-    sol.power = s;
-    sol.pitch = Math.toDegrees(pitchAngle);
-    sol.horizontalDistance = groundDist;
-    
+    // --- Fill output fields ---
     double vmx = dx / t - vrx;
     double vmy = dy / t - vry;
-    sol.yaw = Math.toDegrees(Math.atan2(vmy, vmx));
-    sol.isValid = true;
-    
-    // World velocity for reference
-    sol.worldVel = new Translation3d(vmx + vrx, vmy + vry, vmz + vrz);
+    double vmz = vMuzzle * sinTheta;
 
+    sol.power = vMuzzle;
+    sol.pitch = Math.toDegrees(pitchRad);
+    sol.yaw   = Math.toDegrees(Math.atan2(vmy, vmx));
+    sol.worldVel = new Translation3d(vmx + vrx, vmy + vry, vmz + vrz);
     return sol;
+  }
+
+  /**
+   * Fallback that estimates power from horizontal distance alone.
+   * Ensures the value is always > 0 and varies with distance.
+   */
+  private static double estimateFallbackPower(double d, double dz, double pitchRad) {
+    double vs = stationaryVelocity(d, dz, pitchRad);
+    if (!Double.isNaN(vs)) return Math.max(vs, 6.0);
+    // Target too close — use a linear ramp starting at 6 m/s
+    return Math.max(6.0, 5.0 + d * 1.5);
   }
 }
