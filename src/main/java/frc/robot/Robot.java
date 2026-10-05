@@ -48,10 +48,44 @@ public class Robot extends TimedRobot {
   public static final double SHOOTER_HEIGHT_METERS = 0.3;
   public static final double SHOOTER_FLYWHEEL_DIAMETER_METERS = 0.0889;
 
-  /** Hub opening height (meters above carpet). */
-  public static final double HUB_Z_METERS = 1.8;
-  private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
-  private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
+  // --- Field geometry (Game Manual TU22, 2026 REBUILT) ---
+  // FIELD is 317.7in (~8.07m) wide by 651.2in (~16.54m) long. Manual line 409.
+  // Only the length is needed: each HUB is centered laterally, so its Y is the field centerline.
+  private static final double FIELD_LENGTH_METERS = 16.54;
+
+  /** Each HUB is 158.6in (~4.03m) from its ALLIANCE WALL. Manual line 465. */
+  private static final double HUB_FROM_ALLIANCE_WALL_METERS = 4.03;
+
+  /**
+   * HUB opening front edge is 72in (~1.83m) off the carpet. Manual line 469.
+   * This is the height the projectile solver aims at.
+   */
+  public static final double HUB_Z_METERS = 1.83;
+
+  /**
+   * HUB center X in the standard WPILib field frame.
+   *
+   * <p>WPILib field frame: origin at the center of the field, +X toward the RED ALLIANCE.
+   * So the BLUE wall sits at X = -8.27 and the RED wall at X = +8.27. Each HUB is
+   * {@value #HUB_FROM_ALLIANCE_WALL_METERS} m in from its own wall, giving
+   * +/-({@value #FIELD_LENGTH_METERS}/2 - 4.03) = +/-4.24 m.
+   *
+   * <p>Each HUB is centered between two BUMPS, so Y is the field centerline (0.0).
+   *
+   * <p>NOTE: the previous values (4.626 / 11.915) were 2020 Infinite Recharge constants
+   * expressed in a CORNER-ORIGIN frame (origin on the blue wall). Mixing that frame with the
+   * drivetrain pose -- which is always center-origin -- inflated the computed range by ~3x and
+   * saturated the flywheel, making power appear constant at every distance.
+   */
+  private static final double HUB_X_METERS = FIELD_LENGTH_METERS / 2.0 - HUB_FROM_ALLIANCE_WALL_METERS;
+
+  /** Blue HUB target: {@code (-4.24, 0.0, 1.83)} in the WPILib center-origin field frame. */
+  private static final Translation3d BLUE_ALLIANCE_TARGET_3D =
+          new Translation3d(-HUB_X_METERS, 0.0, HUB_Z_METERS);
+
+  /** Red HUB target: {@code (4.24, 0.0, 1.83)} in the WPILib center-origin field frame. */
+  private static final Translation3d RED_ALLIANCE_TARGET_3D =
+          new Translation3d(HUB_X_METERS, 0.0, HUB_Z_METERS);
   public static final double SHOOTER_LOSS_COMPENSATION = 2;
   public static boolean SHOOT_POWER_OVERRIDE = false;
 
