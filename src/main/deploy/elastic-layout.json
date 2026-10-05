@@ -660,6 +660,345 @@
           }
         ]
       }
+    },
+    {
+      "name": "Diagnostic",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "Pose & Distance",
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 384,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Horizontal Distance",
+                "x": 0,
+                "y": 0,
+                "width": 256,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/shooter2 horizontal distance",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Shooter Vel (m/s)",
+                "x": 0,
+                "y": 0,
+                "width": 256,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/shooter vel",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Shooter Yaw (deg)",
+                "x": 0,
+                "y": 0,
+                "width": 256,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/shooter yaw",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Flywheel Setpoint (RPS)",
+                "x": 0,
+                "y": 0,
+                "width": 256,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/[NEW] Flywheel setpoint velocity",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Vision Count",
+                "x": 0,
+                "y": 0,
+                "width": 256,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/vision measurement count",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Battery Voltage",
+                "x": 0,
+                "y": 0,
+                "width": 256,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/voltage",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Solver Status",
+            "x": 768,
+            "y": 0,
+            "width": 256,
+            "height": 256,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Pitch (deg)",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Robot/shooter2 pitch",
+                  "period": 0.033,
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Solution Valid?",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Robot/shooter2 valid",
+                  "period": 0.033,
+                  "true_color": 4278255615,
+                  "false_color": 4294901760
+                }
+              },
+              {
+                "title": "Target Alliance",
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 64,
+                "type": "FMSInfo",
+                "properties": {
+                  "topic": "/FMSInfo",
+                  "period": 0.033
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "Field",
+            "x": 0,
+            "y": 0,
+            "width": 512,
+            "height": 512,
+            "type": "Field",
+            "properties": {
+              "topic": "/Pose",
+              "period": 0.033,
+              "field_game": "Rebuilt",
+              "robot_width": 0.82,
+              "robot_length": 0.82,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295,
+              "show_robot_outside_widget": true
+            }
+          },
+          {
+            "title": "Match Time",
+            "x": 0,
+            "y": 512,
+            "width": 256,
+            "height": 128,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/FMSInfo/MatchTime",
+              "period": 0.033,
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 15,
+              "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "Voltage View",
+            "x": 256,
+            "y": 512,
+            "width": 256,
+            "height": 128,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/Robot/voltage",
+              "period": 0.033,
+              "min_value": 4.0,
+              "max_value": 13.0,
+              "divisions": 9,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Distance Graph (15s)",
+            "x": 512,
+            "y": 384,
+            "width": 256,
+            "height": 256,
+            "type": "Graph",
+            "properties": {
+              "topic": "/Robot/shooter2 horizontal distance",
+              "period": 0.1,
+              "time_displayed": 15.0,
+              "color": 4283215696,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Shooter Vel Graph (15s)",
+            "x": 768,
+            "y": 256,
+            "width": 256,
+            "height": 256,
+            "type": "Graph",
+            "properties": {
+              "topic": "/Robot/shooter vel",
+              "period": 0.1,
+              "time_displayed": 15.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Flywheel Setpoint Graph (15s)",
+            "x": 1024,
+            "y": 0,
+            "width": 256,
+            "height": 256,
+            "type": "Graph",
+            "properties": {
+              "topic": "/Robot/[NEW] Flywheel setpoint velocity",
+              "period": 0.1,
+              "time_displayed": 15.0,
+              "color": 4286611456,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Swerve Drive",
+            "x": 1024,
+            "y": 256,
+            "width": 256,
+            "height": 256,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/DriveState",
+              "period": 0.033,
+              "show_robot_rotation": true,
+              "rotation_unit": "Degrees"
+            }
+          },
+          {
+            "title": "Vision Count Bar",
+            "x": 0,
+            "y": 640,
+            "width": 256,
+            "height": 128,
+            "type": "Number Bar",
+            "properties": {
+              "topic": "/Robot/vision measurement count",
+              "period": 0.033,
+              "min_value": 0.0,
+              "max_value": 10.0,
+              "divisions": 10,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Distance Bar",
+            "x": 256,
+            "y": 640,
+            "width": 256,
+            "height": 128,
+            "type": "Number Bar",
+            "properties": {
+              "topic": "/Robot/shooter2 horizontal distance",
+              "period": 0.033,
+              "min_value": 0.0,
+              "max_value": 8.0,
+              "divisions": 8,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Command Scheduler",
+            "x": 512,
+            "y": 640,
+            "width": 256,
+            "height": 256,
+            "type": "Scheduler",
+            "properties": {
+              "topic": "/Scheduler",
+              "period": 0.033
+            }
+          },
+          {
+            "title": "Auto Chooser",
+            "x": 768,
+            "y": 640,
+            "width": 256,
+            "height": 128,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto choices",
+              "period": 0.5,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "Shooter Power Override",
+            "x": 768,
+            "y": 768,
+            "width": 256,
+            "height": 128,
+            "type": "Number Slider",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter power",
+              "period": 0.033,
+              "min_value": 0.0,
+              "max_value": 100.0,
+              "divisions": 100,
+              "update_continuously": true
+            }
+          }
+        ]
+      }
     }
   ]
 }
