@@ -1,3 +1,6 @@
 [submodule "GlitchLib"]
 	path = GlitchLib
 	url = https://github.com/Team8727/GlitchLib.git
+[submodule "Glitch-2.0-Agent-Context"]
+	path = Glitch-2.0-Agent-Context
+	url = https://github.com/Team8727/Glitch-2.0-Agent-Context.git
