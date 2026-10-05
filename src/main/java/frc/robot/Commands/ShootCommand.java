@@ -32,21 +32,19 @@ public class ShootCommand extends SequentialCommandGroup {
                         muzzleVelocity = Math.max(muzzleVelocity, 6.0);
                       }
 
-                      double speedCoefficient = 1 / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS);
-                      double flywheelSpeed = speedCoefficient * muzzleVelocity;
-                      double motorSpeed = flywheelSpeed * FLYWHEEL_GEAR_RATIO;
-                      if (controlMode == ControlMode.FEEDFORWARD) {
-                        shooterRoller.setFFVoltageWithVelocity(1 * flywheelSpeed);
-                      } else if (controlMode == ControlMode.PID) {
-                        shooterRoller.setVelocity(motorSpeed / (1 - SLIP_PERCENTAGE_PID));
-                      } else if (controlMode == ControlMode.FF_AND_PID) {
-                        shooterRoller.setVelocity(motorSpeed / (1 - SLIP_PERCENTAGE_FF_PID), Roller.ControlMode.FF_AND_PID);
+                      if (controlMode == ControlMode.STATE_SPACE) {
+                        runStateSpaceStep(shooterRoller, muzzleVelocity);
                       } else {
-                        shooterRoller.m_loop.setNextR(VecBuilder.fill(STATE_SPACE_SPEED_FACTOR * flywheelSpeed));
-                        shooterRoller.m_loop.correct(VecBuilder.fill(shooterRoller.getVelocity()));
-                        shooterRoller.m_loop.predict(0.020);
-                        double nextVoltage = shooterRoller.m_loop.getU(0);
-                        shooterRoller.setVoltage(nextVoltage);
+                        double speedCoefficient = 1 / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS);
+                        double flywheelSpeed = speedCoefficient * muzzleVelocity;
+                        double motorSpeed = flywheelSpeed * FLYWHEEL_GEAR_RATIO;
+                        if (controlMode == ControlMode.FEEDFORWARD) {
+                          shooterRoller.setFFVoltageWithVelocity(1 * flywheelSpeed);
+                        } else if (controlMode == ControlMode.PID) {
+                          shooterRoller.setVelocity(motorSpeed / (1 - SLIP_PERCENTAGE_PID));
+                        } else {
+                          shooterRoller.setVelocity(motorSpeed / (1 - SLIP_PERCENTAGE_FF_PID), Roller.ControlMode.FF_AND_PID);
+                        }
                       }
                     }),
                     sequence(
@@ -56,20 +54,22 @@ public class ShootCommand extends SequentialCommandGroup {
                     )
             ).finallyDo(() -> {
               if (controlMode == ControlMode.STATE_SPACE) {
-                double speedCoefficient = 1 / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS);
-                double muzzleVelocity = (fixedLinearVelocity == 0)
-                        ? Robot.firing.power
-                        : fixedLinearVelocity;
-                double flywheelSpeed = speedCoefficient * muzzleVelocity;
-                double motorSpeed = flywheelSpeed * FLYWHEEL_GEAR_RATIO;
-                shooterRoller.m_loop.setNextR(VecBuilder.fill(STATE_SPACE_SPEED_FACTOR * flywheelSpeed));
-                shooterRoller.m_loop.correct(VecBuilder.fill(shooterRoller.getVelocity()));
-                shooterRoller.m_loop.predict(0.020);
-                double nextVoltage = shooterRoller.m_loop.getU(0);
-                shooterRoller.setVoltage(nextVoltage);
+                runStateSpaceStep(shooterRoller,
+                        (fixedLinearVelocity == 0) ? Robot.firing.power : fixedLinearVelocity);
               }
             })
     );
+  }
+
+  /** Shared helper for the STATE_SPACE flywheel step — used in both the main path and finallyDo. */
+  private static void runStateSpaceStep(ShooterRoller shooterRoller, double muzzleVelocity) {
+    double speedCoefficient = 1 / (Math.PI * Robot.SHOOTER_FLYWHEEL_DIAMETER_METERS);
+    double flywheelSpeed = speedCoefficient * muzzleVelocity;
+    shooterRoller.m_loop.setNextR(VecBuilder.fill(STATE_SPACE_SPEED_FACTOR * flywheelSpeed));
+    shooterRoller.m_loop.correct(VecBuilder.fill(shooterRoller.getVelocity()));
+    shooterRoller.m_loop.predict(0.020);
+    double nextVoltage = shooterRoller.m_loop.getU(0);
+    shooterRoller.setVoltage(nextVoltage);
   }
 
   public enum ControlMode {

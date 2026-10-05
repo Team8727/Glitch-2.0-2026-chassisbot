@@ -86,6 +86,17 @@ public class Robot extends TimedRobot {
   /** Red HUB target: {@code (4.24, 0.0, 1.83)} in the WPILib center-origin field frame. */
   private static final Translation3d RED_ALLIANCE_TARGET_3D =
           new Translation3d(HUB_X_METERS, 0.0, HUB_Z_METERS);
+
+  /** Exposed for testing. @return the blue HUB target in the WPILib center-origin field frame. */
+  static Translation3d getBlueTarget() { return BLUE_ALLIANCE_TARGET_3D; }
+
+  /** Exposed for testing. @return the red HUB target in the WPILib center-origin field frame. */
+  static Translation3d getRedTarget() { return RED_ALLIANCE_TARGET_3D; }
+  /**
+   * Legacy loss-compensation multiplier for the OLD flywheel setpoint log.
+   * Kept to avoid breaking the dashboard. The NEW log uses the correct formula
+   * ({@link #SHOOTER_FLYWHEEL_DIAMETER_METERS}) and should be used instead.
+   */
   public static final double SHOOTER_LOSS_COMPENSATION = 2;
   public static boolean SHOOT_POWER_OVERRIDE = false;
 
