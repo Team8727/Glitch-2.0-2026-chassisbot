@@ -8,6 +8,8 @@ import Glitch.Lib.Controller.Controller;
 import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
+import dev.doglog.DogLog;
+import dev.doglog.DogLogOptions;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -139,6 +141,19 @@ public class Robot extends TimedRobot {
 
     // Start the URCL logger (logs REV SparkMaxes and SparkFlexes automatically on networkTables)
     URCL.start();
+
+    // Initialize DogLog for file-based logging (WPILOG) + NetworkTables mirror
+    // Download the .wpilog file from roboRIO after matches and open in AdvantageScope
+    DogLog.setOptions(
+        new DogLogOptions()
+            .withCaptureConsole(true)
+            .withCaptureDs(true)
+            .withCaptureNt(true)
+            .withLogEntryQueueCapacity(1000)
+            .withLogExtras(true)
+            .withNtPublish(true));
+    DogLog.setEnabled(true);
+    DogLog.log("Misc/RIO Serial Number", RobotController.getSerialNumber());
 
     SmartDashboard.putNumber("Shooter power", 0);
 

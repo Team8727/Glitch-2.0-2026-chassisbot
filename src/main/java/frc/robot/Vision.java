@@ -34,7 +34,7 @@ public class Vision implements AutoCloseable {
    * @param pose             Estimated field pose at capture time.
    * @param timestampSeconds Capture timestamp in seconds.
    */
-  public record Measurement(Pose2d pose, double timestampSeconds) {
+  public record Measurement(Pose2d pose, double timestampSeconds, double avgDistanceMeters, double ambiguity) {
   }
 
   private final Glitch.Lib.Vision.Vision.Provider provider;
@@ -109,7 +109,7 @@ public class Vision implements AutoCloseable {
   public List<Measurement> drainMeasurements(Pose2d referencePose) {
     return provider.drainMeasurements(referencePose)
             .stream()
-            .map(m -> new Measurement(m.pose, m.timestampSeconds))
+            .map(m -> new Measurement(m.pose, m.timestampSeconds, m.avgDistanceMeters, m.ambiguity))
             .collect(Collectors.toList());
   }
 
