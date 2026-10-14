@@ -105,7 +105,7 @@ public class Autos {
     try {
       paths.put(pathName, PathPlannerPath.fromPathFile(pathName));
     } catch (IOException | ParseException e) {
-      e.printStackTrace();
+      DriverStation.reportError("Failed to load PathPlanner path: " + pathName + " (" + e.getMessage() + ")", true);
     }
   }
 

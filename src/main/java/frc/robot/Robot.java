@@ -16,7 +16,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -100,16 +99,14 @@ public class Robot extends TimedRobot {
    * ({@link #SHOOTER_FLYWHEEL_DIAMETER_METERS}) and should be used instead.
    */
   public static final double SHOOTER_LOSS_COMPENSATION = 2;
-  public static boolean SHOOT_POWER_OVERRIDE = false;
 
   private Translation3d target;
 
-  public static ProjectileSolver.FiringSolution firing;
-  private double lastTime = Timer.getFPGATimestamp();
-  private double deltaTime;
+  /** Pre-filled so commands/controls are null-safe before the first robotPeriodic(). */
+  public static ProjectileSolver.FiringSolution firing = ProjectileSolver.emptySolution();
 
   // Used for drivetrain oscillation command (wiggling)
-  public static Rotation2d referenceRotation = new  Rotation2d();
+  public static Rotation2d referenceRotation = new Rotation2d();
 
   private final ShooterRoller shooterRoller = new ShooterRoller();
 
@@ -196,15 +193,11 @@ public class Robot extends TimedRobot {
   LEDPattern reasonableConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.ace, 10, 20);
   LEDPattern highConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 20, 30);
   LEDPattern confidenceNow;
-  double ledRefreshTime = 0.5; // Time in seconds to refresh the LED pattern
 
   @Override
   public void robotPeriodic() {
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
     logger.logDouble("voltage", RobotController.getInputVoltage());
-    double now = Timer.getFPGATimestamp();
-    deltaTime = now - lastTime;
-    lastTime = now;
     vision.logCameraPoses(CTREDrivetrain.getState().Pose);
 
 
@@ -294,7 +287,11 @@ public class Robot extends TimedRobot {
     // This makes sure that autonomous stops running when teleop starts running.
     CommandScheduler.getInstance().cancelAll();
 
-    shooterRoller.m_loop.reset(VecBuilder.fill(Units.rotationsPerMinuteToRadiansPerSecond(shooterRoller.getVelocity())));
+    // The state-space loop (ShooterRoller) is fed RPS everywhere: setNextR() and correct()
+    // both use RPS values, and the plant was identified in the same units. Reset with the
+    // raw RPS velocity — the old code used rotationsPerMinuteToRadiansPerSecond(), a 60×
+    // mismatch that threw the observer's initial state way off.
+    shooterRoller.m_loop.reset(VecBuilder.fill(shooterRoller.getVelocity()));
 
     leds.teleopInit();
   }

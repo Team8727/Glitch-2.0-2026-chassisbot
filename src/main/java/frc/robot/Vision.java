@@ -113,10 +113,6 @@ public class Vision implements AutoCloseable {
             .collect(Collectors.toList());
   }
 
-  public int measurementCount(Pose2d referencePose) {
-    return provider.drainMeasurements(referencePose).size();
-  }
-
   /**
    * Attempts to compute an initial robot pose from visible tags (e.g., at boot).
    *
@@ -141,11 +137,12 @@ public class Vision implements AutoCloseable {
    */
   public void logCameraPoses(Pose2d robotPose) {
     var robotPose3d = new edu.wpi.first.math.geometry.Pose3d(robotPose);
-    // Real Bot Cams
+    // Real Bot Cams — keys pushed under the "Vision" table without a leading '/'
+    // (a leading slash would publish at the NT4 root instead of /Vision/...)
     var camLeftFront = robotPose3d.transformBy(FRONT_LEFT);
-    logger.logPose3d("/" + CAM_FRONT_LEFT+ "/Pose", camLeftFront);
+    logger.logPose3d(CAM_FRONT_LEFT + "/Pose", camLeftFront);
     var camRightFront = robotPose3d.transformBy(FRONT_RIGHT);
-    logger.logPose3d("/" + CAM_FRONT_RIGHT + "/Pose", camRightFront);
+    logger.logPose3d(CAM_FRONT_RIGHT + "/Pose", camRightFront);
   }
 
   /**

@@ -39,6 +39,21 @@ public class ProjectileSolver {
   private static final double MAX_POWER_MPS = 20.0;
 
   /**
+   * Returns a safe "no solution" result so callers can consume {@code FiringSolution}
+   * before the first real solve has run (e.g. at robot startup).
+   */
+  public static FiringSolution emptySolution() {
+    FiringSolution sol = new FiringSolution();
+    sol.yaw = 0.0;
+    sol.pitch = Math.toDegrees(45.0);
+    sol.power = 0.0;
+    sol.horizontalDistance = 0.0;
+    sol.isValid = false;
+    sol.worldVel = new Translation3d();
+    return sol;
+  }
+
+  /**
    * Analytic muzzle velocity for a <em>stationary</em> shooter at the given pitch.
    * <pre>
    *   v² = g·d² / (2·cos²θ·(d·tanθ − Δz))

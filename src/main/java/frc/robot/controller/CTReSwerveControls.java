@@ -51,12 +51,7 @@ public class CTReSwerveControls {
                   .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                   .withHeadingPID(Robot.isReal() ? REAL_ROTATION_kP : SIM_ROTATION_kP, 0, ROTATION_kD);
 
-  // Hub positions
-//  private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
-//  private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
-
-  // Will be one of the hub positions depending on alliance color. See in point to hub trigger command below.
-//  private Translation3d target;
+  // Hub positions moved to Robot.java (FIELD geometry, center-origin frame).
 
   public CTReSwerveControls(CTRESwerveDrivetrain drivetrain, CommandXboxController controller) {
 
