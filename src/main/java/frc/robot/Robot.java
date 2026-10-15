@@ -5,7 +5,6 @@
 package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
-import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import dev.doglog.DogLog;
@@ -19,7 +18,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
@@ -157,18 +155,6 @@ public class Robot extends TimedRobot {
     // Used by oscillation command
     addPeriodic(() -> referenceRotation = CTREDrivetrain.getState().Pose.getRotation().minus(Rotation2d.fromDegrees(180)), 0.04); // Update period should be a multiple of the loop time: 0.02 seconds
 
-    addPeriodic(() -> {
-      if (measurementCount == 1) {
-        confidenceNow = lowConfidence;
-      }
-      if (measurementCount == 2) {
-        confidenceNow = reasonableConfidence;
-      }
-      if (measurementCount > 2) {
-        confidenceNow = highConfidence;
-      }},
-      0.5);
-
     // Setup zones
 //    new ZoneController(
 //            CTREDrivetrain,
@@ -188,12 +174,6 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
 
-  int measurementCount; // Number of vision measurements of each tag per camera
-  LEDPattern lowConfidence = GlitchLEDPatterns.ripple(LEDPattern.solid(Color.kYellow), 10, 20);
-  LEDPattern reasonableConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.ace, 10, 20);
-  LEDPattern highConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 20, 30);
-  LEDPattern confidenceNow;
-
   @Override
   public void robotPeriodic() {
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
@@ -208,7 +188,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     // Vision fusion is done in drivetrain.periodic(); read the most recent fused count here.
-    measurementCount = CTREDrivetrain.getLastVisionMeasurementCount();
+    int measurementCount = CTREDrivetrain.getLastVisionMeasurementCount();
+    leds.updateVisionConfidence(measurementCount);
 
     Translation3d shooterFieldPosition = new Translation3d(
             CTREDrivetrain.getState().Pose.getX(),
@@ -275,11 +256,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-    leds.leftSide.setBase(confidenceNow);
-    leds.pip.setBase(confidenceNow);
-    leds.rightSide.setBase(confidenceNow);
-  }
+  public void autonomousPeriodic() {}
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -298,11 +275,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    leds.leftSide.setBase(confidenceNow);
-    leds.pip.setBase(confidenceNow);
-    leds.rightSide.setBase(confidenceNow);
-  }
+  public void teleopPeriodic() {}
 
   /** This function is called once when test mode is enabled. */
   @Override
