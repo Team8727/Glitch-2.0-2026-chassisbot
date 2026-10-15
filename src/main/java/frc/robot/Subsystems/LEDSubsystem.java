@@ -53,7 +53,7 @@ public class LEDSubsystem extends AbstractLEDS {
   private double loopDt = 0.02;
 
   /** CAN device ID — set this to match your CANdle's configured ID in Phoenix Tuner. */
-  private static final int CANDLE_CAN_ID = 21;
+  private static final int CANDLE_CAN_ID = 49;
 
   private static final String CANDLE_BUS_NAME = "Swerve Drive";
 
@@ -184,7 +184,6 @@ public class LEDSubsystem extends AbstractLEDS {
   @Override
   public void periodic() {
     loopDt = 0.02; // approximate 50 Hz
-    super.periodic();
 
     if (!candleActive) return;
 
