@@ -25,11 +25,22 @@ public class LEDSubsystem extends AbstractLEDS {
   public final Section pip;
   public final Section rightSide;
 
+  // --- CANdle backend ---
+  private CANdleGroup candleGroup;
+  private boolean candleActive = false;
+
+  // --- Green-purple fire animation (disabled/idle default) ---
+  private CustomFireAnimation greenPurpleFire;
+  private boolean fireActive = false;
+
+  // --- State machine (ported from Lynk/PWM version) ---
   private static final double TEMP_STATE_TIME_SECONDS = 0.70;
   private static final double BLINK_RATE_SECONDS = 0.2;
   private static final double ERROR_BLINK_RATE_SECONDS = 0.1;
 
   private static final Timer tempStateTimer = new Timer();
+  private double blinkTimer = 0;
+  private boolean blinkOff = false;
 
   private LEDState state = LEDState.STARTUP;
   private LEDState lastState = null;
@@ -39,13 +50,12 @@ public class LEDSubsystem extends AbstractLEDS {
   private double currentFlywheelVelocity = 0.0;
   private double targetFlywheelVelocity = 0.0;
   private int measurementCount = 0;
+  private double loopDt = 0.02;
 
-  private final LEDPattern lowConfidence =
-      GlitchLEDPatterns.ripple(LEDPattern.solid(Color.kYellow), 10, 20);
-  private final LEDPattern reasonableConfidence =
-      GlitchLEDPatterns.ripple(GlitchLEDPatterns.ace, 10, 20);
-  private final LEDPattern highConfidence =
-      GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 20, 30);
+  /** CAN device ID — set this to match your CANdle's configured ID in Phoenix Tuner. */
+  private static final int CANDLE_CAN_ID = 21;
+
+  private static final String CANDLE_BUS_NAME = "Swerve Drive";
 
   public LEDSubsystem() {
     super(91, 40, 11, -40);
@@ -54,6 +64,8 @@ public class LEDSubsystem extends AbstractLEDS {
     pip = getSections().get(1);
     pip.setBase(LEDPattern.kOff);
     rightSide = getSections().get(2);
+
+    initCandle();
   }
 
   static LEDSubsystem instance;
@@ -65,182 +77,205 @@ public class LEDSubsystem extends AbstractLEDS {
     return instance;
   }
 
-  private enum LEDState {
-    STARTUP(new LEDConfig(
-        GlitchLEDPatterns.fire(LEDPattern.solid(GlitchColors.purple), Color.kBlack),
-        LEDPattern.solid(GlitchColors.purple))),
-    DISABLED(new LEDConfig(
-        GlitchLEDPatterns.fire(LEDPattern.solid(GlitchColors.purple), Color.kBlack),
-        LEDPattern.solid(GlitchColors.purple))),
-    AUTONOMOUS(new LEDConfig(
-        GlitchLEDPatterns.fire(LEDPattern.solid(Color.kRed), Color.kBlack),
-        LEDPattern.solid(Color.kOrangeRed))),
-    TELEOP(new LEDConfig(GlitchLEDPatterns.ace)),
-    SHOOTING(new LEDConfig(GlitchLEDPatterns.blinkyGreen)),
-    INTAKING(new LEDConfig(GlitchLEDPatterns.algaePickup)),
-    ERROR(new LEDConfig(LEDPattern.solid(Color.kRed), true, ERROR_BLINK_RATE_SECONDS)),
-    WARNING(new LEDConfig(LEDPattern.solid(Color.kYellow), true, ERROR_BLINK_RATE_SECONDS)),
-    INFO(new LEDConfig(LEDPattern.solid(Color.kWhite), true, ERROR_BLINK_RATE_SECONDS));
+  // ========== CANdle init ==========
 
-    public final LEDConfig config;
+  private void initCandle() {
+    CANBus swerveBus = new CANBus(CANDLE_BUS_NAME, "./logs/example.hoot");
+    CANdle candle = new CANdle(CANDLE_CAN_ID, swerveBus);
+    candleGroup = new CANdleGroup(candle);
 
-    LEDState(LEDConfig config) {
-      this.config = config;
-    }
+    greenPurpleFire = new CustomFireAnimation(0, 90)
+        .withFrameRate(60).withSparking(0.8).withCooling(0.65)
+        .withBrightness(1.0).withPalette(Palette.GREEN_PURPLE)
+        .withDirection(AnimationDirectionValue.Forward);
+
+    candleActive = true;
+    fireActive = true;
+    greenPurpleFire.reset();
   }
 
-  private static class LEDConfig {
-    public final LEDPattern pattern;
-    public final LEDPattern pipPattern;
+  // ========== Color helpers ==========
+
+  private void allOff() { candleGroup.setLEDs(0, 0, 0, 0, 91); }
+
+  private void allSolid(int r, int g, int b) { candleGroup.setLEDs(r, g, b, 0, 91); }
+
+  /** Fills a percentage of the strip from LED 0 upward. */
+  private void progressBar(double pct, int r, int g, int b) {
+    int lit = (int) Math.round(91 * pct);
+    for (int section = 0; section < 91; section += 91) {
+      int count = Math.min(lit - section, 91 - section);
+      if (count > 0) candleGroup.setLEDs(r, g, b, section, count);
+    }
+    int unlit = 91 - lit;
+    if (unlit > 0) candleGroup.setLEDs(0, 0, 0, lit, unlit);
+  }
+
+  // ========== Fire rendering helpers ==========
+
+  /** Renders fire on left (0-39) and right (51-90) sections with a solid pip (40-50). */
+  private void fireOnSides(Palette palette, int pipR, int pipG, int pipB) {
+    CustomFireAnimation leftFire = new CustomFireAnimation(0, 39)
+        .withFrameRate(60).withSparking(0.7).withCooling(0.5)
+        .withBrightness(1.0).withPalette(palette)
+        .withDirection(AnimationDirectionValue.Forward);
+    candleGroup.setLEDs(pipR, pipG, pipB, 40, 11);
+    leftFire.update(candleGroup);
+    // right side uses the same palette but mirrored
+    CustomFireAnimation rightFire = new CustomFireAnimation(51, 90)
+        .withFrameRate(60).withSparking(0.7).withCooling(0.5)
+        .withBrightness(1.0).withPalette(palette)
+        .withDirection(AnimationDirectionValue.Forward);
+    rightFire.update(candleGroup);
+  }
+
+  // ========== State machine (LEDState enum + config) ==========
+
+  private enum LEDState {
+    STARTUP, DISABLED, AUTONOMOUS, TELEOP, SHOOTING, INTAKING,
+    ERROR, WARNING, INFO;
+
     public final boolean blink;
     public final double blinkRate;
 
-    LEDConfig(LEDPattern pattern) {
-      this(pattern, pattern, false, BLINK_RATE_SECONDS);
-    }
-
-    LEDConfig(LEDPattern pattern, LEDPattern pipPattern) {
-      this(pattern, pipPattern, false, BLINK_RATE_SECONDS);
-    }
-
-    LEDConfig(LEDPattern pattern, boolean blink, double blinkRate) {
-      this(pattern, pattern, blink, blinkRate);
-    }
-
-    LEDConfig(LEDPattern pattern, LEDPattern pipPattern, boolean blink, double blinkRate) {
-      this.pattern = pattern;
-      this.pipPattern = pipPattern;
+    LEDState() { this(false, BLINK_RATE_SECONDS); }
+    LEDState(boolean blink, double blinkRate) {
       this.blink = blink;
       this.blinkRate = blinkRate;
     }
   }
 
-  public void updateVisionConfidence(int measurementCount) {
-    this.measurementCount = measurementCount;
-  }
+  // ========== Public API ==========
 
   public void start() {
+    fireActive = true;
     state = LEDState.DISABLED;
   }
 
   public void autoInit() {
-    shooting = false;
-    intaking = false;
+    shooting = false; intaking = false; fireActive = false;
     state = LEDState.AUTONOMOUS;
   }
 
   public void teleopInit() {
-    shooting = false;
-    intaking = false;
+    shooting = false; intaking = false; fireActive = false;
     state = LEDState.TELEOP;
   }
 
+  public void updateVisionConfidence(int count) { this.measurementCount = count; }
+
   public void shootPatterns(double currentFlywheelVelocity, double targetFlywheelVelocity) {
+    fireActive = false;
     shooting = true;
     this.currentFlywheelVelocity = currentFlywheelVelocity;
     this.targetFlywheelVelocity = targetFlywheelVelocity;
   }
 
-  public void endCommand() {
-    shooting = false;
-  }
+  public void endCommand() { shooting = false; }
 
-  public void intakePatterns() {
-    intaking = !intaking;
-  }
+  public void intakePatterns() { intaking = !intaking; fireActive = false; }
 
-  public void triggerError() {
-    tempStateTimer.restart();
-    state = LEDState.ERROR;
-  }
+  public void triggerError() { tempStateTimer.restart(); state = LEDState.ERROR; fireActive = false; }
+  public void triggerWarning() { tempStateTimer.restart(); state = LEDState.WARNING; fireActive = false; }
+  public void triggerInfo() { tempStateTimer.restart(); state = LEDState.INFO; fireActive = false; }
 
-  public void triggerWarning() {
-    tempStateTimer.restart();
-    state = LEDState.WARNING;
-  }
-
-  public void triggerInfo() {
-    tempStateTimer.restart();
-    state = LEDState.INFO;
-  }
-
-  private LEDPattern confidencePattern() {
-    if (measurementCount > 2) {
-      return highConfidence;
-    }
-    if (measurementCount == 2) {
-      return reasonableConfidence;
-    }
-    return lowConfidence;
-  }
+  // ========== Main periodic ==========
 
   @Override
   public void periodic() {
+    loopDt = 0.02; // approximate 50 Hz
     super.periodic();
 
-    if (DriverStation.isDisabled()) {
-      if (state != LEDState.STARTUP && state != LEDState.DISABLED) {
+    if (!candleActive) return;
+
+    // Fire animation (disabled/startup)
+    if (fireActive) {
+      greenPurpleFire.update(candleGroup);
+      return;
+    }
+
+    // Temp state (error/warning/info) timeout
+    if (tempStateTimer.isRunning() && tempStateTimer.hasElapsed(TEMP_STATE_TIME_SECONDS)) {
+      tempStateTimer.stop();
+    }
+
+    if (!tempStateTimer.isRunning()) {
+      // Determine the appropriate non-temp state
+      if (DriverStation.isDisabled()) {
         state = LEDState.DISABLED;
-      }
-    } else {
-      if (tempStateTimer.isRunning() && tempStateTimer.hasElapsed(TEMP_STATE_TIME_SECONDS)) {
-        tempStateTimer.stop();
-      }
-      if (!tempStateTimer.isRunning()) {
-        if (shooting) {
-          state = LEDState.SHOOTING;
-        } else if (intaking) {
-          state = LEDState.INTAKING;
-        } else {
-          state = DriverStation.isAutonomous() ? LEDState.AUTONOMOUS : LEDState.TELEOP;
-        }
+      } else if (shooting) {
+        state = LEDState.SHOOTING;
+      } else if (intaking) {
+        state = LEDState.INTAKING;
+      } else {
+        state = DriverStation.isAutonomous() ? LEDState.AUTONOMOUS : LEDState.TELEOP;
       }
     }
 
-    applyState();
+    // Blink timing
+    if (state != lastState) {
+      if (state.blink) { blinkOff = false; blinkTimer = 0; } else { blinkOff = false; }
+    }
+    if (state.blink) {
+      double rate = (state == LEDState.ERROR || state == LEDState.WARNING || state == LEDState.INFO)
+          ? ERROR_BLINK_RATE_SECONDS : BLINK_RATE_SECONDS;
+      blinkTimer += loopDt;
+      if (blinkTimer >= rate) { blinkTimer = 0; blinkOff = !blinkOff; }
+    }
+
+    renderState(state);
+    if (state == LEDState.AUTONOMOUS || state == LEDState.TELEOP) {
+      renderConfidenceOverlay();
+    }
+    lastState = state;
   }
 
-  private void applyState() {
-    if (state != lastState) {
-      LEDConfig cfg = state.config;
-      LEDPattern side = cfg.pattern;
-      LEDPattern middle = cfg.pipPattern;
-      if (cfg.blink) {
-        side = side.blink(Second.of(cfg.blinkRate));
-        middle = middle.blink(Second.of(cfg.blinkRate));
-      }
-      if (state == LEDState.TELEOP || state == LEDState.AUTONOMOUS) {
-        side = confidencePattern();
-        middle = confidencePattern();
-      }
-      leftSide.setBase(side);
-      leftSide.setPattern(side);
-      pip.setBase(middle);
-      pip.setPattern(middle);
-      rightSide.setBase(side);
-      rightSide.setPattern(side);
-    }
+  private void renderState(LEDState s) {
+    if (blinkOff) { allOff(); return; }
 
-    if (state == LEDState.TELEOP || state == LEDState.AUTONOMOUS) {
-      LEDPattern confidence = confidencePattern();
-      leftSide.setPattern(confidence);
-      pip.setPattern(confidence);
-      rightSide.setPattern(confidence);
-    } else if (state == LEDState.SHOOTING) {
-      double target = Math.max(targetFlywheelVelocity, 1.0e-9);
-      double progress = Math.min(1.0, currentFlywheelVelocity / target);
-      LEDPattern shootingPattern;
-      if (progress >= 0.95) {
-        shootingPattern = GlitchLEDPatterns.blinkyGreen;
-      } else {
-        shootingPattern = GlitchLEDPatterns.linearProgress(
-            GlitchLEDPatterns.elevatorProgress, currentFlywheelVelocity, target);
-      }
-      leftSide.setPattern(shootingPattern);
-      pip.setPattern(shootingPattern);
-      rightSide.setPattern(shootingPattern);
-    }
+    switch (s) {
+      case STARTUP:
+      case DISABLED:
+        fireActive = true; // fall through to fire on next loop
+        break;
 
-    lastState = state;
+      case AUTONOMOUS:
+        fireOnSides(Palette.RED, 212, 42, 0);
+        break;
+
+      case TELEOP:
+        fireOnSides(Palette.GREEN_PURPLE, 0, 200, 0);
+        break;
+
+      case SHOOTING: {
+        double target = Math.max(targetFlywheelVelocity, 1.0e-9);
+        double progress = Math.min(1.0, currentFlywheelVelocity / target);
+        if (progress >= 0.95) {
+          allSolid(0, 255, 0);
+        } else {
+          progressBar(progress, 0, 255, 0);
+        }
+        break;
+      }
+
+      case INTAKING:
+        candleGroup.setLEDs(0, 100, 150, 0, 40);
+        candleGroup.setLEDs(0, 100, 150, 51, 40);
+        break;
+
+      case ERROR:
+        allSolid(255, 0, 0);
+        break;
+      case WARNING:
+        allSolid(255, 200, 0);
+        break;
+      case INFO:
+        allSolid(200, 200, 255);
+        break;
+    }
+  }
+
+  private void renderConfidenceOverlay() {
+    // Not rendered over CANdle in the initial pass — reserved for future use.
   }
 }
