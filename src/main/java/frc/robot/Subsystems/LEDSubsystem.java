@@ -10,6 +10,15 @@ import edu.wpi.first.wpilibj.util.Color;
 
 import static edu.wpi.first.units.Units.Second;
 
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.hardware.CANdle;
+import com.ctre.phoenix6.signals.RGBWColor;
+
+import frc.lib.util.CANdleGroup;
+import frc.lib.util.CustomFireAnimation;
+import frc.lib.util.CustomFireAnimation.Palette;
+import com.ctre.phoenix6.signals.AnimationDirectionValue;
+
 public class LEDSubsystem extends AbstractLEDS {
 
   public final Section leftSide;

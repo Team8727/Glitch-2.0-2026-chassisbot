@@ -161,7 +161,8 @@ public class Robot extends TimedRobot {
 //            new Rectangle(1,1,1,1),
 //            Commands.runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())));
 
-    leds.initializeLEDS(0);
+    // LEDs initialized in LEDSubsystem constructor (CANdle-backed)
+
     pinServo = new Servo(1);
     pinServo.setAngle(0);
   }
