@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.util.Color;
 
 import static edu.wpi.first.units.Units.Second;
 
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;
 
@@ -18,6 +17,7 @@ import frc.lib.util.CANdleGroup;
 import frc.lib.util.CustomFireAnimation;
 import frc.lib.util.CustomFireAnimation.Palette;
 import com.ctre.phoenix6.signals.AnimationDirectionValue;
+import frc.robot.Drivetrain.TunerConstants;
 
 public class LEDSubsystem extends AbstractLEDS {
 
@@ -55,8 +55,6 @@ public class LEDSubsystem extends AbstractLEDS {
   /** CAN device ID — set this to match your CANdle's configured ID in Phoenix Tuner. */
   private static final int CANDLE_CAN_ID = 49;
 
-  private static final String CANDLE_BUS_NAME = "Swerve Drive";
-
   public LEDSubsystem() {
     super(91, 40, 11, -40);
 
@@ -80,8 +78,7 @@ public class LEDSubsystem extends AbstractLEDS {
   // ========== CANdle init ==========
 
   private void initCandle() {
-    CANBus swerveBus = new CANBus(CANDLE_BUS_NAME, "./logs/example.hoot");
-    CANdle candle = new CANdle(CANDLE_CAN_ID, swerveBus);
+    CANdle candle = new CANdle(CANDLE_CAN_ID, TunerConstants.kCANBus);
     candleGroup = new CANdleGroup(candle);
 
     greenPurpleFire = new CustomFireAnimation(0, 90)
