@@ -49,8 +49,10 @@ public class Driver1DefaultBindings extends Controller {
     new CTReSwerveControls(drivetrain, controller);
 
     // Put binds here
-    controller.leftTrigger().toggleOnTrue(run(() -> intakeRoller.setDutyCycle(.8)));
-    // controller.leftTrigger().onTrue(run(leds::intakePatterns));
+    controller.leftTrigger().toggleOnTrue(run(() -> {
+      IntakeRoller.isIntaking = true;
+      intakeRoller.setDutyCycle(.8);
+    }).finallyDo(() -> IntakeRoller.isIntaking = false));
     controller.rightTrigger().whileTrue(new ShootCommand(indexer, shooterRoller,0, ShootCommand.ControlMode.FF_AND_PID));
     controller.rightTrigger().onTrue(run(() -> leds.shootPatterns(shooterRoller.getFlywheelVelocity(), 45))).onFalse(run(leds::endCommand));
 

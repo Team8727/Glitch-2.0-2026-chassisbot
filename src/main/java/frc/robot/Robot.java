@@ -214,9 +214,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    leds.leftSide.setBase(confidenceNow);
-    leds.pip.setBase(confidenceNow);
-    leds.rightSide.setBase(confidenceNow);
+    leds.setVisionBase(confidenceNow);
   }
 
   /** This function is called once when teleop is enabled. */
@@ -233,9 +231,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    leds.leftSide.setBase(confidenceNow);
-    leds.pip.setBase(confidenceNow);
-    leds.rightSide.setBase(confidenceNow);
+    leds.setVisionBase(confidenceNow);
   }
 
   /** This function is called once when test mode is enabled. */
