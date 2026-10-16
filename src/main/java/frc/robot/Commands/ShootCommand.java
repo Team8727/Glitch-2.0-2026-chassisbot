@@ -49,7 +49,7 @@ public class ShootCommand extends SequentialCommandGroup {
                     }),
                     sequence(
                             waitSeconds(2),
-                            indexer.run(() -> indexer.setDutyCycle(1))
+                            indexer.run(() -> indexer.setDutyCycle(0.6))
                                     .withTimeout(1)
                     )
             ).finallyDo(() -> {

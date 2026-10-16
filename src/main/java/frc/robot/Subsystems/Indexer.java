@@ -12,7 +12,7 @@ public class Indexer extends Roller {
     private static final SparkMaxConfig M2config = new SparkMaxConfig();
     static {
         M1config
-                .smartCurrentLimit(60)
+                .smartCurrentLimit(15)
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .inverted(false)
                 .disableFollowerMode()
