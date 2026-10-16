@@ -199,6 +199,10 @@ public class ShooterRoller extends Roller {
      */
     @Override
     public void setVelocity(double speed, ControlMode mode) {
+        // TEMP: Speed governor — cut commanded velocity in half to avoid overspin.
+        // Remove when flywheel gearing ratio (Issue 4) is resolved.
+        speed *= 0.5;
+
         if (mode == ControlMode.PID) {
             this.getSparkMaxMotor().setVelocity(speed);
         } else if (mode == ControlMode.FEEDFORWARD) {
