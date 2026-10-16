@@ -17,7 +17,6 @@ import frc.lib.util.CANdleGroup;
 import frc.lib.util.CustomFireAnimation;
 import frc.lib.util.CustomFireAnimation.Palette;
 import com.ctre.phoenix6.signals.AnimationDirectionValue;
-import frc.robot.Drivetrain.TunerConstants;
 
 public class LEDSubsystem extends AbstractLEDS {
 
@@ -78,7 +77,10 @@ public class LEDSubsystem extends AbstractLEDS {
   // ========== CANdle init ==========
 
   private void initCandle() {
-    CANdle candle = new CANdle(CANDLE_CAN_ID, TunerConstants.kCANBus);
+    // Use the no-bus constructor so the CANdle is found on the roboRIO's native
+    // CAN 2.0 port rather than on a CANivore bus. If you move the CANdle to a
+    // CANivore later, add TunerConstants.kCANBus as the second argument.
+    CANdle candle = new CANdle(CANDLE_CAN_ID);
     candleGroup = new CANdleGroup(candle);
 
     greenPurpleFire = new CustomFireAnimation(0, 90)
