@@ -10,7 +10,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import dev.doglog.DogLog;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -54,6 +56,13 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
     private Field2d field2d = new Field2d();
+
+    // Distance-scaled vision covariance (Lynk-style). The Kalman filter trusts close
+    // measurements more than distant ones: stdDev = baseline * distance². Tuned per
+    // PhotonVision tag distance ~1-4m. See VisionConstants for Lynk's values.
+    private static final double kVisionLinearStdDevBaseline = 0.10; // m per (m of tag distance)
+    private static final double kVisionAngularStdDevBaseline = 0.35; // rad per (m of tag distance)
+    private static final double kVisionUnknownDistanceMeters = 2.0; // used when distance not reported
 
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
@@ -310,8 +319,40 @@ public class CTRESwerveDrivetrain extends TunerConstants.TunerSwerveDrivetrain i
             m_lastVisionMeasurementCount = measurements.size();
 
             for (Vision.Measurement m : measurements) {
+                // Distance-scaled covariance (Lynk-style). Trust close tags more than far tags:
+                // stdDev = baseline * distance^2, so a tag at 2m has 4x the uncertainty of one at 1m.
+                double dist = Double.isNaN(m.avgDistanceMeters()) ? kVisionUnknownDistanceMeters : m.avgDistanceMeters();
+                double linearStdDev = kVisionLinearStdDevBaseline * dist * dist;
+                double angularStdDev = kVisionAngularStdDevBaseline * dist * dist;
+
                 // Convert timestamp inside the override to avoid double-shifting the time base
-                addVisionMeasurement(m.pose(), m.timestampSeconds());
+                addVisionMeasurement(
+                    m.pose(),
+                    m.timestampSeconds(),
+                    VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+            }
+
+            if (DogLog.isEnabled()) {
+                double avgDist = measurements.stream()
+                        .filter(m -> !Double.isNaN(m.avgDistanceMeters()))
+                        .mapToDouble(Vision.Measurement::avgDistanceMeters)
+                        .average()
+                        .orElse(-1.0);
+                DogLog.log("Vision/Measurement Count", measurements.size());
+                if (!measurements.isEmpty()) {
+                    DogLog.log("Vision/Avg Tag Distance", avgDist);
+                    DogLog.log("Vision/Last Ambiguity", measurements.get(measurements.size() - 1).ambiguity());
+                }
+            }
+
+            logger.logInt("vision measurement count", measurements.size());
+            if (!measurements.isEmpty()) {
+                double avgDist = measurements.stream()
+                        .filter(m -> !Double.isNaN(m.avgDistanceMeters()))
+                        .mapToDouble(Vision.Measurement::avgDistanceMeters)
+                        .average()
+                        .orElse(-1.0);
+                logger.logDouble("vision avg tag distance", avgDist);
             }
         } else {
             m_lastVisionMeasurementCount = 0;
