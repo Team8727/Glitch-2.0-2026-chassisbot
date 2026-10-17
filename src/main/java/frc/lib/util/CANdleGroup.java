@@ -30,7 +30,7 @@ public class CANdleGroup {
     private void applyConfigs() {
         CANdleConfiguration config = new CANdleConfiguration();
         config.LED.BrightnessScalar = 1.0;
-        config.LED.StripType = StripTypeValue.GRB;
+        config.LED.StripType = StripTypeValue.RGB; // Strip expects RGB byte order (matches old PWM ColorOrder.kRGB).
         config.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.KeepRunning;
         config.CANdleFeatures.Enable5VRail = Enable5VRailValue.Enabled;
 
