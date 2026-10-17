@@ -55,7 +55,8 @@ public class LEDSubsystem extends AbstractLEDS {
   private static final int CANDLE_CAN_ID = 49;
 
   public LEDSubsystem() {
-    super(91, 40, 11, -40);
+    // 88 total LEDs: left 40, middle pip 8, right 40 (reversed)
+    super(88, 40, 8, -40);
 
     leftSide = getSections().get(0);
     pip = getSections().get(1);
@@ -83,7 +84,7 @@ public class LEDSubsystem extends AbstractLEDS {
     CANdle candle = new CANdle(CANDLE_CAN_ID);
     candleGroup = new CANdleGroup(candle);
 
-    greenPurpleFire = new CustomFireAnimation(0, 90)
+    greenPurpleFire = new CustomFireAnimation(0, 87)
         .withFrameRate(60).withSparking(0.8).withCooling(0.65)
         .withBrightness(1.0).withPalette(Palette.GREEN_PURPLE)
         .withDirection(AnimationDirectionValue.Forward);
@@ -95,33 +96,33 @@ public class LEDSubsystem extends AbstractLEDS {
 
   // ========== Color helpers ==========
 
-  private void allOff() { candleGroup.setLEDs(0, 0, 0, 0, 91); }
+  private void allOff() { candleGroup.setLEDs(0, 0, 0, 0, 88); }
 
-  private void allSolid(int r, int g, int b) { candleGroup.setLEDs(r, g, b, 0, 91); }
+  private void allSolid(int r, int g, int b) { candleGroup.setLEDs(r, g, b, 0, 88); }
 
   /** Fills a percentage of the strip from LED 0 upward. */
   private void progressBar(double pct, int r, int g, int b) {
-    int lit = (int) Math.round(91 * pct);
-    for (int section = 0; section < 91; section += 91) {
-      int count = Math.min(lit - section, 91 - section);
+    int lit = (int) Math.round(88 * pct);
+    for (int section = 0; section < 88; section += 88) {
+      int count = Math.min(lit - section, 88 - section);
       if (count > 0) candleGroup.setLEDs(r, g, b, section, count);
     }
-    int unlit = 91 - lit;
+    int unlit = 88 - lit;
     if (unlit > 0) candleGroup.setLEDs(0, 0, 0, lit, unlit);
   }
 
   // ========== Fire rendering helpers ==========
 
-  /** Renders fire on left (0-39) and right (51-90) sections with a solid pip (40-50). */
+  /** Renders fire on left (0-39) and right (48-87) sections with a solid pip (40-47). */
   private void fireOnSides(Palette palette, int pipR, int pipG, int pipB) {
     CustomFireAnimation leftFire = new CustomFireAnimation(0, 39)
         .withFrameRate(60).withSparking(0.7).withCooling(0.5)
         .withBrightness(1.0).withPalette(palette)
         .withDirection(AnimationDirectionValue.Forward);
-    candleGroup.setLEDs(pipR, pipG, pipB, 40, 11);
+    candleGroup.setLEDs(pipR, pipG, pipB, 40, 8);
     leftFire.update(candleGroup);
     // right side uses the same palette but mirrored
-    CustomFireAnimation rightFire = new CustomFireAnimation(51, 90)
+    CustomFireAnimation rightFire = new CustomFireAnimation(48, 87)
         .withFrameRate(60).withSparking(0.7).withCooling(0.5)
         .withBrightness(1.0).withPalette(palette)
         .withDirection(AnimationDirectionValue.Forward);
@@ -258,7 +259,7 @@ public class LEDSubsystem extends AbstractLEDS {
 
       case INTAKING:
         candleGroup.setLEDs(0, 100, 150, 0, 40);
-        candleGroup.setLEDs(0, 100, 150, 51, 40);
+        candleGroup.setLEDs(0, 100, 150, 48, 40);
         break;
 
       case ERROR:
