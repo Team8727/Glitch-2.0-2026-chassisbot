@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class ProjectileSolverTest {
   // This must match Robot.SHOOTER_ANGLE_DEGREES so the test uses the same angle as the robot.
-  private static final double TEST_ANGLE_DEG = 45.0;
+  private static final double TEST_ANGLE_DEG = 60.0;
 
   @Test
   void solveProducesExpectedSolutionWhenReachable() {
@@ -20,8 +20,8 @@ class ProjectileSolverTest {
     assertTrue(sol.isValid);
     assertEquals(0.0, sol.yaw, 1e-3);
     assertEquals(TEST_ANGLE_DEG, sol.pitch, 0.1);
-    // At 45°, 5 m horizontal, 1 m height diff: muzzle velocity ≈ 7.83 m/s
-    assertEquals(7.83, sol.power, 0.05);
+    // At 60°, 5 m horizontal, 1 m height diff: muzzle velocity ≈ 8.00 m/s
+    assertEquals(8.00, sol.power, 0.05);
     assertEquals(5.0, sol.horizontalDistance, 1e-3);
   }
 

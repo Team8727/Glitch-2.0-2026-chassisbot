@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,7 +42,7 @@ public class Robot extends TimedRobot {
    * Shooter launch pitch angle (degrees above horizontal). The shooter is mechanically fixed,
    * so software adjusts only flywheel speed.
    */
-  public static final double SHOOTER_ANGLE_DEGREES = 45.0;
+  public static final double SHOOTER_ANGLE_DEGREES = 60.0;
 
   /** Shooter centerline height (meters above carpet). */
   public static final double SHOOTER_HEIGHT_METERS = 0.3;
@@ -165,6 +166,17 @@ public class Robot extends TimedRobot {
 
     pinServo = new Servo(1);
     pinServo.setAngle(0);
+
+    // Start USB cameras connected directly to the roboRIO for dashboard video.
+    // These publish under /CameraPublisher/USB_FrontLeft/... and /CameraPublisher/USB_FrontRight/...
+    // The dashboard is configured for PhotonVision coprocessor streams; if those aren't
+    // available, change the elastic-layout topics to match these /CameraPublisher/USB_* paths.
+    try {
+      CameraServer.startAutomaticCapture("USB_FrontLeft", 0);
+      CameraServer.startAutomaticCapture("USB_FrontRight", 1);
+    } catch (Exception e) {
+      DogLog.log("Misc/USB Camera Init Error", e.getMessage());
+    }
   }
 
   /**
