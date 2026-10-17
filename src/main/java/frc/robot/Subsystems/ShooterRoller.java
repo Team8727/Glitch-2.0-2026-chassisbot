@@ -199,9 +199,10 @@ public class ShooterRoller extends Roller {
      */
     @Override
     public void setVelocity(double speed, ControlMode mode) {
-        // TEMP: Speed governor — cut commanded velocity in half to avoid overspin.
-        // Remove when flywheel gearing ratio (Issue 4) is resolved.
-        speed *= 0.5;
+        // NOTE: The old 0.5x "speed governor" was removed because it prevented the
+        // flywheel from reaching launch speed — balls could not be shot. If the motors
+        // run too fast, the REAL cause is the unverified encoder conversion factor
+        // (1.0/60, see Issue 5), not a need to scale the command down.
 
         if (mode == ControlMode.PID) {
             this.getSparkMaxMotor().setVelocity(speed);
