@@ -57,9 +57,8 @@ public class Robot extends TimedRobot {
 
   private final NetworkTableLogger logger = new NetworkTableLogger("Robot");
 
-  // ========== Controllers & Auto ==========
+  // ========== Auto ==========
 
-  private final Controls controls;
   private final AutoChooser autoChooser;
 
   /** Constructor — runs at robot boot. */
@@ -67,8 +66,8 @@ public class Robot extends TimedRobot {
     // Wire vision into drivetrain for pose fusion
     drivetrain.setVision(vision);
 
-    // Build controls (binds buttons to commands)
-    controls = new Controls(drivetrain, shooter, intake, indexer);
+    // Build controls (binds buttons to commands — field not stored, side-effect only)
+    new Controls(drivetrain, shooter, intake, indexer);
 
     // Build auto chooser (dashboard-selectable routines)
     autoChooser = new AutoChooser(drivetrain, shooter, intake, indexer);
