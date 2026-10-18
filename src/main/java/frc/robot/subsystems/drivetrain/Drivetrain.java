@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -44,6 +46,7 @@ public class Drivetrain extends TunerConstants.TunerSwerveDrivetrain implements 
     private int m_lastVisionMeasurementCount = 0;
     private final VisionFallback m_visionFallback = new VisionFallback();
     private final NetworkTableLogger logger = new NetworkTableLogger("Drivetrain");
+    private final Field2d m_field = new Field2d();
     
     private static final double kSimLoopPeriod = 0.004;
     private Notifier m_simNotifier = null;
@@ -87,6 +90,8 @@ public class Drivetrain extends TunerConstants.TunerSwerveDrivetrain implements 
     ) {
         super(drivetrainConstants, modules);
         if (Utils.isSimulation()) startSimThread();
+
+        SmartDashboard.putData("Field", m_field);
         
         try {
             AutoBuilder.configure(
@@ -174,6 +179,9 @@ public class Drivetrain extends TunerConstants.TunerSwerveDrivetrain implements 
         Pose2d fallbackPose = m_visionFallback.update(
             m_lastVisionMeasurementCount, chassisSpeeds, getState().Pose);
         logger.logString("vision/fallbackStatus", m_visionFallback.getConfidence().name());
+
+        // Update Field2d for sim GUI and dashboard
+        m_field.setRobotPose(getState().Pose);
     }
     
     private void startSimThread() {
