@@ -2,7 +2,7 @@ package frc.robot.autos;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -12,83 +12,97 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 /**
- * Two-part auto selector using a String chooser (reliable on Elastic)
- * plus a raw NT4 string topic as a fallback for dashboard display.
+ * Auto selector using raw NetworkTables strings only.
  *
- * <p>Publishes to:
+ * <p>No SendableChooser — Elastic has trouble with those on some setups.
+ * Instead, a StringPublisher writes the selection key, and you set it
+ * from Elastic via a String Chooser widget bound to {@code /Auto/selection}.
+ *
+ * <p>Available keys (type into the Elastic widget or use the dashboard):
  * <ul>
- *   <li>{@code /SmartDashboard/Auto Chooser} — SendableChooser (use Split Button Chooser widget)</li>
- *   <li>{@code /Auto/selected} — plain string (use String Chooser widget as fallback)</li>
+ *   <li>{@code Depot-Left}, {@code Depot-Center}, {@code Depot-Right}</li>
+ *   <li>{@code Sweep-Left}, {@code Sweep-Center}, {@code Sweep-Right}</li>
+ *   <li>{@code Leave-Left}, {@code Leave-Center}, {@code Leave-Right}</li>
+ *   <li>{@code InPlace-Left}, {@code InPlace-Center}, {@code InPlace-Right}</li>
  * </ul>
  */
 public class AutoChooser {
   private final AutoRoutines routines;
-  private final SendableChooser<String> chooser = new SendableChooser<>();
-  private final StringPublisher selectedPub;
 
-  private String lastSelection = "";
+  // Raw NT4 — no SendableChooser
+  private final StringPublisher selectionPub;
+  private final StringSubscriber selectionSub;
+
+  private String lastKey = "";
   private Command lastCommand = Commands.none();
-
-  /** Descriptive labels for each option key. */
-  private static final String[] KEYS = {
-    "Depot-Left", "Depot-Center", "Depot-Right",
-    "Sweep-Left", "Sweep-Center", "Sweep-Right",
-    "Leave-Left", "Leave-Center", "Leave-Right",
-    "InPlace-Left", "InPlace-Center", "InPlace-Right"
-  };
-  private static final String[] LABELS = {
-    "2-Cycle Depot Rush J-Left",
-    "2-Cycle Depot Rush J-Center",
-    "2-Cycle Depot Rush J-Right",
-    "Center Sweep J-Left",
-    "Center Sweep J-Center",
-    "Center Sweep J-Right",
-    "Shoot+Mobility J-Left",
-    "Shoot+Mobility J-Center",
-    "Shoot+Mobility J-Right",
-    "Shoot In Place J-Left",
-    "Shoot In Place J-Center",
-    "Shoot In Place J-Right"
-  };
+  private int frameCount = 0;
 
   public AutoChooser(
       Drivetrain drivetrain, Shooter shooter, Intake intake, Indexer indexer) {
     this.routines = new AutoRoutines(drivetrain, shooter, intake, indexer);
 
-    // Publish a raw string topic Elastic can definitely read
-    selectedPub = NetworkTableInstance.getDefault()
-        .getStringTopic("Auto/selected").publish();
-    selectedPub.set(LABELS[1]); // default: Depot-Center
+    var inst = NetworkTableInstance.getDefault();
+    selectionPub = inst.getStringTopic("Auto/selection").publish();
+    selectionSub = inst.getStringTopic("Auto/selection").subscribe("Depot-Center");
+    selectionPub.set("Depot-Center");
 
-    // Populate chooser
-    chooser.setDefaultOption(LABELS[1], KEYS[1]);
-    for (int i = 0; i < KEYS.length; i++) {
-      if (i == 1) continue; // already set as default
-      chooser.addOption(LABELS[i], KEYS[i]);
-    }
+    // Also publish the human-readable label for the dashboard
+    inst.getStringTopic("Auto/label").publish().set("2-Cycle Depot Rush J-Center");
 
-    SmartDashboard.putData("Auto Chooser", chooser);
+    // Publish available options as a single string for reference
+    inst.getStringTopic("Auto/options").publish().set(
+        "Depot-Left, Depot-Center, Depot-Right, " +
+        "Sweep-Left, Sweep-Center, Sweep-Right, " +
+        "Leave-Left, Leave-Center, Leave-Right, " +
+        "InPlace-Left, InPlace-Center, InPlace-Right");
+
+    SmartDashboard.putString("Auto Key", "Depot-Center");
+    SmartDashboard.putString("Auto Options",
+        "Depot-Left | Depot-Center | Depot-Right | " +
+        "Sweep-Left | Sweep-Center | Sweep-Right | " +
+        "Leave-Left | Leave-Center | Leave-Right | " +
+        "InPlace-Left | InPlace-Center | InPlace-Right");
   }
 
   public Command getSelected() {
-    String selection = chooser.getSelected();
-    if (selection == null) {
-      return routines.twoCycleDepotRushCenter();
+    // Read from raw NT (settable from Elastic)
+    String key = selectionSub.get();
+    if (key == null || key.isEmpty()) key = "Depot-Center";
+
+    // Also check SmartDashboard (settable from Glass/Shuffleboard)
+    String sdKey = SmartDashboard.getString("Auto Key", "");
+    if (!sdKey.isEmpty()) key = sdKey;
+
+    if (!key.equals(lastKey)) {
+      lastKey = key;
+      lastCommand = buildCommand(key);
+      // Update display
+      selectionPub.set(key);
+      NetworkTableInstance.getDefault()
+          .getStringTopic("Auto/label").publish()
+          .set(labelForKey(key));
+      SmartDashboard.putString("Auto Key", key);
     }
-    if (!selection.equals(lastSelection)) {
-      lastSelection = selection;
-      lastCommand = buildCommand(selection);
-    }
-    // Always publish the human-readable label
-    selectedPub.set(labelForKey(lastSelection));
+
     return lastCommand;
   }
 
   private static String labelForKey(String key) {
-    for (int i = 0; i < KEYS.length; i++) {
-      if (KEYS[i].equals(key)) return LABELS[i];
-    }
-    return "Unknown";
+    return switch (key) {
+      case "Depot-Left"    -> "2-Cycle Depot Rush J-Left";
+      case "Depot-Center"  -> "2-Cycle Depot Rush J-Center";
+      case "Depot-Right"   -> "2-Cycle Depot Rush J-Right";
+      case "Sweep-Left"    -> "Center Sweep J-Left";
+      case "Sweep-Center"  -> "Center Sweep J-Center";
+      case "Sweep-Right"   -> "Center Sweep J-Right";
+      case "Leave-Left"    -> "Shoot+Mobility J-Left";
+      case "Leave-Center"  -> "Shoot+Mobility J-Center";
+      case "Leave-Right"   -> "Shoot+Mobility J-Right";
+      case "InPlace-Left"  -> "Shoot In Place J-Left";
+      case "InPlace-Center" -> "Shoot In Place J-Center";
+      case "InPlace-Right" -> "Shoot In Place J-Right";
+      default              -> "Unknown";
+    };
   }
 
   private Command buildCommand(String key) {
