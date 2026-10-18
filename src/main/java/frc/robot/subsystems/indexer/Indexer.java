@@ -1,5 +1,7 @@
 package frc.robot.subsystems.indexer;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -14,6 +16,7 @@ public class Indexer extends SubsystemBase {
     private final SparkMax leaderMotor;
     @SuppressWarnings("unused")
     private final SparkMax followerMotor;
+    private final RelativeEncoder encoder;
 
     public Indexer() {
         // -- Leader config (CAN 4) --
@@ -23,10 +26,12 @@ public class Indexer extends SubsystemBase {
             .idleMode(IdleMode.kCoast)
             .inverted(false);
         leaderConfig.closedLoop
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             .pid(0.07, 0, 0);
 
         leaderMotor = new SparkMax(Constants.kIndexerLeaderId, MotorType.kBrushless);
         leaderMotor.configure(leaderConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        encoder = leaderMotor.getEncoder();
 
         // -- Follower config (CAN 5, follow leader inverted) --
         SparkMaxConfig followerConfig = new SparkMaxConfig();
@@ -43,6 +48,16 @@ public class Indexer extends SubsystemBase {
 
     public void setDutyCycle(double dutyCycle) {
         leaderMotor.set(dutyCycle);
+    }
+
+    /** Returns the leader motor velocity in RPS. */
+    public double getVelocity() {
+        return encoder.getVelocity();
+    }
+
+    /** Returns the leader motor output current in amps. */
+    public double getOutputCurrent() {
+        return leaderMotor.getOutputCurrent();
     }
 
     @Override

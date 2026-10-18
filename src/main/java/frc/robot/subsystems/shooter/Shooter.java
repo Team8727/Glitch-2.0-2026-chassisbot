@@ -196,6 +196,11 @@ public class Shooter extends SubsystemBase {
         return leaderMotor;
     }
 
+    /** Returns the leader motor output current in amps. */
+    public double getOutputCurrent() {
+        return leaderMotor.getOutputCurrent();
+    }
+
     @Override
     public void periodic() {
         // State-space loop is driven externally (e.g. from Robot.teleopInit)
