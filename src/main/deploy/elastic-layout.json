@@ -23,7 +23,8 @@
               { "title": "Vision Count", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/vision/measurementCount", "period": 0.033, "show_submit_button": false } },
               { "title": "Battery Voltage", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/voltage", "period": 0.033, "show_submit_button": false } },
               { "title": "Shooter Velocity", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Shooter/velocity", "period": 0.033, "show_submit_button": false } },
-              { "title": "Shooter Current", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Shooter/current", "period": 0.033, "show_submit_button": false } }
+              { "title": "Shooter Current", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Shooter/current", "period": 0.033, "show_submit_button": false } },
+              { "title": "Vision Status", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/fallbackStatus", "period": 0.033, "show_submit_button": false } }
             ]
           },
           {
@@ -49,7 +50,8 @@
           { "title": "Swerve Drive", "x": 640, "y": 0, "width": 320, "height": 256, "type": "SwerveDrive", "properties": { "topic": "/DriveState", "period": 0.033, "show_robot_rotation": true, "rotation_unit": "Degrees" } },
           { "title": "Battery", "x": 640, "y": 256, "width": 320, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 13.0, "divisions": 9, "inverted": false, "orientation": "horizontal" } },
           { "title": "FMS Info", "x": 640, "y": 384, "width": 320, "height": 128, "type": "FMSInfo", "properties": { "topic": "/FMSInfo", "period": 0.033 } },
-          { "title": "Auto Chooser", "x": 0, "y": 512, "width": 480, "height": 128, "type": "Split Button Chooser", "properties": { "topic": "/SmartDashboard/Auto Chooser", "period": 0.5 } },
+          { "title": "Auto Selection", "x": 0, "y": 512, "width": 280, "height": 128, "type": "Text Display", "properties": { "topic": "/Auto/label", "period": 0.1, "show_submit_button": false, "font_size": 14 } },
+          { "title": "Auto Key", "x": 280, "y": 512, "width": 200, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } },
           { "title": "Command Scheduler", "x": 480, "y": 512, "width": 400, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
           { "title": "Power Override", "x": 880, "y": 512, "width": 240, "height": 128, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Shooter power override", "period": 0.033, "min_value": 0.0, "max_value": 100.0, "divisions": 100, "update_continuously": true } },
           { "title": "Battery Graph", "x": 1120, "y": 512, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/voltage", "period": 0.1, "time_displayed": 30.0, "color": 4278238420, "line_width": 2.0 } },
@@ -63,8 +65,9 @@
       "grid_layout": {
         "layouts": [],
         "containers": [
-          { "title": "Auto Chooser", "x": 0, "y": 0, "width": 640, "height": 128, "type": "Split Button Chooser", "properties": { "topic": "/SmartDashboard/Auto Chooser", "period": 0.5 } },
-          { "title": "Command Scheduler", "x": 0, "y": 128, "width": 640, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
+          { "title": "Auto Label", "x": 0, "y": 0, "width": 320, "height": 64, "type": "Text Display", "properties": { "topic": "/Auto/label", "period": 0.1, "show_submit_button": false, "font_size": 14 } },
+          { "title": "Auto Key", "x": 320, "y": 0, "width": 320, "height": 64, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } },
+          { "title": "Command Scheduler", "x": 0, "y": 64, "width": 640, "height": 320, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
           { "title": "Field", "x": 640, "y": 0, "width": 640, "height": 640, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070, "show_robot_outside_widget": true } },
           { "title": "Vision Count", "x": 1280, "y": 0, "width": 320, "height": 128, "type": "Number Bar", "properties": { "topic": "/Robot/vision/measurementCount", "period": 0.033, "min_value": 0.0, "max_value": 10.0, "divisions": 10, "inverted": false, "orientation": "horizontal" } },
           { "title": "Battery Voltage", "x": 1280, "y": 128, "width": 320, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 13.0, "divisions": 9, "inverted": false, "orientation": "horizontal" } },
@@ -158,7 +161,7 @@
           { "title": "Power Graph (15s)", "x": 1088, "y": 0, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.1, "time_displayed": 15.0, "color": 4278238420, "line_width": 2.0 } },
           { "title": "Swerve Drive", "x": 1408, "y": 0, "width": 320, "height": 320, "type": "SwerveDrive", "properties": { "topic": "/DriveState", "period": 0.033, "show_robot_rotation": true, "rotation_unit": "Degrees" } },
           { "title": "Command Scheduler", "x": 640, "y": 640, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
-          { "title": "Auto Chooser", "x": 960, "y": 640, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Chooser", "period": 0.5, "sort_options": false } },
+          { "title": "Auto Key", "x": 960, "y": 640, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } },
           { "title": "Power Override", "x": 1280, "y": 640, "width": 320, "height": 128, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Shooter power override", "period": 0.033, "min_value": 0.0, "max_value": 100.0, "divisions": 100, "update_continuously": true } }
         ]
       }
@@ -190,7 +193,7 @@
           { "title": "Module 2", "x": 768, "y": 384, "width": 256, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 2", "period": 0.033 } },
           { "title": "Module 3", "x": 768, "y": 512, "width": 256, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 3", "period": 0.033 } },
           { "title": "Command Scheduler", "x": 1024, "y": 0, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
-          { "title": "Auto Chooser", "x": 1024, "y": 384, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Chooser", "period": 0.5, "sort_options": false } }
+          { "title": "Auto Key", "x": 1024, "y": 384, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } }
         ]
       }
     },
@@ -206,7 +209,7 @@
           { "title": "Match Time", "x": 1280, "y": 0, "width": 320, "height": 128, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
           { "title": "FMS Info", "x": 1280, "y": 128, "width": 320, "height": 128, "type": "FMSInfo", "properties": { "topic": "/FMSInfo", "period": 0.033 } },
           { "title": "Voltage View", "x": 1280, "y": 256, "width": 320, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 13.0, "divisions": 9, "inverted": false, "orientation": "horizontal" } },
-          { "title": "Auto Chooser", "x": 1280, "y": 384, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Chooser", "period": 0.5, "sort_options": false } }
+          { "title": "Auto Key", "x": 1280, "y": 384, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } }
         ]
       }
     }
