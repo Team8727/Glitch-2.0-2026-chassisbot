@@ -7,12 +7,29 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Lightweight lazy-initialized NetworkTables logger.
- * Publishes typed values under a configurable root table.
+ * Lightweight NetworkTables logger with cached publishers.
+ *
+ * <p>Publishers are created once and reused, avoiding the NT4 limit on
+ * concurrent publisher objects.
  */
 public class NetworkTableLogger {
   private final String root;
+
+  private final Map<String, DoublePublisher> doublePubs = new HashMap<>();
+  private final Map<String, IntegerPublisher> intPubs = new HashMap<>();
+  private final Map<String, BooleanPublisher> boolPubs = new HashMap<>();
+  private final Map<String, StringPublisher> stringPubs = new HashMap<>();
+  private final Map<String, StructPublisher<Pose2d>> pose2dPubs = new HashMap<>();
+  private final Map<String, StructPublisher<Pose3d>> pose3dPubs = new HashMap<>();
+  private final Map<String, StructPublisher<ChassisSpeeds>> chassisPubs = new HashMap<>();
+  private final Map<String, StructArrayPublisher<SwerveModuleState>> moduleStatePubs = new HashMap<>();
+  private final Map<String, StructPublisher<Translation3d>> translationPubs = new HashMap<>();
+
+  private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   public NetworkTableLogger(String root) {
     this.root = root;
@@ -20,59 +37,39 @@ public class NetworkTableLogger {
 
   private String key(String k) { return root + "/" + k; }
 
-  // ---- Lazily-created publishers ----
-
   public void logDouble(String key, double value) {
-    var topic = NetworkTableInstance.getDefault().getDoubleTopic(key(key));
-    var pub = topic.publish();
-    pub.set(value);
+    doublePubs.computeIfAbsent(key(key), k -> inst.getDoubleTopic(k).publish()).set(value);
   }
 
   public void logInt(String key, int value) {
-    var topic = NetworkTableInstance.getDefault().getIntegerTopic(key(key));
-    var pub = topic.publish();
-    pub.set(value);
+    intPubs.computeIfAbsent(key(key), k -> inst.getIntegerTopic(k).publish()).set(value);
   }
 
   public void logBoolean(String key, boolean value) {
-    var topic = NetworkTableInstance.getDefault().getBooleanTopic(key(key));
-    var pub = topic.publish();
-    pub.set(value);
+    boolPubs.computeIfAbsent(key(key), k -> inst.getBooleanTopic(k).publish()).set(value);
   }
 
   public void logString(String key, String value) {
-    var topic = NetworkTableInstance.getDefault().getStringTopic(key(key));
-    var pub = topic.publish();
-    pub.set(value);
+    stringPubs.computeIfAbsent(key(key), k -> inst.getStringTopic(k).publish()).set(value);
   }
 
   public void logPose2d(String key, Pose2d value) {
-    var topic = NetworkTableInstance.getDefault().getStructTopic(key(key), Pose2d.struct);
-    var pub = topic.publish();
-    pub.set(value);
+    pose2dPubs.computeIfAbsent(key(key), k -> inst.getStructTopic(k, Pose2d.struct).publish()).set(value);
   }
 
   public void logPose3d(String key, Pose3d value) {
-    var topic = NetworkTableInstance.getDefault().getStructTopic(key(key), Pose3d.struct);
-    var pub = topic.publish();
-    pub.set(value);
+    pose3dPubs.computeIfAbsent(key(key), k -> inst.getStructTopic(k, Pose3d.struct).publish()).set(value);
   }
 
   public void logChassisSpeeds(String key, ChassisSpeeds value) {
-    var topic = NetworkTableInstance.getDefault().getStructTopic(key(key), ChassisSpeeds.struct);
-    var pub = topic.publish();
-    pub.set(value);
+    chassisPubs.computeIfAbsent(key(key), k -> inst.getStructTopic(k, ChassisSpeeds.struct).publish()).set(value);
   }
 
   public void logSwerveModuleStates(String key, SwerveModuleState[] value) {
-    var topic = NetworkTableInstance.getDefault().getStructArrayTopic(key(key), SwerveModuleState.struct);
-    var pub = topic.publish();
-    pub.set(value);
+    moduleStatePubs.computeIfAbsent(key(key), k -> inst.getStructArrayTopic(k, SwerveModuleState.struct).publish()).set(value);
   }
 
   public void logTranslation3d(String key, Translation3d value) {
-    var topic = NetworkTableInstance.getDefault().getStructTopic(key(key), Translation3d.struct);
-    var pub = topic.publish();
-    pub.set(value);
+    translationPubs.computeIfAbsent(key(key), k -> inst.getStructTopic(k, Translation3d.struct).publish()).set(value);
   }
 }

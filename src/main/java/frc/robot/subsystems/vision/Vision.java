@@ -101,18 +101,17 @@ public class Vision implements AutoCloseable {
     return Optional.of(best.pose());
   }
 
+  private final StructPublisher<Pose3d> flPosePub =
+      NetworkTableInstance.getDefault().getStructTopic("Vision/" + Constants.kCamFrontLeft + "/Pose", Pose3d.struct).publish();
+  private final StructPublisher<Pose3d> frPosePub =
+      NetworkTableInstance.getDefault().getStructTopic("Vision/" + Constants.kCamFrontRight + "/Pose", Pose3d.struct).publish();
+
   public void logCameraPoses(Pose2d robotPose) {
     var robotPose3d = new Pose3d(robotPose);
-
     var flTransform = new Transform3d(Constants.kCamFrontLeftTranslation, new Rotation3d(0, 0, Constants.kCamFrontLeftYaw));
-    getPose3dPublisher("Vision/" + Constants.kCamFrontLeft + "/Pose").set(robotPose3d.transformBy(flTransform));
-
+    flPosePub.set(robotPose3d.transformBy(flTransform));
     var frTransform = new Transform3d(Constants.kCamFrontRightTranslation, new Rotation3d(0, 0, Constants.kCamFrontRightYaw));
-    getPose3dPublisher("Vision/" + Constants.kCamFrontRight + "/Pose").set(robotPose3d.transformBy(frTransform));
-  }
-
-  private static StructPublisher<Pose3d> getPose3dPublisher(String key) {
-    return NetworkTableInstance.getDefault().getStructTopic(key, Pose3d.struct).publish();
+    frPosePub.set(robotPose3d.transformBy(frTransform));
   }
 
   @Override
