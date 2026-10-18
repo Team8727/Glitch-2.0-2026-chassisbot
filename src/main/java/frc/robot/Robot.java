@@ -27,6 +27,7 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.leds.LED;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.drivetrain.Telemetry;
 import frc.robot.subsystems.vision.Vision;
 import edu.wpi.first.wpilibj.Servo;
 import frc.lib.util.NetworkTableLogger;
@@ -74,6 +75,10 @@ public class Robot extends TimedRobot {
 
     // Build controls (binds buttons to commands — field not stored, side-effect only)
     new Controls(drivetrain, shooter, intake, indexer);
+
+    // Register telemetry for dashboard and sim visualization
+    var telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(edu.wpi.first.units.Units.MetersPerSecond));
+    drivetrain.registerTelemetry(telemetry::telemeterize);
 
     // Build auto chooser (dashboard-selectable routines)
     autoChooser = new AutoChooser(drivetrain, shooter, intake, indexer);
