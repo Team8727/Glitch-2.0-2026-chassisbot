@@ -1,0 +1,47 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": { "x": 1.8, "y": 4.035 },
+      "prevControl": null,
+      "nextControl": { "x": 2.15, "y": 4.035 },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": { "x": 2.5, "y": 4.035 },
+      "prevControl": { "x": 2.15, "y": 4.035 },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 180
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 311.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180
+  },
+  "reversed": false,
+  "folder": "THOR West Autos",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180
+  },
+  "useDefaultConstraints": true
+}
