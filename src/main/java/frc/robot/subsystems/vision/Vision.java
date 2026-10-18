@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants;
 
 import java.util.ArrayList;
@@ -33,8 +33,14 @@ public class Vision implements AutoCloseable {
   private static final double kMaxDistance = 3.5;
 
   public Vision() {
-    cameraFrontLeft = new org.photonvision.PhotonCamera(Constants.kCamFrontLeft);
-    cameraFrontRight = new org.photonvision.PhotonCamera(Constants.kCamFrontRight);
+    if (RobotBase.isReal()) {
+      cameraFrontLeft = new org.photonvision.PhotonCamera(Constants.kCamFrontLeft);
+      cameraFrontRight = new org.photonvision.PhotonCamera(Constants.kCamFrontRight);
+    } else {
+      // In simulation, use a null-safe stub — no PhotonVision coprocessor available
+      cameraFrontLeft = null;
+      cameraFrontRight = null;
+    }
 
     AprilTagFieldLayout layout = null;
     try {
@@ -51,8 +57,8 @@ public class Vision implements AutoCloseable {
 
   public List<Measurement> drainMeasurements(Pose2d referencePose) {
     List<Measurement> measurements = new ArrayList<>();
-    drainCamera(cameraFrontLeft, measurements);
-    drainCamera(cameraFrontRight, measurements);
+    if (cameraFrontLeft != null) drainCamera(cameraFrontLeft, measurements);
+    if (cameraFrontRight != null) drainCamera(cameraFrontRight, measurements);
     return measurements;
   }
 
@@ -107,6 +113,7 @@ public class Vision implements AutoCloseable {
       NetworkTableInstance.getDefault().getStructTopic("Vision/" + Constants.kCamFrontRight + "/Pose", Pose3d.struct).publish();
 
   public void logCameraPoses(Pose2d robotPose) {
+    if (cameraFrontLeft == null) return; // sim
     var robotPose3d = new Pose3d(robotPose);
     var flTransform = new Transform3d(Constants.kCamFrontLeftTranslation, new Rotation3d(0, 0, Constants.kCamFrontLeftYaw));
     flPosePub.set(robotPose3d.transformBy(flTransform));
@@ -116,7 +123,7 @@ public class Vision implements AutoCloseable {
 
   @Override
   public void close() {
-    cameraFrontLeft.close();
-    cameraFrontRight.close();
+    if (cameraFrontLeft != null) cameraFrontLeft.close();
+    if (cameraFrontRight != null) cameraFrontRight.close();
   }
 }
