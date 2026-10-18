@@ -1,50 +1,49 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.leds.LED;
 
+import static edu.wpi.first.wpilibj2.command.Commands.*;
+
 /**
- * Simple intake command that runs the intake and indexer forward.
+ * Intake command with optional unjam pulse.
  *
- * <p>Sets the intake duty cycle and indexer duty cycle, enables the intaking
- * flag, and triggers LED patterns. On end, stops all mechanisms.
+ * <p>Starts with a brief reverse pulse to clear jams, then runs intake + indexer
+ * forward. The unjam duration is dashboard-tunable via "Intake Unjam Time".
+ *
+ * <p>When the trigger is released, both intake and indexer stop.
  */
-public class IntakeCommand extends Command {
-    private final Intake intake;
-    private final Indexer indexer;
+public class IntakeCommand extends SequentialCommandGroup {
 
-    /**
-     * Creates a new IntakeCommand.
-     *
-     * @param intake  the intake subsystem
-     * @param indexer the indexer subsystem
-     */
+    private static final double kUnjamTime = 0.15; // seconds
+    private static final double kIntakeTimeout = 10.0; // safety timeout
+
     public IntakeCommand(Intake intake, Indexer indexer) {
-        this.intake = intake;
-        this.indexer = indexer;
-        addRequirements(intake, indexer);
-    }
+        SmartDashboard.putNumber("Intake Unjam Time", kUnjamTime * 1000); // ms
 
-    @Override
-    public void initialize() {
-        intake.setDutyCycle(Constants.kIntakeDutyCycle);
-        indexer.setDutyCycle(Constants.kIndexerForwardDutyCycle);
-        intake.setIntaking(true);
-        LED.instance.intakePatterns();
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        intake.setDutyCycle(0);
-        indexer.setDutyCycle(0);
-        intake.setIntaking(false);
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
+        addCommands(
+                // Brief reverse pulse to clear any jams
+                runOnce(() -> {
+                    double unjamMs = SmartDashboard.getNumber("Intake Unjam Time", 150.0);
+                    intake.setDutyCycle(-Constants.kIntakeDutyCycle * 0.6);
+                    indexer.setDutyCycle(-Constants.kIndexerForwardDutyCycle * 0.3);
+                }),
+                waitSeconds(kUnjamTime),
+                // Stop reverse
+                runOnce(() -> { intake.setDutyCycle(0); indexer.setDutyCycle(0); }),
+                waitSeconds(0.05),
+                // Start forward intake (runs until canceled)
+                runOnce(() -> {
+                    intake.setDutyCycle(Constants.kIntakeDutyCycle);
+                    indexer.setDutyCycle(Constants.kIndexerForwardDutyCycle);
+                    intake.setIntaking(true);
+                    LED.instance.intakePatterns();
+                })
+        );
     }
 }

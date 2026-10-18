@@ -24,6 +24,8 @@
               { "title": "Battery Voltage", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/voltage", "period": 0.033, "show_submit_button": false } },
               { "title": "Shooter Velocity", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Shooter/velocity", "period": 0.033, "show_submit_button": false } },
               { "title": "Shooter Current", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Shooter/current", "period": 0.033, "show_submit_button": false } },
+              { "title": "RPM Target", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter RPM Target", "period": 0.033, "show_submit_button": false } },
+              { "title": "RPM Actual", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter RPM Actual", "period": 0.033, "show_submit_button": false } },
               { "title": "Vision Status", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/fallbackStatus", "period": 0.033, "show_submit_button": false } }
             ]
           },
@@ -54,6 +56,9 @@
           { "title": "Auto Key", "x": 280, "y": 512, "width": 200, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } },
           { "title": "Command Scheduler", "x": 480, "y": 512, "width": 400, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
           { "title": "Power Override", "x": 880, "y": 512, "width": 240, "height": 128, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Shooter power override", "period": 0.033, "min_value": 0.0, "max_value": 100.0, "divisions": 100, "update_continuously": true } },
+          { "title": "Invert Fwd", "x": 880, "y": 640, "width": 120, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert X", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
+          { "title": "Invert Strf", "x": 1000, "y": 640, "width": 120, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert Y", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
+          { "title": "Invert Rot", "x": 1120, "y": 640, "width": 120, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert Rot", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
           { "title": "Battery Graph", "x": 1120, "y": 512, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/voltage", "period": 0.1, "time_displayed": 30.0, "color": 4278238420, "line_width": 2.0 } },
           { "title": "Power Graph", "x": 1440, "y": 512, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.1, "time_displayed": 15.0, "color": 4283215696, "line_width": 2.0 } },
           { "title": "Distance Graph", "x": 1120, "y": 768, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.1, "time_displayed": 15.0, "color": 4286611456, "line_width": 2.0 } }

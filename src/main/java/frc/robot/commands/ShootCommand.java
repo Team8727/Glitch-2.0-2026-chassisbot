@@ -5,12 +5,14 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.shooting.ShootingRegressions;
 import frc.robot.shooting.Targeting;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.Shooter.ShooterControlMode;
 
@@ -19,48 +21,53 @@ import frc.robot.subsystems.shooter.Shooter.ShooterControlMode;
  *
  * <p>Spins up the flywheel, waits until it reaches target RPM (within a
  * dashboard-tunable tolerance), then feeds balls through the indexer.
+ * The shooter stays running the entire time so velocity doesn't drop.
  *
- * <p>The RPM tolerance can be tuned from the dashboard via
- * {@code /SmartDashboard/Shooter RPM Tolerance}.
+ * <p>Tune from dashboard:
+ * <ul>
+ *   <li>{@code /SmartDashboard/Shooter RPM Tolerance} — default 50 RPM</li>
+ *   <li>{@code /SmartDashboard/Shooter Feed Time} — how long to feed (default 1.0s)</li>
+ * </ul>
  */
 public class ShootCommand extends SequentialCommandGroup {
 
     public ShootCommand(Shooter shooter, Indexer indexer, Drivetrain drivetrain) {
-        SmartDashboard.putNumber("Shooter RPM Tolerance", 100.0);
+        // Dashboard-tunable parameters
+        SmartDashboard.putNumber("Shooter RPM Tolerance", 50.0);
+        SmartDashboard.putNumber("Shooter Feed Time", Constants.kShooterFeedTime);
 
         addCommands(
-                parallel(
-                        // Spin up flywheel based on distance regression
-                        shooter.run(() -> {
-                            var pose = drivetrain.getState().Pose;
-                            double distance = Targeting.getHorizontalDistance(pose);
-                            double motorRPS = ShootingRegressions.getMotorRPS(distance);
-                            shooter.setVelocity(motorRPS, ShooterControlMode.FF_AND_PID);
-                        }),
+                // Step 1: Spin up flywheel
+                shooter.run(() -> {
+                    var pose = drivetrain.getState().Pose;
+                    double distance = Targeting.getHorizontalDistance(pose);
+                    double motorRPS = ShootingRegressions.getMotorRPS(distance);
+                    shooter.setVelocity(motorRPS, ShooterControlMode.FF_AND_PID);
+                }),
 
-                        // Wait for flywheel to reach speed, then feed
-                        sequence(
-                                new WaitForFlywheelSpeed(shooter, drivetrain),
-                                indexer.run(() -> indexer.setDutyCycle(
-                                        Constants.kShooterIndexerDutyCycle))
-                                        .withTimeout(Constants.kShooterFeedTime)))
-                .finallyDo(() -> {
-                    shooter.setDutyCycle(0);
-                    indexer.setDutyCycle(0);
-                }));
+                // Step 2: Wait until at speed (with timeout)
+                new WaitForFlywheelSpeed(shooter, drivetrain),
+
+                // Step 3: Feed balls while keeping shooter running
+                parallel(
+                        shooter.run(() -> {}), // keeps shooter required/active
+                        indexer.run(() -> indexer.setDutyCycle(
+                                Constants.kShooterIndexerDutyCycle))
+                                .withTimeout(Constants.kShooterFeedTime))
+        );
     }
 }
 
 /**
- * Waits until the flywheel reaches target RPM within tolerance, or times out.
- * Tune tolerance from dashboard via "Shooter RPM Tolerance" (default 100 RPM).
+ * Waits until flywheel reaches target RPM within tolerance, or times out.
+ * Dashboard-tunable tolerance via "Shooter RPM Tolerance".
  */
 class WaitForFlywheelSpeed extends Command {
     private final Shooter shooter;
     private final Drivetrain drivetrain;
     private double startTime;
 
-    private static final double kMaxWaitTime = Constants.kShooterSpinupTime + 1.0;
+    private static final double kMaxWaitTime = Constants.kShooterSpinupTime + 2.0;
 
     public WaitForFlywheelSpeed(Shooter shooter, Drivetrain drivetrain) {
         this.shooter = shooter;
@@ -74,8 +81,8 @@ class WaitForFlywheelSpeed extends Command {
 
     @Override
     public boolean isFinished() {
-        double tolerance = SmartDashboard.getNumber("Shooter RPM Tolerance", 100.0);
-        if (tolerance <= 0) tolerance = 100.0;
+        double tolerance = SmartDashboard.getNumber("Shooter RPM Tolerance", 50.0);
+        if (tolerance <= 1.0) tolerance = 50.0;
 
         var pose = drivetrain.getState().Pose;
         double distance = Targeting.getHorizontalDistance(pose);
@@ -86,6 +93,8 @@ class WaitForFlywheelSpeed extends Command {
         boolean timedOut = (Timer.getFPGATimestamp() - startTime) > kMaxWaitTime;
 
         if (atSpeed || timedOut) {
+            SmartDashboard.putNumber("Shooter RPM Target", targetRPM);
+            SmartDashboard.putNumber("Shooter RPM Actual", currentRPM);
             return true;
         }
         return false;
