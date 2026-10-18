@@ -5,6 +5,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -38,6 +39,18 @@ public class DriveCommands {
 
     private DriveCommands() {}
 
+    /** Initialize dashboard tuning sliders for drive axis inversion (called once at robot boot). */
+    public static void initDashboardTuning() {
+        SmartDashboard.putNumber("Drive/Invert X", 1.0);   // -1 to invert forward
+        SmartDashboard.putNumber("Drive/Invert Y", 1.0);   // -1 to invert strafe
+        SmartDashboard.putNumber("Drive/Invert Rot", 1.0); // -1 to invert rotation
+    }
+
+    /** Read the SmartDashboard multiplier for each axis (1 = normal, -1 = inverted). */
+    private static double invertX() { return SmartDashboard.getNumber("Drive/Invert X", 1.0); }
+    private static double invertY() { return SmartDashboard.getNumber("Drive/Invert Y", 1.0); }
+    private static double invertRot() { return SmartDashboard.getNumber("Drive/Invert Rot", 1.0); }
+
     /**
      * Default field-centric teleop drive command.
      *
@@ -48,9 +61,9 @@ public class DriveCommands {
     public static Command teleopDrive(Drivetrain drivetrain, CommandXboxController controller) {
         return drivetrain.applyRequest(
                 () ->
-                        drive.withVelocityX(controller.getLeftY() * kMaxSpeed)
-                                .withVelocityY(controller.getLeftX() * kMaxSpeed)
-                                .withRotationalRate(-controller.getRightX() * kMaxAngularRate));
+                        drive.withVelocityX(controller.getLeftY() * kMaxSpeed * invertX())
+                                .withVelocityY(controller.getLeftX() * kMaxSpeed * invertY())
+                                .withRotationalRate(-controller.getRightX() * kMaxAngularRate * invertRot()));
     }
 
     /**
@@ -67,8 +80,8 @@ public class DriveCommands {
                     Rotation2d targetYaw = Targeting.computeYaw(robotPose);
                     return faceTarget
                             .withTargetDirection(targetYaw)
-                            .withVelocityX(controller.getLeftY() * kMaxSpeed)
-                            .withVelocityY(controller.getLeftX() * kMaxSpeed)
+                            .withVelocityX(controller.getLeftY() * kMaxSpeed * invertX())
+                            .withVelocityY(controller.getLeftX() * kMaxSpeed * invertY())
                             .withRotationalDeadband(kMaxAngularRate * 0.1);
                 });
     }
@@ -90,8 +103,8 @@ public class DriveCommands {
                             .withTargetDirection(
                                     Rotation2d.fromDegrees(
                                             baseYaw.getDegrees() - oscDeg))
-                            .withVelocityX(controller.getLeftY() * kMaxSpeed)
-                            .withVelocityY(controller.getLeftX() * kMaxSpeed)
+                            .withVelocityX(controller.getLeftY() * kMaxSpeed * invertX())
+                            .withVelocityY(controller.getLeftX() * kMaxSpeed * invertY())
                             .withRotationalDeadband(kMaxAngularRate * 0.1);
                 });
     }

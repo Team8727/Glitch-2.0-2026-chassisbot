@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.AutoChooser;
+import frc.robot.commands.DriveCommands;
 import frc.robot.controls.Controls;
 import frc.robot.shooting.ProjectileSolver;
 import frc.robot.shooting.ProjectileSolver.FiringSolution;
@@ -75,6 +76,9 @@ public class Robot extends TimedRobot {
 
     // Build controls (binds buttons to commands — field not stored, side-effect only)
     new Controls(drivetrain, shooter, intake, indexer);
+
+    // Initialize drive tuning sliders on dashboard
+    DriveCommands.initDashboardTuning();
 
     // Register telemetry for dashboard and sim visualization
     var telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(edu.wpi.first.units.Units.MetersPerSecond));

@@ -31,22 +31,36 @@ public class AutoRoutines {
       Constants.kAutoMaxAngularAcceleration);
 
   // ========================================================================
-  // Blue-alliance positions (center-origin WPILib frame)
+  // Blue-alliance positions (WPILib center-origin frame)
   // ========================================================================
 
-  private static final Pose2d kBlueShootLeft    = new Pose2d(-5.8, 2.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueShootCenter  = new Pose2d(-5.8, 0.0, Rotation2d.fromDegrees(180));
+  // Starting positions (must match .path file start waypoints)
+  // Converted from PathPlanner frame: PP_X - 8.27, PP_Y - 4.035
+  // J-Left to Shoot starts at PP(1.8, 6.0)   -> WPILib(-6.47, 1.97)
+  // J-Center to Shoot starts at PP(1.8, 4.035) -> WPILib(-6.47, 0.0)
+  // J-Right to Shoot starts at PP(1.8, 2.0)   -> WPILib(-6.47, -2.04)
+  private static final Pose2d kBlueStartLeft    = new Pose2d(-6.5,  2.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueStartCenter  = new Pose2d(-6.5,  0.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueStartRight   = new Pose2d(-6.5, -2.0, Rotation2d.fromDegrees(180));
+
+  // Shoot positions
+  private static final Pose2d kBlueShootLeft    = new Pose2d(-5.8,  2.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueShootCenter  = new Pose2d(-5.8,  0.0, Rotation2d.fromDegrees(180));
   private static final Pose2d kBlueShootRight   = new Pose2d(-5.8, -2.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueDepot        = new Pose2d(-7.8, 2.5, Rotation2d.fromDegrees(180));
+
+  // Intake positions
+  private static final Pose2d kBlueDepot        = new Pose2d(-7.8,  2.5, Rotation2d.fromDegrees(180));
   private static final Pose2d kBlueOutpost      = new Pose2d(-7.8, -2.5, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueSweepLeft    = new Pose2d(1.5, 2.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueSweepCenter  = new Pose2d(1.5, 0.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueSweepRight   = new Pose2d(1.5, -2.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueMobilityLeft    = new Pose2d(-1.0, 2.0, Rotation2d.fromDegrees(0));
-  private static final Pose2d kBlueMobilityCenter  = new Pose2d(-1.0, 0.0, Rotation2d.fromDegrees(0));
+  private static final Pose2d kBlueSweepLeft    = new Pose2d( 1.5,  2.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueSweepCenter  = new Pose2d( 1.5,  0.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueSweepRight   = new Pose2d( 1.5, -2.0, Rotation2d.fromDegrees(180));
+
+  // Mobility positions
+  private static final Pose2d kBlueMobilityLeft    = new Pose2d(-1.0,  2.0, Rotation2d.fromDegrees(0));
+  private static final Pose2d kBlueMobilityCenter  = new Pose2d(-1.0,  0.0, Rotation2d.fromDegrees(0));
   private static final Pose2d kBlueMobilityRight   = new Pose2d(-1.0, -2.0, Rotation2d.fromDegrees(0));
 
-  // PathPlanner path file names (blue-corner-origin, in deploy/pathplanner/paths/)
+  // Path file names
   private static final String kPathLeftToShoot     = "J-Left to Shoot";
   private static final String kPathShootToDepot    = "Shoot to Depot Left";
   private static final String kPathDepotToShoot    = "Depot Left to Shoot";
@@ -58,10 +72,8 @@ public class AutoRoutines {
   private static final String kPathOutpostToShoot  = "Outpost Right to Shoot";
   private static final String kPathShootToMobility = "Shoot to Mobility";
 
-  // ========================================================================
-
-  public AutoRoutines(Drivetrain drivetrain, Shooter shooter, Intake intake, Indexer indexer) {
-    this.drivetrain = drivetrain; this.shooter = shooter; this.intake = intake; this.indexer = indexer;
+  public AutoRoutines(Drivetrain dt, Shooter s, Intake i, Indexer ix) {
+    drivetrain = dt; shooter = s; intake = i; indexer = ix;
     registerNamedCommands();
   }
 
@@ -77,7 +89,7 @@ public class AutoRoutines {
   }
 
   // ========================================================================
-  // Mirroring
+  // Helpers
   // ========================================================================
 
   private static Pose2d mirror(Pose2d p) {
@@ -87,9 +99,10 @@ public class AutoRoutines {
     return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? mirror(bluePose) : bluePose;
   }
 
-  // ========================================================================
-  // Building blocks
-  // ========================================================================
+  /** Reset drivetrain pose so the robot knows where it is (critical without vision). */
+  private Command resetPose(Pose2d startPose) {
+    return runOnce(() -> drivetrain.resetPose(ap(startPose)));
+  }
 
   private Command shoot() { return new ShootCommand(shooter, indexer, drivetrain); }
 
@@ -97,132 +110,88 @@ public class AutoRoutines {
     return AutoBuilder.pathfindToPose(ap(p), kConstraints, 0.0);
   }
 
-  /** Try .path file first, fall back to pathfinding. */
+  /** Try .path file first, fall back to online pathfinding. */
   private Command go(String pathName, Pose2d fallback) {
     try {
-      var path = PathPlannerPath.fromPathFile(pathName);
-      return AutoBuilder.followPath(path);
+      return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName));
     } catch (Exception e) {
       return pathfind(fallback);
     }
   }
 
-  /** Path with red-alliance mirroring. */
-  private Command goMirrored(String pathName, Pose2d fallback) {
-    try {
-      var path = PathPlannerPath.fromPathFile(pathName);
-      if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-        return AutoBuilder.followPath(path.flipPath());
-      }
-      return AutoBuilder.followPath(path);
-    } catch (Exception e) {
-      return pathfind(fallback);
-    }
-  }
-
-  private Command intakeWhileMoving(String pathName, Pose2d target, Pose2d shootPos) {
+  private Command runIntakeSec(double seconds) {
     return sequence(
-        parallel(
-            go(pathName, target),
-            sequence(waitSeconds(3.0), runOnce(() -> {
-              intake.setDutyCycle(Constants.kIntakeDutyCycle);
-              indexer.setDutyCycle(Constants.kIndexerForwardDutyCycle);
-            }))),
-        run(() -> {}) // placeholder — intake continues
-    );
+        runOnce(() -> { intake.setDutyCycle(Constants.kIntakeDutyCycle);
+                        indexer.setDutyCycle(Constants.kIndexerForwardDutyCycle); }),
+        waitSeconds(seconds),
+        runOnce(() -> { intake.setDutyCycle(0); indexer.setDutyCycle(0); }));
   }
 
   // ========================================================================
-  // Auto Routines
+  // Auto Routines — each resets pose first so autos work without vision
   // ========================================================================
 
   // --- 2-Cycle Depot Rush ---
 
   public Command twoCycleDepotRushLeft() {
-    return sequence(
+    return sequence(resetPose(kBlueStartLeft),
         shoot(),
-        go(kPathShootToDepot, kBlueDepot),
-        runIntakeSec(3.0),
-        go(kPathDepotToShoot, kBlueShootLeft),
-        shoot());
+        go(kPathShootToDepot, kBlueDepot), runIntakeSec(3.0),
+        go(kPathDepotToShoot, kBlueShootLeft), shoot());
   }
 
   public Command twoCycleDepotRushCenter() {
-    return sequence(
+    return sequence(resetPose(kBlueStartCenter),
         shoot(),
-        go(kPathShootToDepot, kBlueDepot),
-        runIntakeSec(3.0),
-        go(kPathSweepToShoot, kBlueShootCenter),
-        shoot());
+        go(kPathShootToDepot, kBlueDepot), runIntakeSec(3.0),
+        go(kPathSweepToShoot, kBlueShootCenter), shoot());
   }
 
   public Command twoCycleDepotRushRight() {
-    return sequence(
+    return sequence(resetPose(kBlueStartRight),
         shoot(),
-        go(kPathShootToOutpost, kBlueOutpost),
-        runIntakeSec(3.0),
-        go(kPathOutpostToShoot, kBlueShootRight),
-        shoot());
+        go(kPathShootToOutpost, kBlueOutpost), runIntakeSec(3.0),
+        go(kPathOutpostToShoot, kBlueShootRight), shoot());
   }
 
   // --- Center Sweep ---
 
   public Command centerSweepLeft() {
-    return sequence(
+    return sequence(resetPose(kBlueStartLeft),
         shoot(),
-        go(kPathShootToSweep, kBlueSweepLeft),
-        runIntakeSec(2.0),
-        go(kPathSweepToShoot, kBlueShootLeft),
-        shoot());
+        go(kPathShootToSweep, kBlueSweepLeft), runIntakeSec(2.0),
+        go(kPathSweepToShoot, kBlueShootLeft), shoot());
   }
 
   public Command centerSweepCenter() {
-    return sequence(
+    return sequence(resetPose(kBlueStartCenter),
         shoot(),
-        go(kPathShootToSweep, kBlueSweepCenter),
-        runIntakeSec(2.0),
-        go(kPathSweepToShoot, kBlueShootCenter),
-        shoot());
+        go(kPathShootToSweep, kBlueSweepCenter), runIntakeSec(2.0),
+        go(kPathSweepToShoot, kBlueShootCenter), shoot());
   }
 
   public Command centerSweepRight() {
-    return sequence(
+    return sequence(resetPose(kBlueStartRight),
         shoot(),
-        go(kPathShootToSweep, kBlueSweepRight),
-        runIntakeSec(2.0),
-        go(kPathSweepToShoot, kBlueShootRight),
-        shoot());
+        go(kPathShootToSweep, kBlueSweepRight), runIntakeSec(2.0),
+        go(kPathSweepToShoot, kBlueShootRight), shoot());
   }
 
   // --- Shoot + Mobility ---
 
   public Command shootAndLeaveLeft() {
-    return sequence(shoot(), go(kPathShootToMobility, kBlueMobilityLeft));
+    return sequence(resetPose(kBlueStartLeft), shoot(), go(kPathShootToMobility, kBlueMobilityLeft));
   }
   public Command shootAndLeaveCenter() {
-    return sequence(shoot(), go(kPathShootToMobility, kBlueMobilityCenter));
+    return sequence(resetPose(kBlueStartCenter), shoot(), go(kPathShootToMobility, kBlueMobilityCenter));
   }
   public Command shootAndLeaveRight() {
-    return sequence(shoot(), go(kPathShootToMobility, kBlueMobilityRight));
+    return sequence(resetPose(kBlueStartRight), shoot(), go(kPathShootToMobility, kBlueMobilityRight));
   }
 
   // --- Shoot In Place ---
 
-  public Command shootInPlaceLeft()   { return shoot(); }
-  public Command shootInPlaceCenter() { return shoot(); }
-  public Command shootInPlaceRight()  { return shoot(); }
-
-  // ========================================================================
-  // Helper
-  // ========================================================================
-
-  private Command runIntakeSec(double seconds) {
-    return sequence(
-        runOnce(() -> {
-          intake.setDutyCycle(Constants.kIntakeDutyCycle);
-          indexer.setDutyCycle(Constants.kIndexerForwardDutyCycle);
-        }),
-        waitSeconds(seconds),
-        runOnce(() -> { intake.setDutyCycle(0); indexer.setDutyCycle(0); }));
-  }
+  public Command shootInPlaceLeft()   { return sequence(resetPose(kBlueStartLeft), shoot()); }
+  public Command shootInPlaceCenter() { return sequence(resetPose(kBlueStartCenter), shoot()); }
+  public Command shootInPlaceRight()  { return sequence(resetPose(kBlueStartRight), shoot()); }
 }
