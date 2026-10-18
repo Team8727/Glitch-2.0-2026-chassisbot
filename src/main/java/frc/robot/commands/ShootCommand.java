@@ -5,62 +5,63 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.shooting.ShootingRegressions;
 import frc.robot.shooting.Targeting;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.indexer.Indexer;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.Shooter.ShooterControlMode;
 
 /**
- * Adaptive shoot command with at-speed gating.
+ * Adaptive shoot command — runs shooter + indexer as long as RT is held.
  *
- * <p>Spins up the flywheel, waits until it reaches target RPM (within a
- * dashboard-tunable tolerance), then feeds balls through the indexer.
- * The shooter stays running the entire time so velocity doesn't drop.
+ * <p>Spins up flywheel → waits until at speed → feeds balls continuously
+ * until the trigger is released. The {@code whileTrue} binding in Controls
+ * cancels this command on trigger release, which triggers the finallyDo
+ * cleanup and stops both mechanisms.
  *
- * <p>Tune from dashboard:
+ * <p>Dashboard tuning:
  * <ul>
  *   <li>{@code /SmartDashboard/Shooter RPM Tolerance} — default 50 RPM</li>
- *   <li>{@code /SmartDashboard/Shooter Feed Time} — how long to feed (default 1.0s)</li>
  * </ul>
  */
 public class ShootCommand extends SequentialCommandGroup {
 
     public ShootCommand(Shooter shooter, Indexer indexer, Drivetrain drivetrain) {
-        // Dashboard-tunable parameters
         SmartDashboard.putNumber("Shooter RPM Tolerance", 50.0);
-        SmartDashboard.putNumber("Shooter Feed Time", Constants.kShooterFeedTime);
 
         addCommands(
-                // Step 1: Spin up flywheel
-                shooter.run(() -> {
-                    var pose = drivetrain.getState().Pose;
-                    double distance = Targeting.getHorizontalDistance(pose);
-                    double motorRPS = ShootingRegressions.getMotorRPS(distance);
-                    shooter.setVelocity(motorRPS, ShooterControlMode.FF_AND_PID);
-                }),
+                sequence(
+                        // Step 1: Spin up flywheel based on distance regression
+                        shooter.run(() -> {
+                            var pose = drivetrain.getState().Pose;
+                            double distance = Targeting.getHorizontalDistance(pose);
+                            double motorRPS = ShootingRegressions.getMotorRPS(distance);
+                            shooter.setVelocity(motorRPS, ShooterControlMode.FF_AND_PID);
+                        }),
 
-                // Step 2: Wait until at speed (with timeout)
-                new WaitForFlywheelSpeed(shooter, drivetrain),
+                        // Step 2: Wait until flywheel reaches target speed
+                        new WaitForFlywheelSpeed(shooter, drivetrain),
 
-                // Step 3: Feed balls while keeping shooter running
-                parallel(
-                        shooter.run(() -> {}), // keeps shooter required/active
-                        indexer.run(() -> indexer.setDutyCycle(
-                                Constants.kShooterIndexerDutyCycle))
-                                .withTimeout(Constants.kShooterFeedTime))
-        );
+                        // Step 3: Feed balls continuously while keeping shooter running
+                        // Both run until RT is released and the command is canceled
+                        parallel(
+                                shooter.run(() -> {}),
+                                indexer.run(() -> indexer.setDutyCycle(
+                                        Constants.kShooterIndexerDutyCycle)))
+                ).finallyDo(() -> {
+                    // Cleanup when trigger is released or command ends
+                    shooter.setDutyCycle(0);
+                    indexer.setDutyCycle(0);
+                }));
     }
 }
 
 /**
  * Waits until flywheel reaches target RPM within tolerance, or times out.
- * Dashboard-tunable tolerance via "Shooter RPM Tolerance".
+ * Tolerance is dashboard-tunable via "Shooter RPM Tolerance" (default 50 RPM).
  */
 class WaitForFlywheelSpeed extends Command {
     private final Shooter shooter;
