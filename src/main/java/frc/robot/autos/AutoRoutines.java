@@ -18,11 +18,21 @@ import frc.robot.subsystems.shooter.Shooter;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 /**
- * Autonomous routines for 2026 REBUILT.
+ * Autonomous routines for 2026 REBUILT - THOR West.
  *
- * <p>Each routine composes shooting, intake, and PathPlanner pathfinding
- * commands. Uses online pathfinding instead of .path files for robustness
- * during the THOR West off-season.
+ * <p>Each routine comes in 3 starting positions (J-Left, J-Center, J-Right).
+ * Uses PathPlanner online pathfinding. All poses in WPILib center-origin frame
+ * (blue convention; mirrored for red via {@link #alliancePose(Pose2d)}).
+ *
+ * <h3>Starting Positions</h3>
+ * <ul>
+ *   <li><b>J-Left</b> — starting from the left side of the alliance wall
+ *       (depot side). Optimal for depot rush.
+ *   <li><b>J-Center</b> — starting from the center of the alliance wall
+ *       (between the bumps). Best for center sweep.
+ *   <li><b>J-Right</b> — starting from the right side of the alliance wall
+ *       (outpost side). Good for outpost intake.
+ * </ul>
  */
 public class AutoRoutines {
   private final Drivetrain drivetrain;
@@ -36,31 +46,57 @@ public class AutoRoutines {
       Constants.kAutoMaxAngularVelocity,
       Constants.kAutoMaxAngularAcceleration);
 
-  private static final PathConstraints kSlowConstraints = new PathConstraints(
-      Constants.kAutoMaxLinearVelocity * 0.5,
-      Constants.kAutoMaxLinearAcceleration * 0.6,
-      Constants.kAutoMaxAngularVelocity * 0.5,
-      Constants.kAutoMaxAngularAcceleration * 0.5);
-
   // ========================================================================
   // Field Positions (blue-alliance frame, center-origin)
+  //
+  // WPILib center-origin: origin at center of field, +X toward RED alliance.
+  // Blue wall is at X = -8.27, Red wall at X = +8.27.
+  // Y = 0 is the centerline; +Y is to the left (from blue driver perspective).
   // ========================================================================
 
-  /** Primary shooting position: ~2m in front of blue HUB. */
-  private static final Pose2d kBlueShootPose =
+  // ---- Shoot positions ----
+  /** Shoot from left side: about 2m in front of HUB, slightly left. */
+  private static final Pose2d kBlueShootLeft =
+      new Pose2d(-5.8, 1.8, Rotation2d.fromDegrees(180));
+
+  /** Shoot from center: directly in front of HUB. */
+  private static final Pose2d kBlueShootCenter =
       new Pose2d(-5.8, 0.0, Rotation2d.fromDegrees(180));
 
-  /** Approach pose for the depot area (near alliance wall). */
+  /** Shoot from right side: about 2m in front of HUB, slightly right. */
+  private static final Pose2d kBlueShootRight =
+      new Pose2d(-5.8, -1.8, Rotation2d.fromDegrees(180));
+
+  // ---- Intake positions ----
+  /** Depot approach (left side of alliance wall). */
   private static final Pose2d kBlueDepotPose =
+      new Pose2d(-7.8, 2.5, Rotation2d.fromDegrees(180));
+
+  /** Outpost approach (right side of alliance wall). */
+  private static final Pose2d kBlueOutpostPose =
       new Pose2d(-7.8, -2.5, Rotation2d.fromDegrees(180));
 
-  /** Center-field sweep end - deep in neutral zone. */
-  private static final Pose2d kBlueSweepEnd =
+  /** Center-field sweep end — deep in neutral zone, center. */
+  private static final Pose2d kBlueSweepCenterEnd =
       new Pose2d(1.5, 0.0, Rotation2d.fromDegrees(180));
 
-  /** Mobility pose - across the auto line. */
-  private static final Pose2d kBlueMobilityPose =
-      new Pose2d(-2.0, 0.0, Rotation2d.fromDegrees(0));
+  /** Center-field sweep end — deep in neutral zone, left side. */
+  private static final Pose2d kBlueSweepLeftEnd =
+      new Pose2d(1.5, 1.5, Rotation2d.fromDegrees(180));
+
+  /** Center-field sweep end — deep in neutral zone, right side. */
+  private static final Pose2d kBlueSweepRightEnd =
+      new Pose2d(1.5, -1.5, Rotation2d.fromDegrees(180));
+
+  // ---- Mobility poses ----
+  private static final Pose2d kBlueMobilityCenter =
+      new Pose2d(-1.0, 0.0, Rotation2d.fromDegrees(0));
+
+  private static final Pose2d kBlueMobilityLeft =
+      new Pose2d(-1.0, 1.8, Rotation2d.fromDegrees(0));
+
+  private static final Pose2d kBlueMobilityRight =
+      new Pose2d(-1.0, -1.8, Rotation2d.fromDegrees(0));
 
   // ========================================================================
   // Construction
@@ -109,6 +145,7 @@ public class AutoRoutines {
         bluePose.getRotation().rotateBy(Rotation2d.k180deg));
   }
 
+  /** Returns the same physical location for the current alliance. */
   private Pose2d alliancePose(Pose2d bluePose) {
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
       return mirrorPose(bluePose);
@@ -128,6 +165,7 @@ public class AutoRoutines {
     return AutoBuilder.pathfindToPose(targetPose, kConstraints, 0.0);
   }
 
+  /** Runs intake + indexer for a set duration, then stops. */
   private Command runIntake(double durationSeconds) {
     return sequence(
         runOnce(() -> {
@@ -141,76 +179,164 @@ public class AutoRoutines {
         }));
   }
 
-  // ========================================================================
-  // Auto Routines
-  // ========================================================================
-
-  /**
-   * AUTO 1: "2-Cycle Depot Rush" (DEFAULT)
-   *
-   * Shoot preloads, drive to alliance depot, intake FUEL, return to shoot.
-   * Phases: (0-2s) shoot 8 preloads, (2-6s) pathfind to depot, (6-10s) intake,
-   * (10-14s) pathfind back, (14-20s) shoot collected FUEL.
-   */
-  public Command twoCycleDepotRush() {
+  /** Intake while pathfinding, then continue running intake for more time. */
+  private Command intakeWhileMoving(Pose2d target, double intakeAfterSec) {
     return sequence(
-        shootPreloads(),
         parallel(
-            pathfindTo(alliancePose(kBlueDepotPose)),
+            pathfindTo(alliancePose(target)),
             sequence(
-                waitSeconds(3.5),
+                waitSeconds(3.0),
                 runOnce(() -> {
                   intake.setDutyCycle(Constants.kIntakeDutyCycle);
                   indexer.setDutyCycle(Constants.kIndexerForwardDutyCycle);
                 }))),
-        runIntake(4.0),
-        pathfindTo(alliancePose(kBlueShootPose)),
+        runIntake(intakeAfterSec));
+  }
+
+  // ========================================================================
+  // Auto Routines — Each has Left / Center / Right variants
+  // ========================================================================
+
+  // -------- 2-Cycle Depot Rush (J-Left | J-Center | J-Right) --------
+
+  /**
+   * 2-Cycle Depot Rush — J-Left.
+   * Shoot from left side, intake from left-side depot, return to shoot.
+   */
+  public Command twoCycleDepotRushLeft() {
+    return sequence(
+        shootPreloads(),
+        intakeWhileMoving(kBlueDepotPose, 3.0),
+        pathfindTo(alliancePose(kBlueShootLeft)),
         shootPreloads());
   }
 
   /**
-   * AUTO 2: "Center Sweep"
-   *
-   * Shoot preloads, drive through neutral zone collecting FUEL, return
-   * to shoot. More reliable but fewer balls than depot rush.
+   * 2-Cycle Depot Rush — J-Center.
+   * Shoot from center, intake from depot (left side), return to center to shoot.
    */
-  public Command centerSweep() {
+  public Command twoCycleDepotRushCenter() {
+    return sequence(
+        shootPreloads(),
+        intakeWhileMoving(kBlueDepotPose, 3.0),
+        pathfindTo(alliancePose(kBlueShootCenter)),
+        shootPreloads());
+  }
+
+  /**
+   * 2-Cycle Depot Rush — J-Right.
+   * Shoot from right side, intake from outpost (right side), return to shoot.
+   */
+  public Command twoCycleDepotRushRight() {
+    return sequence(
+        shootPreloads(),
+        intakeWhileMoving(kBlueOutpostPose, 3.0),
+        pathfindTo(alliancePose(kBlueShootRight)),
+        shootPreloads());
+  }
+
+  // -------- Center Sweep (J-Left | J-Center | J-Right) --------
+
+  /**
+   * Center Sweep — J-Left.
+   * Shoot from left, sweep left side of neutral zone, return to shoot.
+   */
+  public Command centerSweepLeft() {
     return sequence(
         shootPreloads(),
         parallel(
-            pathfindTo(alliancePose(kBlueSweepEnd)),
+            pathfindTo(alliancePose(kBlueSweepLeftEnd)),
             sequence(
                 runOnce(() -> {
                   intake.setDutyCycle(Constants.kIntakeDutyCycle);
                   indexer.setDutyCycle(Constants.kIndexerForwardDutyCycle);
                 }),
-                waitSeconds(3.0),
+                waitSeconds(3.5),
                 runOnce(() -> {
                   intake.setDutyCycle(0);
                   indexer.setDutyCycle(0);
                 }))),
-        pathfindTo(alliancePose(kBlueShootPose)),
+        pathfindTo(alliancePose(kBlueShootLeft)),
         shootPreloads());
   }
 
   /**
-   * AUTO 3: "Shoot + Mobility"
-   *
-   * Shoot preloads and drive across the auto line for mobility points.
-   * Simple and reliable.
+   * Center Sweep — J-Center.
+   * Shoot from center, sweep center of neutral zone, return to shoot.
    */
-  public Command shootAndLeave() {
+  public Command centerSweepCenter() {
     return sequence(
         shootPreloads(),
-        pathfindTo(alliancePose(kBlueMobilityPose)));
+        parallel(
+            pathfindTo(alliancePose(kBlueSweepCenterEnd)),
+            sequence(
+                runOnce(() -> {
+                  intake.setDutyCycle(Constants.kIntakeDutyCycle);
+                  indexer.setDutyCycle(Constants.kIndexerForwardDutyCycle);
+                }),
+                waitSeconds(3.5),
+                runOnce(() -> {
+                  intake.setDutyCycle(0);
+                  indexer.setDutyCycle(0);
+                }))),
+        pathfindTo(alliancePose(kBlueShootCenter)),
+        shootPreloads());
   }
 
   /**
-   * AUTO 4: "Shoot In Place"
-   *
-   * Just fire preloads from starting position. 100% reliable.
+   * Center Sweep — J-Right.
+   * Shoot from right, sweep right side of neutral zone, return to shoot.
    */
-  public Command shootInPlace() {
+  public Command centerSweepRight() {
+    return sequence(
+        shootPreloads(),
+        parallel(
+            pathfindTo(alliancePose(kBlueSweepRightEnd)),
+            sequence(
+                runOnce(() -> {
+                  intake.setDutyCycle(Constants.kIntakeDutyCycle);
+                  indexer.setDutyCycle(Constants.kIndexerForwardDutyCycle);
+                }),
+                waitSeconds(3.5),
+                runOnce(() -> {
+                  intake.setDutyCycle(0);
+                  indexer.setDutyCycle(0);
+                }))),
+        pathfindTo(alliancePose(kBlueShootRight)),
+        shootPreloads());
+  }
+
+  // -------- Shoot + Mobility (J-Left | J-Center | J-Right) --------
+
+  public Command shootAndLeaveLeft() {
+    return sequence(
+        shootPreloads(),
+        pathfindTo(alliancePose(kBlueMobilityLeft)));
+  }
+
+  public Command shootAndLeaveCenter() {
+    return sequence(
+        shootPreloads(),
+        pathfindTo(alliancePose(kBlueMobilityCenter)));
+  }
+
+  public Command shootAndLeaveRight() {
+    return sequence(
+        shootPreloads(),
+        pathfindTo(alliancePose(kBlueMobilityRight)));
+  }
+
+  // -------- Shoot In Place (J-Left | J-Center | J-Right) --------
+
+  public Command shootInPlaceLeft() {
+    return shootPreloads();
+  }
+
+  public Command shootInPlaceCenter() {
+    return shootPreloads();
+  }
+
+  public Command shootInPlaceRight() {
     return shootPreloads();
   }
 }
