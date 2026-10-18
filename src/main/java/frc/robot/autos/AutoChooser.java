@@ -9,41 +9,36 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 /**
- * Dashboard auto mode selector with 12 routines (4 types x 3 J positions).
+ * Dashboard auto mode selector — 12 routines (4 strategies × 3 J positions).
  *
- * <p>Use the Split Button Chooser on Elastic to navigate:
- * <ul>
- *   <li>Pick your starting position: J-Left, J-Center, or J-Right
- *   <li>Pick your strategy: Depot Rush, Center Sweep, Shoot+Leave, or Shoot In Place
- * </ul>
+ * <p>Select from a flat list on the Elastic dashboard. The Split Button Chooser
+ * widget on the TeleDrive and Auto Setup tabs displays all options.
  */
 public class AutoChooser {
-  private final AutoRoutines routines;
   private final SendableChooser<Command> chooser = new SendableChooser<>();
 
   public AutoChooser(
       Drivetrain drivetrain, Shooter shooter, Intake intake, Indexer indexer) {
-    this.routines = new AutoRoutines(drivetrain, shooter, intake, indexer);
+    AutoRoutines r = new AutoRoutines(drivetrain, shooter, intake, indexer);
 
-    // ---- 2-Cycle Depot Rush ----
-    chooser.addOption("Depot Rush J-Left", routines.twoCycleDepotRushLeft());
-    chooser.addOption("Depot Rush J-Center", routines.twoCycleDepotRushCenter());
-    chooser.addOption("Depot Rush J-Right", routines.twoCycleDepotRushRight());
+    // Default: highest scoring
+    chooser.setDefaultOption("2-Cycle Depot Rush J-Center", r.twoCycleDepotRushCenter());
 
-    // ---- Center Sweep ----
-    chooser.addOption("Center Sweep J-Left", routines.centerSweepLeft());
-    chooser.addOption("Center Sweep J-Center", routines.centerSweepCenter());
-    chooser.addOption("Center Sweep J-Right", routines.centerSweepRight());
-
-    // ---- Shoot + Mobility ----
-    chooser.addOption("Shoot+Leave J-Left", routines.shootAndLeaveLeft());
-    chooser.addOption("Shoot+Leave J-Center", routines.shootAndLeaveCenter());
-    chooser.addOption("Shoot+Leave J-Right", routines.shootAndLeaveRight());
-
-    // ---- Shoot In Place ----
-    chooser.addOption("Shoot In Place J-Left", routines.shootInPlaceLeft());
-    chooser.setDefaultOption("Shoot In Place J-Center", routines.shootInPlaceCenter());
-    chooser.addOption("Shoot In Place J-Right", routines.shootInPlaceRight());
+    // Depot Rush variants
+    chooser.addOption("2-Cycle Depot Rush J-Left",  r.twoCycleDepotRushLeft());
+    chooser.addOption("2-Cycle Depot Rush J-Right", r.twoCycleDepotRushRight());
+    // Center Sweep variants
+    chooser.addOption("Center Sweep J-Left",   r.centerSweepLeft());
+    chooser.addOption("Center Sweep J-Center", r.centerSweepCenter());
+    chooser.addOption("Center Sweep J-Right",  r.centerSweepRight());
+    // Shoot + Mobility variants
+    chooser.addOption("Shoot+Mobility J-Left",   r.shootAndLeaveLeft());
+    chooser.addOption("Shoot+Mobility J-Center", r.shootAndLeaveCenter());
+    chooser.addOption("Shoot+Mobility J-Right",  r.shootAndLeaveRight());
+    // Shoot In Place variants
+    chooser.addOption("Shoot In Place J-Left",   r.shootInPlaceLeft());
+    chooser.addOption("Shoot In Place J-Center", r.shootInPlaceCenter());
+    chooser.addOption("Shoot In Place J-Right",  r.shootInPlaceRight());
 
     SmartDashboard.putData("Auto Chooser", chooser);
   }
