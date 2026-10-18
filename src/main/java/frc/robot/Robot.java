@@ -28,6 +28,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.leds.LED;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
+import edu.wpi.first.wpilibj.Servo;
 import frc.lib.util.NetworkTableLogger;
 import org.littletonrobotics.urcl.URCL;
 
@@ -57,6 +58,11 @@ public class Robot extends TimedRobot {
 
   private final NetworkTableLogger logger = new NetworkTableLogger("Robot");
 
+  // ========== Autonomous pin servo (PWM port 1) ==========
+
+  /** Used to release a physical pin at the start of autonomous. */
+  private final Servo pinServo = new Servo(1);
+
   // ========== Auto ==========
 
   private final AutoChooser autoChooser;
@@ -71,6 +77,9 @@ public class Robot extends TimedRobot {
 
     // Build auto chooser (dashboard-selectable routines)
     autoChooser = new AutoChooser(drivetrain, shooter, intake, indexer);
+
+    // Start with pin retracted
+    pinServo.setAngle(0);
 
     // Warm up PathPlanner
     CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
@@ -172,6 +181,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     leds.start();
+    pinServo.setAngle(0);
   }
 
   @Override
@@ -182,6 +192,9 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
 
     leds.autoInit();
+
+    // Deploy pin to release mechanism
+    pinServo.setAngle(180);
 
     Command autoCommand = autoChooser.getSelected();
     if (autoCommand != null) {
