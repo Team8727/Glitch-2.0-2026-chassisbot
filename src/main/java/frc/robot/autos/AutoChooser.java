@@ -2,7 +2,6 @@ package frc.robot.autos;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
-import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,76 +12,100 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 /**
- * Auto chooser that publishes a simple string to NetworkTables.
+ * Two-part auto selector using a String chooser (reliable on Elastic)
+ * plus a raw NT4 string topic as a fallback for dashboard display.
  *
- * <p>Elastic reads this from the topic directly. Use a "String Chooser"
- * widget in Elastic bound to {@code /SmartDashboard/Auto Chooser}.
- *
- * <p>When selected, publishes one of:
- * {@code Depot-Left}, {@code Depot-Center}, {@code Depot-Right},
- * {@code Sweep-Left}, {@code Sweep-Center}, {@code Sweep-Right},
- * {@code Leave-Left}, {@code Leave-Center}, {@code Leave-Right},
- * {@code InPlace-Left}, {@code InPlace-Center}, {@code InPlace-Right}.
+ * <p>Publishes to:
+ * <ul>
+ *   <li>{@code /SmartDashboard/Auto Chooser} — SendableChooser (use Split Button Chooser widget)</li>
+ *   <li>{@code /Auto/selected} — plain string (use String Chooser widget as fallback)</li>
+ * </ul>
  */
 public class AutoChooser {
   private final AutoRoutines routines;
   private final SendableChooser<String> chooser = new SendableChooser<>();
+  private final StringPublisher selectedPub;
 
   private String lastSelection = "";
   private Command lastCommand = Commands.none();
+
+  /** Descriptive labels for each option key. */
+  private static final String[] KEYS = {
+    "Depot-Left", "Depot-Center", "Depot-Right",
+    "Sweep-Left", "Sweep-Center", "Sweep-Right",
+    "Leave-Left", "Leave-Center", "Leave-Right",
+    "InPlace-Left", "InPlace-Center", "InPlace-Right"
+  };
+  private static final String[] LABELS = {
+    "2-Cycle Depot Rush J-Left",
+    "2-Cycle Depot Rush J-Center",
+    "2-Cycle Depot Rush J-Right",
+    "Center Sweep J-Left",
+    "Center Sweep J-Center",
+    "Center Sweep J-Right",
+    "Shoot+Mobility J-Left",
+    "Shoot+Mobility J-Center",
+    "Shoot+Mobility J-Right",
+    "Shoot In Place J-Left",
+    "Shoot In Place J-Center",
+    "Shoot In Place J-Right"
+  };
 
   public AutoChooser(
       Drivetrain drivetrain, Shooter shooter, Intake intake, Indexer indexer) {
     this.routines = new AutoRoutines(drivetrain, shooter, intake, indexer);
 
-    // Use a String chooser — Elastic handles these reliably
-    chooser.setDefaultOption("2-Cycle Depot Rush J-Center", "Depot-Center");
+    // Publish a raw string topic Elastic can definitely read
+    selectedPub = NetworkTableInstance.getDefault()
+        .getStringTopic("Auto/selected").publish();
+    selectedPub.set(LABELS[1]); // default: Depot-Center
 
-    chooser.addOption("2-Cycle Depot Rush J-Left",  "Depot-Left");
-    chooser.addOption("2-Cycle Depot Rush J-Right", "Depot-Right");
-
-    chooser.addOption("Center Sweep J-Left",   "Sweep-Left");
-    chooser.addOption("Center Sweep J-Center", "Sweep-Center");
-    chooser.addOption("Center Sweep J-Right",  "Sweep-Right");
-
-    chooser.addOption("Shoot+Mobility J-Left",   "Leave-Left");
-    chooser.addOption("Shoot+Mobility J-Center", "Leave-Center");
-    chooser.addOption("Shoot+Mobility J-Right",  "Leave-Right");
-
-    chooser.addOption("Shoot In Place J-Left",   "InPlace-Left");
-    chooser.addOption("Shoot In Place J-Center", "InPlace-Center");
-    chooser.addOption("Shoot In Place J-Right",  "InPlace-Right");
+    // Populate chooser
+    chooser.setDefaultOption(LABELS[1], KEYS[1]);
+    for (int i = 0; i < KEYS.length; i++) {
+      if (i == 1) continue; // already set as default
+      chooser.addOption(LABELS[i], KEYS[i]);
+    }
 
     SmartDashboard.putData("Auto Chooser", chooser);
   }
 
-  /** Returns the command matching the currently selected string. */
   public Command getSelected() {
     String selection = chooser.getSelected();
-    if (selection == null || selection.equals(lastSelection)) {
-      return lastCommand;
+    if (selection == null) {
+      return routines.twoCycleDepotRushCenter();
     }
-    lastSelection = selection;
-    lastCommand = buildCommand(selection);
+    if (!selection.equals(lastSelection)) {
+      lastSelection = selection;
+      lastCommand = buildCommand(selection);
+    }
+    // Always publish the human-readable label
+    selectedPub.set(labelForKey(lastSelection));
     return lastCommand;
   }
 
+  private static String labelForKey(String key) {
+    for (int i = 0; i < KEYS.length; i++) {
+      if (KEYS[i].equals(key)) return LABELS[i];
+    }
+    return "Unknown";
+  }
+
   private Command buildCommand(String key) {
-    if (key == null) return routines.twoCycleDepotRushCenter();
     return switch (key) {
-      case "Depot-Left"    -> routines.twoCycleDepotRushLeft();
-      case "Depot-Center"  -> routines.twoCycleDepotRushCenter();
-      case "Depot-Right"   -> routines.twoCycleDepotRushRight();
-      case "Sweep-Left"    -> routines.centerSweepLeft();
-      case "Sweep-Center"  -> routines.centerSweepCenter();
-      case "Sweep-Right"   -> routines.centerSweepRight();
-      case "Leave-Left"    -> routines.shootAndLeaveLeft();
-      case "Leave-Center"  -> routines.shootAndLeaveCenter();
-      case "Leave-Right"   -> routines.shootAndLeaveRight();
-      case "InPlace-Left"  -> routines.shootInPlaceLeft();
+      case "Depot-Left"     -> routines.twoCycleDepotRushLeft();
+      case "Depot-Center"   -> routines.twoCycleDepotRushCenter();
+      case "Depot-Right"    -> routines.twoCycleDepotRushRight();
+      case "Sweep-Left"     -> routines.centerSweepLeft();
+      case "Sweep-Center"   -> routines.centerSweepCenter();
+      case "Sweep-Right"    -> routines.centerSweepRight();
+      case "Leave-Left"     -> routines.shootAndLeaveLeft();
+      case "Leave-Center"   -> routines.shootAndLeaveCenter();
+      case "Leave-Right"    -> routines.shootAndLeaveRight();
+      case "InPlace-Left"   -> routines.shootInPlaceLeft();
       case "InPlace-Center" -> routines.shootInPlaceCenter();
-      case "InPlace-Right" -> routines.shootInPlaceRight();
-      default              -> routines.twoCycleDepotRushCenter();
+      case "InPlace-Right"  -> routines.shootInPlaceRight();
+      default               -> routines.twoCycleDepotRushCenter();
     };
   }
 }
