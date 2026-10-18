@@ -14,7 +14,6 @@ import frc.robot.Robot;
 import frc.robot.shooting.Targeting;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
-import java.util.function.DoubleSupplier;
 
 public class DriveCommands {
     private static final double kMaxSpeed =
