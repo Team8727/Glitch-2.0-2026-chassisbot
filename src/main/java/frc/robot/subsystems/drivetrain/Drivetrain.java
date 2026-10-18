@@ -17,6 +17,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionFallback;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,7 @@ import frc.lib.util.NetworkTableLogger;
 public class Drivetrain extends TunerConstants.TunerSwerveDrivetrain implements Subsystem {
     private Vision m_Vision = null;
     private int m_lastVisionMeasurementCount = 0;
+    private final VisionFallback m_visionFallback = new VisionFallback();
     private final NetworkTableLogger logger = new NetworkTableLogger("Drivetrain");
     
     private static final double kSimLoopPeriod = 0.004;
@@ -162,6 +165,15 @@ public class Drivetrain extends TunerConstants.TunerSwerveDrivetrain implements 
         } else {
             m_lastVisionMeasurementCount = 0;
         }
+
+        // Run vision fallback — publishes confidence to dashboard
+        // When vision is down, this provides a dead-reckoned pose estimate
+        ChassisSpeeds speeds = getState().Speeds;
+        var chassisSpeeds = new ChassisSpeeds(
+            speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
+        Pose2d fallbackPose = m_visionFallback.update(
+            m_lastVisionMeasurementCount, chassisSpeeds, getState().Pose);
+        logger.logString("vision/fallbackStatus", m_visionFallback.getConfidence().name());
     }
     
     private void startSimThread() {
