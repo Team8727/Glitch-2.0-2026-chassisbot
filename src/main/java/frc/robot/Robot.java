@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.autos.AutoChooser;
 import frc.robot.commands.DriveCommands;
 import frc.robot.controls.Controls;
@@ -85,8 +86,9 @@ public class Robot extends TimedRobot {
     var telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(edu.wpi.first.units.Units.MetersPerSecond));
     drivetrain.registerTelemetry(telemetry::telemeterize);
 
-    // Build auto chooser (dashboard-selectable routines)
-    autoChooser = new AutoChooser(drivetrain, shooter, intake, indexer);
+    // Build auto chooser (dashboard-selectable routines).
+    // Pass the driver controller so autos can be cycled while disabled using bumpers.
+    autoChooser = new AutoChooser(drivetrain, shooter, intake, indexer, new CommandXboxController(0));
 
     // Start with pin retracted
     pinServo.setAngle(0);
