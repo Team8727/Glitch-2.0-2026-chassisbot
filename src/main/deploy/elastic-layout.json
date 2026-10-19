@@ -53,8 +53,8 @@
           { "title": "Distance Graph", "x": 384, "y": 768, "width": 384, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "time_displayed": 20.0, "color": 4286611456, "line_width": 2.0 } },
           { "title": "Amps Graph", "x": 768, "y": 768, "width": 384, "height": 256, "type": "Graph", "properties": { "topic": "/SmartDashboard/Total Amps", "period": 0.033, "time_displayed": 20.0, "color": 4294198070, "line_width": 2.0 } },
           { "title": "Scheduler", "x": 1152, "y": 768, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
-          { "title": "Auto Mode", "x": 1472, "y": 768, "width": 512, "height": 128, "type": "Split Button Chooser", "properties": { "topic": "/SmartDashboard/Auto Mode", "period": 0.5 } },
-          { "title": "Auto Label", "x": 1472, "y": 896, "width": 512, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Label", "period": 0.1, "show_submit_button": false, "font_size": 16 } },
+          { "title": "Auto Selector", "x": 1472, "y": 768, "width": 512, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Auto Selector", "period": 0.1, "min_value": 0.0, "max_value": 11.0, "divisions": 11, "update_continuously": true } },
+          { "title": "Auto Label", "x": 1472, "y": 832, "width": 512, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Label", "period": 0.1, "show_submit_button": false, "font_size": 16 } },
           { "title": "Invert Fwd", "x": 1472, "y": 960, "width": 160, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert X", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
           { "title": "Invert Strf", "x": 1632, "y": 960, "width": 160, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert Y", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
           { "title": "Invert Rot", "x": 1792, "y": 960, "width": 160, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert Rot", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
@@ -73,6 +73,7 @@
             "properties": { "label_position": "TOP" },
             "children": [
               { "title": "Auto Label", "x": 0, "y": 0, "width": 384, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Label", "period": 0.1, "show_submit_button": false, "font_size": 18 } },
+              { "title": "Auto Slider (0-11)", "x": 0, "y": 0, "width": 384, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Auto Selector", "period": 0.1, "min_value": 0.0, "max_value": 11.0, "divisions": 11, "update_continuously": true } },
               { "title": "Auto Key (type here)", "x": 0, "y": 0, "width": 384, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Options", "period": 0.1, "show_submit_button": false } },
               { "title": "Vision Status", "x": 0, "y": 0, "width": 384, "height": 64, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/fallbackStatus", "period": 0.033, "show_submit_button": false } },
               { "title": "Zone", "x": 0, "y": 0, "width": 192, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/zone", "period": 0.033, "show_submit_button": false, "font_size": 18 } },
@@ -84,8 +85,10 @@
         ],
         "containers": [
           { "title": "Field", "x": 0, "y": 0, "width": 768, "height": 768, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070, "show_robot_outside_widget": true } },
-          { "title": "Auto Mode", "x": 0, "y": 768, "width": 768, "height": 192, "type": "Split Button Chooser", "properties": { "topic": "/SmartDashboard/Auto Mode", "period": 0.5 } },
-          { "title": "Scheduler", "x": 768, "y": 512, "width": 384, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
+          { "title": "Auto Selector", "x": 0, "y": 768, "width": 640, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Auto Selector", "period": 0.1, "min_value": 0.0, "max_value": 11.0, "divisions": 11, "update_continuously": true } },
+          { "title": "Auto Label", "x": 0, "y": 832, "width": 640, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Label", "period": 0.1, "show_submit_button": false, "font_size": 18 } },
+          { "title": "Map", "x": 640, "y": 768, "width": 640, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Options", "period": 0.5, "show_submit_button": false } },
+          { "title": "Scheduler", "x": 768, "y": 128, "width": 384, "height": 384, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
           { "title": "Distance Graph", "x": 1152, "y": 0, "width": 512, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "time_displayed": 30.0, "color": 4286611456, "line_width": 2.0 } },
           { "title": "Power Graph", "x": 1152, "y": 256, "width": 512, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "time_displayed": 30.0, "color": 4283215696, "line_width": 2.0 } },
           { "title": "Voltage Graph", "x": 1152, "y": 512, "width": 512, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/voltage", "period": 0.1, "time_displayed": 60.0, "color": 4278238420, "line_width": 2.0 } },
@@ -195,7 +198,8 @@
           { "title": "Scheduler", "x": 1280, "y": 0, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
           { "title": "Match Time", "x": 1280, "y": 256, "width": 320, "height": 128, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
           { "title": "FMS Info", "x": 1280, "y": 384, "width": 320, "height": 128, "type": "FMSInfo", "properties": { "topic": "/FMSInfo", "period": 0.033 } },
-          { "title": "Auto Mode", "x": 768, "y": 640, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Mode", "period": 0.5 } }
+          { "title": "Auto Selector", "x": 768, "y": 640, "width": 320, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Auto Selector", "period": 0.1, "min_value": 0.0, "max_value": 11.0, "divisions": 11, "update_continuously": true } },
+          { "title": "Auto Label", "x": 768, "y": 704, "width": 320, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Label", "period": 0.1, "show_submit_button": false } }
         ]
       }
     }

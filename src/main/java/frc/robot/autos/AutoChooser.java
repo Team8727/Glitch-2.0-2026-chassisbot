@@ -1,105 +1,91 @@
 package frc.robot.autos;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 /**
- * Auto selector with a flat SendableChooser.
+ * Auto selector using a Number Slider (0-11) for reliable Elastic operation.
  *
- * <p>Elastic: use a <b>Split Button Chooser</b> bound to
- * {@code /SmartDashboard/Auto Mode} to see all options as buttons.
- * Falls back to typing the key directly into {@code /SmartDashboard/Auto Key}
- * if the chooser doesn't render properly.
+ * <p>On the dashboard, add a <b>Number Slider</b> widget bound to
+ * {@code /SmartDashboard/Auto Selector} with min=0, max=11, divisions=11.
+ * A <b>Text Display</b> bound to {@code /SmartDashboard/Auto Label} shows
+ * the human-readable name.
+ *
+ * <pre>
+ *   0 = Depot-Left      1 = Depot-Center      2 = Depot-Right
+ *   3 = Sweep-Left      4 = Sweep-Center      5 = Sweep-Right
+ *   6 = Leave-Left      7 = Leave-Center      8 = Leave-Right
+ *   9 = InPlace-Left   10 = InPlace-Center   11 = InPlace-Right
+ * </pre>
  */
 public class AutoChooser {
   private final AutoRoutines routines;
-  private final SendableChooser<String> chooser = new SendableChooser<>();
+  private int lastIndex = -1;
+  private Command lastCmd = Commands.none();
 
-  private String lastKey = "";
-  private Command lastCmd = null;
+  private static final String[] LABELS = {
+    "2-Cycle Depot Rush J-Left",   // 0
+    "2-Cycle Depot Rush J-Center", // 1  (default)
+    "2-Cycle Depot Rush J-Right",  // 2
+    "Center Sweep J-Left",        // 3
+    "Center Sweep J-Center",      // 4
+    "Center Sweep J-Right",       // 5
+    "Shoot+Leave J-Left",         // 6
+    "Shoot+Leave J-Center",       // 7
+    "Shoot+Leave J-Right",        // 8
+    "In Place J-Left",            // 9
+    "In Place J-Center",          // 10
+    "In Place J-Right"            // 11
+  };
 
   public AutoChooser(Drivetrain dt, Shooter s, Intake i, Indexer ix) {
     this.routines = new AutoRoutines(dt, s, i, ix);
 
-    // Populate chooser — these appear as buttons on Split Button Chooser
-    chooser.setDefaultOption("Depot Rush J-Center", "Depot-Center");
-    chooser.addOption("Depot Rush J-Left",   "Depot-Left");
-    chooser.addOption("Depot Rush J-Right",  "Depot-Right");
-    chooser.addOption("Center Sweep J-Left",  "Sweep-Left");
-    chooser.addOption("Center Sweep J-Center","Sweep-Center");
-    chooser.addOption("Center Sweep J-Right", "Sweep-Right");
-    chooser.addOption("Shoot+Leave J-Left",   "Leave-Left");
-    chooser.addOption("Shoot+Leave J-Center", "Leave-Center");
-    chooser.addOption("Shoot+Leave J-Right",  "Leave-Right");
-    chooser.addOption("In Place J-Left",      "InPlace-Left");
-    chooser.addOption("In Place J-Center",    "InPlace-Center");
-    chooser.addOption("In Place J-Right",     "InPlace-Right");
+    // Default: Depot-Center (index 1)
+    SmartDashboard.putNumber("Auto Selector", 1);
+    SmartDashboard.putString("Auto Label", LABELS[1]);
 
-    // Publish to SmartDashboard (works with Elastic Split Button Chooser)
-    SmartDashboard.putData("Auto Mode", chooser);
-
-    // Also publish raw key as fallback (for Glass or typing)
-    SmartDashboard.putString("Auto Key", "Depot-Center");
-
-    // Publish human-readable label
-    SmartDashboard.putString("Auto Label", "Depot Rush J-Center");
+    // Publish reference map for drivers
+    StringBuilder sb = new StringBuilder();
+    for (int idx = 0; idx < LABELS.length; idx++) {
+      sb.append(idx).append("=").append(LABELS[idx]).append("  ");
+    }
+    SmartDashboard.putString("Auto Options", sb.toString());
   }
 
   public Command getSelected() {
-    // Try chooser first, fall back to raw string key
-    String key = chooser.getSelected();
-    if (key == null || key.isEmpty()) {
-      key = SmartDashboard.getString("Auto Key", "Depot-Center");
-    }
+    int index = (int) SmartDashboard.getNumber("Auto Selector", 1);
+    if (index < 0) index = 0;
+    if (index > 11) index = 11;
 
-    if (!key.equals(lastKey)) {
-      lastKey = key;
-      lastCmd = build(key);
-      // Keep fallback in sync
-      SmartDashboard.putString("Auto Key", key);
-      SmartDashboard.putString("Auto Label", label(key));
+    if (index != lastIndex) {
+      lastIndex = index;
+      lastCmd = build(index);
+      SmartDashboard.putString("Auto Label", LABELS[index]);
     }
     return lastCmd;
   }
 
-  private static String label(String key) {
-    return switch (key) {
-      case "Depot-Left"    -> "Depot Rush J-Left";
-      case "Depot-Center"  -> "Depot Rush J-Center";
-      case "Depot-Right"   -> "Depot Rush J-Right";
-      case "Sweep-Left"    -> "Center Sweep J-Left";
-      case "Sweep-Center"  -> "Center Sweep J-Center";
-      case "Sweep-Right"   -> "Center Sweep J-Right";
-      case "Leave-Left"    -> "Shoot+Leave J-Left";
-      case "Leave-Center"  -> "Shoot+Leave J-Center";
-      case "Leave-Right"   -> "Shoot+Leave J-Right";
-      case "InPlace-Left"  -> "In Place J-Left";
-      case "InPlace-Center"-> "In Place J-Center";
-      case "InPlace-Right" -> "In Place J-Right";
-      default              -> "Unknown: " + key;
-    };
-  }
-
-  private Command build(String key) {
-    return switch (key) {
-      case "Depot-Left"     -> routines.twoCycleDepotRushLeft();
-      case "Depot-Center"   -> routines.twoCycleDepotRushCenter();
-      case "Depot-Right"    -> routines.twoCycleDepotRushRight();
-      case "Sweep-Left"     -> routines.centerSweepLeft();
-      case "Sweep-Center"   -> routines.centerSweepCenter();
-      case "Sweep-Right"    -> routines.centerSweepRight();
-      case "Leave-Left"     -> routines.shootAndLeaveLeft();
-      case "Leave-Center"   -> routines.shootAndLeaveCenter();
-      case "Leave-Right"    -> routines.shootAndLeaveRight();
-      case "InPlace-Left"   -> routines.shootInPlaceLeft();
-      case "InPlace-Center" -> routines.shootInPlaceCenter();
-      case "InPlace-Right"  -> routines.shootInPlaceRight();
-      default               -> routines.twoCycleDepotRushCenter();
+  private Command build(int index) {
+    return switch (index) {
+      case 0  -> routines.twoCycleDepotRushLeft();
+      case 1  -> routines.twoCycleDepotRushCenter();
+      case 2  -> routines.twoCycleDepotRushRight();
+      case 3  -> routines.centerSweepLeft();
+      case 4  -> routines.centerSweepCenter();
+      case 5  -> routines.centerSweepRight();
+      case 6  -> routines.shootAndLeaveLeft();
+      case 7  -> routines.shootAndLeaveCenter();
+      case 8  -> routines.shootAndLeaveRight();
+      case 9  -> routines.shootInPlaceLeft();
+      case 10 -> routines.shootInPlaceCenter();
+      case 11 -> routines.shootInPlaceRight();
+      default -> routines.twoCycleDepotRushCenter();
     };
   }
 }
