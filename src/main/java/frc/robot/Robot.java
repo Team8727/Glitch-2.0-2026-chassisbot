@@ -22,6 +22,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.controls.Controls;
 import frc.robot.shooting.ProjectileSolver;
 import frc.robot.shooting.ProjectileSolver.FiringSolution;
+import frc.robot.shooting.Targeting;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.indexer.Indexer;
@@ -183,6 +184,14 @@ public class Robot extends TimedRobot {
     int measurementCount = drivetrain.getLastVisionMeasurementCount();
     leds.updateVisionConfidence(measurementCount);
     logger.logInt("vision/measurementCount", measurementCount);
+
+    // Publish zone awareness
+    var zone = Targeting.getZone(drivetrain.getState().Pose);
+    logger.logString("zone", zone.name());
+
+    // Publish look-ahead distance (for dashboard display)
+    var chassisSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
+    logger.logDouble("shooter/lookaheadDistance", Targeting.getLookaheadDistance(drivetrain.getState().Pose, chassisSpeeds));
   }
 
   // ========== Mode lifecycle ==========

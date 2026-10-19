@@ -3,82 +3,94 @@
   "grid_size": 128,
   "tabs": [
     {
-      "name": "TeleDrive",
+      "name": "Teleop",
       "grid_layout": {
         "layouts": [
           {
-            "title": "Shooter Data",
-            "x": 1280,
-            "y": 0,
-            "width": 320,
-            "height": 512,
+            "title": "Shooter",
+            "x": 1408, "y": 0, "width": 384, "height": 768,
             "type": "List Layout",
-            "properties": { "label_position": "TOP" },
+            "properties": { "label_position": "TOP", "background_color": 4283781479 },
             "children": [
-              { "title": "Required Power", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "show_submit_button": false } },
-              { "title": "Horizontal Distance", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "show_submit_button": false } },
-              { "title": "Target Yaw", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/shooter/yawDeg", "period": 0.033, "show_submit_button": false } },
-              { "title": "Pitch", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/shooter/pitchDeg", "period": 0.033, "show_submit_button": false } },
-              { "title": "Solution Valid", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Boolean Box", "properties": { "topic": "/Robot/shooter/valid", "period": 0.033, "true_color": 4278255615, "false_color": 4294901760, "true_icon": "Checkmark", "false_icon": "X" } },
-              { "title": "Vision Count", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/vision/measurementCount", "period": 0.033, "show_submit_button": false } },
-              { "title": "Battery Voltage", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/voltage", "period": 0.033, "show_submit_button": false } },
-              { "title": "Shooter Velocity", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Shooter/velocity", "period": 0.033, "show_submit_button": false } },
-              { "title": "Shooter Current", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Shooter/current", "period": 0.033, "show_submit_button": false } },
-              { "title": "RPM Target", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter RPM Target", "period": 0.033, "show_submit_button": false } },
-              { "title": "RPM Actual", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter RPM Actual", "period": 0.033, "show_submit_button": false } },
-              { "title": "Vision Status", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/fallbackStatus", "period": 0.033, "show_submit_button": false } }
+              { "title": "Distance", "x": 0, "y": 0, "width": 192, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "show_submit_button": false, "font_size": 18 } },
+              { "title": "Look-ahead", "x": 0, "y": 0, "width": 192, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/lookaheadDistance", "period": 0.033, "show_submit_button": false, "font_size": 14 } },
+              { "title": "Power", "x": 0, "y": 0, "width": 192, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "show_submit_button": false, "font_size": 18 } },
+              { "title": "Yaw", "x": 0, "y": 0, "width": 192, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/yawDeg", "period": 0.033, "show_submit_button": false } },
+              { "title": "Valid", "x": 0, "y": 0, "width": 128, "height": 56, "type": "Boolean Box", "properties": { "topic": "/Robot/shooter/valid", "period": 0.033, "true_color": 4278255615, "false_color": 4294901760, "true_icon": "Checkmark", "false_icon": "X" } },
+              { "title": "RPM Target", "x": 0, "y": 0, "width": 192, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter RPM Target", "period": 0.033, "show_submit_button": false, "font_size": 16 } },
+              { "title": "RPM Actual", "x": 0, "y": 0, "width": 192, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter RPM Actual", "period": 0.033, "show_submit_button": false, "font_size": 16 } },
+              { "title": "Shooter A", "x": 0, "y": 0, "width": 128, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter Amps", "period": 0.033, "show_submit_button": false } },
+              { "title": "Indexer A", "x": 0, "y": 0, "width": 128, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Indexer Amps", "period": 0.033, "show_submit_button": false } },
+              { "title": "Total A", "x": 0, "y": 0, "width": 128, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Total Amps", "period": 0.033, "show_submit_button": false } },
+              { "title": "Vision", "x": 0, "y": 0, "width": 384, "height": 56, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/fallbackStatus", "period": 0.033, "show_submit_button": false, "font_size": 14 } },
+              { "title": "Zone", "x": 0, "y": 0, "width": 192, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/zone", "period": 0.033, "show_submit_button": false, "font_size": 16 } }
             ]
           },
           {
             "title": "Mechanisms",
-            "x": 1600,
-            "y": 0,
-            "width": 320,
-            "height": 384,
+            "x": 1792, "y": 0, "width": 384, "height": 640,
             "type": "List Layout",
             "properties": { "label_position": "TOP" },
             "children": [
-              { "title": "Intake Speed", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/Intake/velocity", "period": 0.033, "show_submit_button": false } },
-              { "title": "Intake Current", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/Intake/current", "period": 0.033, "show_submit_button": false } },
-              { "title": "Indexer Speed", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/Indexer/velocity", "period": 0.033, "show_submit_button": false } },
-              { "title": "Indexer Current", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/Indexer/current", "period": 0.033, "show_submit_button": false } },
-              { "title": "Match Time", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
-              { "title": "Alliance", "x": 0, "y": 0, "width": 320, "height": 56, "type": "Text Display", "properties": { "topic": "/FMSInfo/IsRedAlliance", "period": 0.033, "show_submit_button": false } }
+              { "title": "Intake Speed", "x": 0, "y": 0, "width": 192, "height": 56, "type": "Text Display", "properties": { "topic": "/Intake/velocity", "period": 0.033, "show_submit_button": false } },
+              { "title": "Intake A", "x": 0, "y": 0, "width": 192, "height": 56, "type": "Text Display", "properties": { "topic": "/Intake/current", "period": 0.033, "show_submit_button": false } },
+              { "title": "Indexer Speed", "x": 0, "y": 0, "width": 192, "height": 56, "type": "Text Display", "properties": { "topic": "/Indexer/velocity", "period": 0.033, "show_submit_button": false } },
+              { "title": "Indexer A", "x": 0, "y": 0, "width": 192, "height": 56, "type": "Text Display", "properties": { "topic": "/Indexer/current", "period": 0.033, "show_submit_button": false } },
+              { "title": "Shooter Vel", "x": 0, "y": 0, "width": 192, "height": 56, "type": "Text Display", "properties": { "topic": "/Shooter/velocity", "period": 0.033, "show_submit_button": false } },
+              { "title": "Shooter A", "x": 0, "y": 0, "width": 192, "height": 56, "type": "Text Display", "properties": { "topic": "/Shooter/current", "period": 0.033, "show_submit_button": false } },
+              { "title": "Voltage", "x": 0, "y": 0, "width": 256, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/voltage", "period": 0.033, "show_submit_button": false, "font_size": 16 } },
+              { "title": "Vision Count", "x": 0, "y": 0, "width": 256, "height": 56, "type": "Text Display", "properties": { "topic": "/Robot/vision/measurementCount", "period": 0.033, "show_submit_button": false } }
             ]
           }
         ],
         "containers": [
-          { "title": "Field", "x": 0, "y": 0, "width": 640, "height": 512, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070, "trajectory_color": 4294967295, "show_robot_outside_widget": true } },
-          { "title": "Swerve Drive", "x": 640, "y": 0, "width": 320, "height": 256, "type": "SwerveDrive", "properties": { "topic": "/DriveState", "period": 0.033, "show_robot_rotation": true, "rotation_unit": "Degrees" } },
-          { "title": "Battery", "x": 640, "y": 256, "width": 320, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 13.0, "divisions": 9, "inverted": false, "orientation": "horizontal" } },
-          { "title": "FMS Info", "x": 640, "y": 384, "width": 320, "height": 128, "type": "FMSInfo", "properties": { "topic": "/FMSInfo", "period": 0.033 } },
-          { "title": "Auto Selection", "x": 0, "y": 512, "width": 280, "height": 128, "type": "Text Display", "properties": { "topic": "/Auto/label", "period": 0.1, "show_submit_button": false, "font_size": 14 } },
-          { "title": "Auto Key", "x": 280, "y": 512, "width": 200, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } },
-          { "title": "Command Scheduler", "x": 480, "y": 512, "width": 400, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
-          { "title": "Power Override", "x": 880, "y": 512, "width": 240, "height": 128, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Shooter power override", "period": 0.033, "min_value": 0.0, "max_value": 100.0, "divisions": 100, "update_continuously": true } },
-          { "title": "Invert Fwd", "x": 880, "y": 640, "width": 120, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert X", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
-          { "title": "Invert Strf", "x": 1000, "y": 640, "width": 120, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert Y", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
-          { "title": "Invert Rot", "x": 1120, "y": 640, "width": 120, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert Rot", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
-          { "title": "Battery Graph", "x": 1120, "y": 512, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/voltage", "period": 0.1, "time_displayed": 30.0, "color": 4278238420, "line_width": 2.0 } },
-          { "title": "Power Graph", "x": 1440, "y": 512, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.1, "time_displayed": 15.0, "color": 4283215696, "line_width": 2.0 } },
-          { "title": "Distance Graph", "x": 1120, "y": 768, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.1, "time_displayed": 15.0, "color": 4286611456, "line_width": 2.0 } }
+          { "title": "Field", "x": 0, "y": 0, "width": 768, "height": 768, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070, "trajectory_color": 4294967295, "show_robot_outside_widget": true } },
+          { "title": "Swerve", "x": 768, "y": 0, "width": 320, "height": 320, "type": "SwerveDrive", "properties": { "topic": "/DriveState", "period": 0.033, "show_robot_rotation": true, "rotation_unit": "Degrees" } },
+          { "title": "Battery", "x": 768, "y": 320, "width": 320, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 14.0, "divisions": 10, "inverted": false, "orientation": "horizontal" } },
+          { "title": "Match Time", "x": 768, "y": 640, "width": 320, "height": 128, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
+          { "title": "FMS", "x": 1088, "y": 640, "width": 320, "height": 128, "type": "FMSInfo", "properties": { "topic": "/FMSInfo", "period": 0.033 } },
+          { "title": "Power Graph", "x": 0, "y": 768, "width": 384, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "time_displayed": 20.0, "color": 4283215696, "line_width": 2.0 } },
+          { "title": "Distance Graph", "x": 384, "y": 768, "width": 384, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "time_displayed": 20.0, "color": 4286611456, "line_width": 2.0 } },
+          { "title": "Amps Graph", "x": 768, "y": 768, "width": 384, "height": 256, "type": "Graph", "properties": { "topic": "/SmartDashboard/Total Amps", "period": 0.033, "time_displayed": 20.0, "color": 4294198070, "line_width": 2.0 } },
+          { "title": "Scheduler", "x": 1152, "y": 768, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
+          { "title": "Auto Mode", "x": 1472, "y": 768, "width": 512, "height": 128, "type": "Split Button Chooser", "properties": { "topic": "/SmartDashboard/Auto Mode", "period": 0.5 } },
+          { "title": "Auto Label", "x": 1472, "y": 896, "width": 512, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Label", "period": 0.1, "show_submit_button": false, "font_size": 16 } },
+          { "title": "Invert Fwd", "x": 1472, "y": 960, "width": 160, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert X", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
+          { "title": "Invert Strf", "x": 1632, "y": 960, "width": 160, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert Y", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
+          { "title": "Invert Rot", "x": 1792, "y": 960, "width": 160, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Drive/Invert Rot", "period": 0.1, "min_value": -1.0, "max_value": 1.0, "divisions": 2, "update_continuously": true } },
+          { "title": "Current Limit", "x": 1952, "y": 960, "width": 160, "height": 64, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Shooter Current Limit", "period": 0.1, "min_value": 40.0, "max_value": 200.0, "divisions": 16, "update_continuously": true } }
         ]
       }
     },
     {
-      "name": "Auto Setup",
+      "name": "Auto",
       "grid_layout": {
-        "layouts": [],
+        "layouts": [
+          {
+            "title": "Controls",
+            "x": 768, "y": 0, "width": 384, "height": 512,
+            "type": "List Layout",
+            "properties": { "label_position": "TOP" },
+            "children": [
+              { "title": "Auto Label", "x": 0, "y": 0, "width": 384, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Label", "period": 0.1, "show_submit_button": false, "font_size": 18 } },
+              { "title": "Auto Key (type here)", "x": 0, "y": 0, "width": 384, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Auto Options", "period": 0.1, "show_submit_button": false } },
+              { "title": "Vision Status", "x": 0, "y": 0, "width": 384, "height": 64, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/fallbackStatus", "period": 0.033, "show_submit_button": false } },
+              { "title": "Zone", "x": 0, "y": 0, "width": 192, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/zone", "period": 0.033, "show_submit_button": false, "font_size": 18 } },
+              { "title": "Distance", "x": 0, "y": 0, "width": 192, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "show_submit_button": false } },
+              { "title": "Vision Count", "x": 0, "y": 0, "width": 192, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/vision/measurementCount", "period": 0.033, "show_submit_button": false } },
+              { "title": "Voltage", "x": 0, "y": 0, "width": 384, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/voltage", "period": 0.033, "show_submit_button": false, "font_size": 16 } }
+            ]
+          }
+        ],
         "containers": [
-          { "title": "Auto Label", "x": 0, "y": 0, "width": 320, "height": 64, "type": "Text Display", "properties": { "topic": "/Auto/label", "period": 0.1, "show_submit_button": false, "font_size": 14 } },
-          { "title": "Auto Key", "x": 320, "y": 0, "width": 320, "height": 64, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } },
-          { "title": "Command Scheduler", "x": 0, "y": 64, "width": 640, "height": 320, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
-          { "title": "Field", "x": 640, "y": 0, "width": 640, "height": 640, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070, "show_robot_outside_widget": true } },
-          { "title": "Vision Count", "x": 1280, "y": 0, "width": 320, "height": 128, "type": "Number Bar", "properties": { "topic": "/Robot/vision/measurementCount", "period": 0.033, "min_value": 0.0, "max_value": 10.0, "divisions": 10, "inverted": false, "orientation": "horizontal" } },
-          { "title": "Battery Voltage", "x": 1280, "y": 128, "width": 320, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 13.0, "divisions": 9, "inverted": false, "orientation": "horizontal" } },
-          { "title": "Match Time", "x": 1280, "y": 256, "width": 320, "height": 128, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
-          { "title": "FMS Info", "x": 1280, "y": 384, "width": 320, "height": 128, "type": "FMSInfo", "properties": { "topic": "/FMSInfo", "period": 0.033 } },
-          { "title": "Shooter Distance (m)", "x": 1280, "y": 512, "width": 320, "height": 128, "type": "Number Bar", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "min_value": 0.0, "max_value": 8.0, "divisions": 8, "inverted": false, "orientation": "horizontal" } }
+          { "title": "Field", "x": 0, "y": 0, "width": 768, "height": 768, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070, "show_robot_outside_widget": true } },
+          { "title": "Auto Mode", "x": 0, "y": 768, "width": 768, "height": 192, "type": "Split Button Chooser", "properties": { "topic": "/SmartDashboard/Auto Mode", "period": 0.5 } },
+          { "title": "Scheduler", "x": 768, "y": 512, "width": 384, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
+          { "title": "Distance Graph", "x": 1152, "y": 0, "width": 512, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "time_displayed": 30.0, "color": 4286611456, "line_width": 2.0 } },
+          { "title": "Power Graph", "x": 1152, "y": 256, "width": 512, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "time_displayed": 30.0, "color": 4283215696, "line_width": 2.0 } },
+          { "title": "Voltage Graph", "x": 1152, "y": 512, "width": 512, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/voltage", "period": 0.1, "time_displayed": 60.0, "color": 4278238420, "line_width": 2.0 } },
+          { "title": "Match Time", "x": 768, "y": 768, "width": 384, "height": 128, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
+          { "title": "FMS Info", "x": 1152, "y": 768, "width": 384, "height": 128, "type": "FMSInfo", "properties": { "topic": "/FMSInfo", "period": 0.033 } }
         ]
       }
     },
@@ -87,92 +99,75 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "Solver Output",
-            "x": 256,
-            "y": 0,
-            "width": 256,
-            "height": 384,
+            "title": "Live Data",
+            "x": 0, "y": 0, "width": 320, "height": 768,
             "type": "List Layout",
             "properties": { "label_position": "TOP" },
             "children": [
-              { "title": "Required Power (m/s)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "show_submit_button": false } },
-              { "title": "Horizontal Distance (m)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "show_submit_button": false } },
-              { "title": "Target Yaw (deg)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/yawDeg", "period": 0.033, "show_submit_button": false } },
-              { "title": "Pitch (deg)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/pitchDeg", "period": 0.033, "show_submit_button": false } },
-              { "title": "Solution Valid?", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Boolean Box", "properties": { "topic": "/Robot/shooter/valid", "period": 0.033, "true_color": 4278255615, "false_color": 4294901760 } }
-            ]
-          },
-          {
-            "title": "Mechanism Telemetry",
-            "x": 0,
-            "y": 0,
-            "width": 256,
-            "height": 512,
-            "type": "List Layout",
-            "properties": { "label_position": "TOP" },
-            "children": [
-              { "title": "Shooter Velocity (RPS)", "x": 0, "y": 0, "width": 128, "height": 64, "type": "Text Display", "properties": { "topic": "/Shooter/velocity", "period": 0.033, "show_submit_button": false } },
-              { "title": "Shooter Current (A)", "x": 0, "y": 0, "width": 128, "height": 64, "type": "Text Display", "properties": { "topic": "/Shooter/current", "period": 0.033, "show_submit_button": false } },
-              { "title": "Intake Speed", "x": 0, "y": 0, "width": 128, "height": 64, "type": "Text Display", "properties": { "topic": "/Intake/velocity", "period": 0.033, "show_submit_button": false } },
-              { "title": "Intake Current (A)", "x": 0, "y": 0, "width": 128, "height": 64, "type": "Text Display", "properties": { "topic": "/Intake/current", "period": 0.033, "show_submit_button": false } },
-              { "title": "Indexer Speed", "x": 0, "y": 0, "width": 128, "height": 64, "type": "Text Display", "properties": { "topic": "/Indexer/velocity", "period": 0.033, "show_submit_button": false } },
-              { "title": "Indexer Current (A)", "x": 0, "y": 0, "width": 128, "height": 64, "type": "Text Display", "properties": { "topic": "/Indexer/current", "period": 0.033, "show_submit_button": false } },
-              { "title": "Vision Count", "x": 0, "y": 0, "width": 128, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/vision/measurementCount", "period": 0.033, "show_submit_button": false } },
-              { "title": "Battery Voltage", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/voltage", "period": 0.033, "show_submit_button": false } }
+              { "title": "RPM Target", "x": 0, "y": 0, "width": 160, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter RPM Target", "period": 0.033, "show_submit_button": false, "font_size": 20 } },
+              { "title": "RPM Actual", "x": 0, "y": 0, "width": 160, "height": 64, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter RPM Actual", "period": 0.033, "show_submit_button": false, "font_size": 20 } },
+              { "title": "Power", "x": 0, "y": 0, "width": 320, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "show_submit_button": false } },
+              { "title": "Distance", "x": 0, "y": 0, "width": 160, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "show_submit_button": false } },
+              { "title": "Look-ahead", "x": 0, "y": 0, "width": 160, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/lookaheadDistance", "period": 0.033, "show_submit_button": false } },
+              { "title": "Yaw", "x": 0, "y": 0, "width": 160, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/yawDeg", "period": 0.033, "show_submit_button": false } },
+              { "title": "Pitch", "x": 0, "y": 0, "width": 160, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/pitchDeg", "period": 0.033, "show_submit_button": false } },
+              { "title": "Valid", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Boolean Box", "properties": { "topic": "/Robot/shooter/valid", "period": 0.033, "true_color": 4278255615, "false_color": 4294901760 } },
+              { "title": "Shooter A", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Shooter Amps", "period": 0.033, "show_submit_button": false } },
+              { "title": "Indexer A", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Indexer Amps", "period": 0.033, "show_submit_button": false } },
+              { "title": "Total A", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Text Display", "properties": { "topic": "/SmartDashboard/Total Amps", "period": 0.033, "show_submit_button": false } },
+              { "title": "Limit", "x": 0, "y": 0, "width": 160, "height": 56, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Shooter Current Limit", "period": 0.1, "min_value": 40.0, "max_value": 200.0, "divisions": 16, "update_continuously": true } }
             ]
           }
         ],
         "containers": [
-          { "title": "Shooter Velocity Graph", "x": 512, "y": 0, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Shooter/velocity", "period": 0.033, "time_displayed": 15.0, "color": 4283215696, "line_width": 2.0 } },
-          { "title": "Power Graph", "x": 832, "y": 0, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "time_displayed": 15.0, "color": 4286611456, "line_width": 2.0 } },
-          { "title": "Voltage Graph (30s)", "x": 1152, "y": 0, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/voltage", "period": 0.1, "time_displayed": 30.0, "color": 4278238420, "line_width": 2.0 } },
-          { "title": "Voltage View", "x": 1472, "y": 0, "width": 320, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 13.0, "divisions": 9, "inverted": false, "orientation": "horizontal" } },
-          { "title": "Command Scheduler", "x": 0, "y": 512, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
-          { "title": "Power Override", "x": 320, "y": 512, "width": 320, "height": 128, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Shooter power override", "period": 0.033, "min_value": 0.0, "max_value": 100.0, "divisions": 100, "update_continuously": true } },
-          { "title": "Distance Graph (15s)", "x": 640, "y": 512, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.05, "time_displayed": 15.0, "color": 4286611456, "line_width": 2.0 } }
+          { "title": "Field", "x": 320, "y": 0, "width": 640, "height": 640, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070 } },
+          { "title": "RPM Graph", "x": 960, "y": 0, "width": 640, "height": 320, "type": "Graph", "properties": { "topic": "/SmartDashboard/Shooter RPM Actual", "period": 0.033, "time_displayed": 15.0, "color": 4283215696, "line_width": 2.0 } },
+          { "title": "Power Graph", "x": 960, "y": 320, "width": 640, "height": 320, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "time_displayed": 15.0, "color": 4286611456, "line_width": 2.0 } },
+          { "title": "Amps Graph", "x": 960, "y": 640, "width": 640, "height": 256, "type": "Graph", "properties": { "topic": "/SmartDashboard/Total Amps", "period": 0.033, "time_displayed": 15.0, "color": 4294198070, "line_width": 2.0 } },
+          { "title": "Distance Graph", "x": 320, "y": 640, "width": 640, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "time_displayed": 15.0, "color": 4286611456, "line_width": 2.0 } },
+          { "title": "Scheduler", "x": 0, "y": 768, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } }
         ]
       }
     },
     {
-      "name": "Diagnostic",
+      "name": "Diagnostics",
       "grid_layout": {
         "layouts": [
           {
-            "title": "Pose & Shooter",
-            "x": 512,
-            "y": 0,
-            "width": 256,
-            "height": 448,
+            "title": "System",
+            "x": 512, "y": 0, "width": 256, "height": 576,
             "type": "List Layout",
             "properties": { "label_position": "TOP" },
             "children": [
-              { "title": "Distance (m)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "show_submit_button": false } },
-              { "title": "Power (m/s)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "show_submit_button": false } },
-              { "title": "Yaw (deg)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/yawDeg", "period": 0.033, "show_submit_button": false } },
+              { "title": "Voltage", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/voltage", "period": 0.033, "show_submit_button": false } },
+              { "title": "Vision Status", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/fallbackStatus", "period": 0.033, "show_submit_button": false } },
               { "title": "Vision Count", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/vision/measurementCount", "period": 0.033, "show_submit_button": false } },
-              { "title": "Battery (V)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/voltage", "period": 0.033, "show_submit_button": false } },
-              { "title": "Valid?", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Boolean Box", "properties": { "topic": "/Robot/shooter/valid", "period": 0.033, "true_color": 4278255615, "false_color": 4294901760 } },
-              { "title": "Shooter RPM", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Shooter/velocity", "period": 0.033, "show_submit_button": false } }
+              { "title": "Distance", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "show_submit_button": false } },
+              { "title": "Power", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "show_submit_button": false } },
+              { "title": "Yaw", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/shooter/yawDeg", "period": 0.033, "show_submit_button": false } },
+              { "title": "Valid", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Boolean Box", "properties": { "topic": "/Robot/shooter/valid", "period": 0.033, "true_color": 4278255615, "false_color": 4294901760 } },
+              { "title": "Odometry Freq", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/DriveState/OdometryFrequency", "period": 0.033, "show_submit_button": false } }
             ]
           }
         ],
         "containers": [
           { "title": "Field", "x": 0, "y": 0, "width": 512, "height": 512, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070 } },
-          { "title": "Match Time", "x": 0, "y": 512, "width": 256, "height": 128, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
-          { "title": "Voltage View", "x": 256, "y": 512, "width": 256, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 13.0, "divisions": 9, "inverted": false, "orientation": "horizontal" } },
-          { "title": "Vision Count Bar", "x": 0, "y": 640, "width": 320, "height": 128, "type": "Number Bar", "properties": { "topic": "/Robot/vision/measurementCount", "period": 0.033, "min_value": 0.0, "max_value": 10.0, "divisions": 10, "inverted": false, "orientation": "horizontal" } },
-          { "title": "Distance Bar", "x": 320, "y": 640, "width": 320, "height": 128, "type": "Number Bar", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "min_value": 0.0, "max_value": 8.0, "divisions": 8, "inverted": false, "orientation": "horizontal" } },
-          { "title": "Distance Graph (15s)", "x": 768, "y": 0, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.1, "time_displayed": 15.0, "color": 4283215696, "line_width": 2.0 } },
-          { "title": "Power Graph (15s)", "x": 1088, "y": 0, "width": 320, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.1, "time_displayed": 15.0, "color": 4278238420, "line_width": 2.0 } },
-          { "title": "Swerve Drive", "x": 1408, "y": 0, "width": 320, "height": 320, "type": "SwerveDrive", "properties": { "topic": "/DriveState", "period": 0.033, "show_robot_rotation": true, "rotation_unit": "Degrees" } },
-          { "title": "Command Scheduler", "x": 640, "y": 640, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
-          { "title": "Auto Key", "x": 960, "y": 640, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } },
-          { "title": "Power Override", "x": 1280, "y": 640, "width": 320, "height": 128, "type": "Number Slider", "properties": { "topic": "/SmartDashboard/Shooter power override", "period": 0.033, "min_value": 0.0, "max_value": 100.0, "divisions": 100, "update_continuously": true } }
+          { "title": "Swerve", "x": 768, "y": 0, "width": 320, "height": 320, "type": "SwerveDrive", "properties": { "topic": "/DriveState", "period": 0.033, "show_robot_rotation": true, "rotation_unit": "Degrees" } },
+          { "title": "Module 0", "x": 1120, "y": 0, "width": 320, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 0", "period": 0.033 } },
+          { "title": "Module 1", "x": 1120, "y": 128, "width": 320, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 1", "period": 0.033 } },
+          { "title": "Module 2", "x": 1120, "y": 256, "width": 320, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 2", "period": 0.033 } },
+          { "title": "Module 3", "x": 1120, "y": 384, "width": 320, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 3", "period": 0.033 } },
+          { "title": "Gyro", "x": 768, "y": 512, "width": 320, "height": 256, "type": "Gyro", "properties": { "topic": "/DriveState/Pose", "period": 0.033, "counter_clockwise_positive": false } },
+          { "title": "Power Graph", "x": 1088, "y": 512, "width": 384, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/requiredPowerMPS", "period": 0.033, "time_displayed": 15.0, "color": 4283215696, "line_width": 2.0 } },
+          { "title": "Distance Graph", "x": 1472, "y": 512, "width": 384, "height": 256, "type": "Graph", "properties": { "topic": "/Robot/shooter/horizontalDistance", "period": 0.033, "time_displayed": 15.0, "color": 4286611456, "line_width": 2.0 } },
+          { "title": "Scheduler", "x": 0, "y": 512, "width": 512, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
+          { "title": "Match Time", "x": 0, "y": 768, "width": 320, "height": 128, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
+          { "title": "Voltage", "x": 320, "y": 768, "width": 320, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 14.0, "divisions": 10, "inverted": false, "orientation": "horizontal" } }
         ]
       }
     },
     {
-      "name": "Swerve Debug",
+      "name": "Swerve",
       "grid_layout": {
         "layouts": [
           {
@@ -181,40 +176,26 @@
             "type": "List Layout",
             "properties": { "label_position": "TOP" },
             "children": [
-              { "title": "Odometry Freq (Hz)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/DriveState/OdometryFrequency", "period": 0.033, "show_submit_button": false } },
-              { "title": "Drive Timestamp", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/DriveState/Timestamp", "period": 0.033, "show_submit_button": false } },
+              { "title": "Odometry (Hz)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/DriveState/OdometryFrequency", "period": 0.033, "show_submit_button": false } },
+              { "title": "Timestamp", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/DriveState/Timestamp", "period": 0.033, "show_submit_button": false } },
               { "title": "Voltage", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Robot/voltage", "period": 0.033, "show_submit_button": false } },
               { "title": "Vision Count", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/measurementCount", "period": 0.033, "show_submit_button": false } },
-              { "title": "Vision Avg Dist (m)", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/avgTagDistance", "period": 0.033, "show_submit_button": false } },
-              { "title": "Module 0", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 0", "period": 0.033 } }
+              { "title": "Vision Status", "x": 0, "y": 0, "width": 256, "height": 64, "type": "Text Display", "properties": { "topic": "/Drivetrain/vision/fallbackStatus", "period": 0.033, "show_submit_button": false } }
             ]
           }
         ],
         "containers": [
-          { "title": "Swerve Drive", "x": 0, "y": 0, "width": 256, "height": 256, "type": "SwerveDrive", "properties": { "topic": "/DriveState", "period": 0.033, "show_robot_rotation": true, "rotation_unit": "Degrees" } },
+          { "title": "Swerve", "x": 0, "y": 0, "width": 256, "height": 256, "type": "SwerveDrive", "properties": { "topic": "/DriveState", "period": 0.033, "show_robot_rotation": true, "rotation_unit": "Degrees" } },
           { "title": "Gyro", "x": 256, "y": 0, "width": 256, "height": 256, "type": "Gyro", "properties": { "topic": "/DriveState/Pose", "period": 0.033, "counter_clockwise_positive": false } },
-          { "title": "Field", "x": 0, "y": 256, "width": 512, "height": 512, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070 } },
-          { "title": "Module 1", "x": 512, "y": 384, "width": 256, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 1", "period": 0.033 } },
-          { "title": "Module 2", "x": 768, "y": 384, "width": 256, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 2", "period": 0.033 } },
-          { "title": "Module 3", "x": 768, "y": 512, "width": 256, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 3", "period": 0.033 } },
-          { "title": "Command Scheduler", "x": 1024, "y": 0, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
-          { "title": "Auto Key", "x": 1024, "y": 384, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } }
-        ]
-      }
-    },
-    {
-      "name": "System",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          { "title": "Field", "x": 0, "y": 0, "width": 640, "height": 640, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070 } },
-          { "title": "Swerve Drive", "x": 640, "y": 0, "width": 320, "height": 320, "type": "SwerveDrive", "properties": { "topic": "/DriveState", "period": 0.033, "show_robot_rotation": true, "rotation_unit": "Degrees" } },
-          { "title": "Battery Graph (60s)", "x": 960, "y": 0, "width": 320, "height": 320, "type": "Graph", "properties": { "topic": "/Robot/voltage", "period": 0.1, "time_displayed": 60.0, "color": 4278238420, "line_width": 2.0 } },
-          { "title": "Command Scheduler", "x": 640, "y": 512, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
-          { "title": "Match Time", "x": 1280, "y": 0, "width": 320, "height": 128, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
-          { "title": "FMS Info", "x": 1280, "y": 128, "width": 320, "height": 128, "type": "FMSInfo", "properties": { "topic": "/FMSInfo", "period": 0.033 } },
-          { "title": "Voltage View", "x": 1280, "y": 256, "width": 320, "height": 128, "type": "Voltage View", "properties": { "topic": "/Robot/voltage", "period": 0.033, "min_value": 4.0, "max_value": 13.0, "divisions": 9, "inverted": false, "orientation": "horizontal" } },
-          { "title": "Auto Key", "x": 1280, "y": 384, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Key", "period": 0.5, "sort_options": false } }
+          { "title": "Field", "x": 0, "y": 256, "width": 768, "height": 640, "type": "Field", "properties": { "topic": "/Pose", "period": 0.033, "field_game": "Rebuilt", "robot_width": 0.82, "robot_length": 0.82, "show_other_objects": true, "show_trajectories": true, "field_rotation": 0.0, "robot_color": 4294198070 } },
+          { "title": "Module 0", "x": 768, "y": 0, "width": 256, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 0", "period": 0.033 } },
+          { "title": "Module 1", "x": 768, "y": 128, "width": 256, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 1", "period": 0.033 } },
+          { "title": "Module 2", "x": 1024, "y": 0, "width": 256, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 2", "period": 0.033 } },
+          { "title": "Module 3", "x": 1024, "y": 128, "width": 256, "height": 128, "type": "Subsystem", "properties": { "topic": "/SmartDashboard/Module 3", "period": 0.033 } },
+          { "title": "Scheduler", "x": 1280, "y": 0, "width": 320, "height": 256, "type": "Scheduler", "properties": { "topic": "/Scheduler", "period": 0.033 } },
+          { "title": "Match Time", "x": 1280, "y": 256, "width": 320, "height": 128, "type": "Match Time", "properties": { "topic": "/FMSInfo/MatchTime", "period": 0.033, "time_display_mode": "Minutes and Seconds", "red_start_time": 15, "yellow_start_time": 30 } },
+          { "title": "FMS Info", "x": 1280, "y": 384, "width": 320, "height": 128, "type": "FMSInfo", "properties": { "topic": "/FMSInfo", "period": 0.033 } },
+          { "title": "Auto Mode", "x": 768, "y": 640, "width": 320, "height": 128, "type": "ComboBox Chooser", "properties": { "topic": "/SmartDashboard/Auto Mode", "period": 0.5 } }
         ]
       }
     }

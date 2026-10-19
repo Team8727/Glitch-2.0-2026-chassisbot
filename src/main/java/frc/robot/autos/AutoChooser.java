@@ -1,60 +1,68 @@
 package frc.robot.autos;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringSubscriber;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 /**
- * Auto selector using a simple string on SmartDashboard.
+ * Auto selector with a flat SendableChooser.
  *
- * <p>Type the auto key into {@code /SmartDashboard/Auto Key} on Elastic.
- * Available keys (case-sensitive):
- * <pre>
- *   Depot-Left    Depot-Center    Depot-Right
- *   Sweep-Left    Sweep-Center    Sweep-Right
- *   Leave-Left    Leave-Center    Leave-Right
- *   InPlace-Left  InPlace-Center  InPlace-Right
- * </pre>
- *
- * Displays the human-readable label on {@code /Auto/label}.
+ * <p>Elastic: use a <b>Split Button Chooser</b> bound to
+ * {@code /SmartDashboard/Auto Mode} to see all options as buttons.
+ * Falls back to typing the key directly into {@code /SmartDashboard/Auto Key}
+ * if the chooser doesn't render properly.
  */
 public class AutoChooser {
   private final AutoRoutines routines;
+  private final SendableChooser<String> chooser = new SendableChooser<>();
+
   private String lastKey = "";
-  private Command lastCmd = Commands.none();
+  private Command lastCmd = null;
 
   public AutoChooser(Drivetrain dt, Shooter s, Intake i, Indexer ix) {
     this.routines = new AutoRoutines(dt, s, i, ix);
 
-    // Publish available options as a reference
-    NetworkTableInstance.getDefault()
-        .getStringTopic("Auto/options").publish()
-        .set("Depot-L/C/R  Sweep-L/C/R  Leave-L/C/R  InPlace-L/C/R");
+    // Populate chooser — these appear as buttons on Split Button Chooser
+    chooser.setDefaultOption("Depot Rush J-Center", "Depot-Center");
+    chooser.addOption("Depot Rush J-Left",   "Depot-Left");
+    chooser.addOption("Depot Rush J-Right",  "Depot-Right");
+    chooser.addOption("Center Sweep J-Left",  "Sweep-Left");
+    chooser.addOption("Center Sweep J-Center","Sweep-Center");
+    chooser.addOption("Center Sweep J-Right", "Sweep-Right");
+    chooser.addOption("Shoot+Leave J-Left",   "Leave-Left");
+    chooser.addOption("Shoot+Leave J-Center", "Leave-Center");
+    chooser.addOption("Shoot+Leave J-Right",  "Leave-Right");
+    chooser.addOption("In Place J-Left",      "InPlace-Left");
+    chooser.addOption("In Place J-Center",    "InPlace-Center");
+    chooser.addOption("In Place J-Right",     "InPlace-Right");
 
-    // Set default
+    // Publish to SmartDashboard (works with Elastic Split Button Chooser)
+    SmartDashboard.putData("Auto Mode", chooser);
+
+    // Also publish raw key as fallback (for Glass or typing)
     SmartDashboard.putString("Auto Key", "Depot-Center");
-    NetworkTableInstance.getDefault()
-        .getStringTopic("Auto/label").publish()
-        .set("2-Cycle Depot Rush J-Center");
+
+    // Publish human-readable label
+    SmartDashboard.putString("Auto Label", "Depot Rush J-Center");
   }
 
   public Command getSelected() {
-    String key = SmartDashboard.getString("Auto Key", "Depot-Center");
-    if (key == null || key.isEmpty()) key = "Depot-Center";
+    // Try chooser first, fall back to raw string key
+    String key = chooser.getSelected();
+    if (key == null || key.isEmpty()) {
+      key = SmartDashboard.getString("Auto Key", "Depot-Center");
+    }
 
     if (!key.equals(lastKey)) {
       lastKey = key;
       lastCmd = build(key);
-      // Update label
-      NetworkTableInstance.getDefault()
-          .getStringTopic("Auto/label").publish()
-          .set(label(key));
+      // Keep fallback in sync
+      SmartDashboard.putString("Auto Key", key);
+      SmartDashboard.putString("Auto Label", label(key));
     }
     return lastCmd;
   }
@@ -70,9 +78,9 @@ public class AutoChooser {
       case "Leave-Left"    -> "Shoot+Leave J-Left";
       case "Leave-Center"  -> "Shoot+Leave J-Center";
       case "Leave-Right"   -> "Shoot+Leave J-Right";
-      case "InPlace-Left"  -> "Shoot In Place J-Left";
-      case "InPlace-Center"-> "Shoot In Place J-Center";
-      case "InPlace-Right" -> "Shoot In Place J-Right";
+      case "InPlace-Left"  -> "In Place J-Left";
+      case "InPlace-Center"-> "In Place J-Center";
+      case "InPlace-Right" -> "In Place J-Right";
       default              -> "Unknown: " + key;
     };
   }
