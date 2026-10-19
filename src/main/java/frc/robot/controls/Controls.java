@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ShootCommand;
+import frc.robot.commands.SmartShootCommand;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
@@ -70,8 +70,8 @@ public class Controls {
     controller.leftTrigger().onFalse(run(() -> LED.instance.endCommand()));
 
     // ---- Shoot (Right Trigger) ----
-    // The ShootCommand uses regression-based RPM targeting
-    controller.rightTrigger().whileTrue(new ShootCommand(shooter, indexer, drivetrain));
+    // SmartShoot: auto-rotates to face the HUB while spinning up and feeding
+    controller.rightTrigger().whileTrue(new SmartShootCommand(shooter, indexer, drivetrain));
     controller.rightTrigger()
         .onTrue(run(() -> LED.instance.shootPatterns(shooter.getFlywheelVelocity(), 45)))
         .onFalse(run(LED.instance::endCommand));
