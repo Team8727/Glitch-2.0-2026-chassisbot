@@ -110,12 +110,18 @@ public class AutoRoutines {
     return AutoBuilder.pathfindToPose(ap(p), kConstraints, 0.0);
   }
 
-  /** Try .path file first, fall back to online pathfinding. */
+  /** Try AI-Auto path first, then legacy name, then fall back to pathfinding. */
   private Command go(String pathName, Pose2d fallback) {
+    // Try AI-Auto- prefixed path first
     try {
-      return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName));
+      return AutoBuilder.followPath(PathPlannerPath.fromPathFile("AI-Auto-" + pathName));
     } catch (Exception e) {
-      return pathfind(fallback);
+      // Try legacy path name
+      try {
+        return AutoBuilder.followPath(PathPlannerPath.fromPathFile(pathName));
+      } catch (Exception e2) {
+        return pathfind(fallback);
+      }
     }
   }
 
