@@ -12,6 +12,14 @@ import frc.robot.Constants;
 
 public class LED extends SubsystemBase {
     public static final LED instance = new LED();
+
+    /** Returns the LED strip length, tunable from dashboard. */
+    public static int stripLen() {
+        int len = (int)edu.wpi.first.wpilibj.smartdashboard.SmartDashboard.getNumber("LED Strip Length", (double)stripLen());
+        if (len < 10) len = 88;
+        if (len > 300) len = 300;
+        return len;
+    }
     
     private static CANdleGroup candleGroup;
     private static final Timer tempStateTimer = new Timer();
@@ -48,9 +56,9 @@ public class LED extends SubsystemBase {
         candleGroup = new CANdleGroup(candle);
 
         // Send an initial full-strip command so the CANdle learns we have 88 LEDs
-        candleGroup.setLEDs(0, 0, 0, 0, Constants.kLEDTotal);
+        candleGroup.setLEDs(0, 0, 0, 0, stripLen());
         
-        disabledFire = new CustomFireAnimation(0, Constants.kLEDTotal - 1)
+        disabledFire = new CustomFireAnimation(0, stripLen() - 1)
             .withFrameRate(LEDConstants.kFireFrameRate)
             .withSparking(LEDConstants.kFireSparking)
             .withCooling(LEDConstants.kFireCooling)
@@ -58,14 +66,14 @@ public class LED extends SubsystemBase {
             .withPalette(LEDConstants.kDisabledPalette)
             .withDirection(AnimationDirectionValue.Forward);
         
-        autoFire = new CustomFireAnimation(0, Constants.kLEDTotal - 1)
+        autoFire = new CustomFireAnimation(0, stripLen() - 1)
             .withFrameRate(LEDConstants.kFireFrameRate)
             .withSparking(0.7).withCooling(0.5)
             .withBrightness(1.0)
             .withPalette(LEDConstants.kAutoPalette)
             .withDirection(AnimationDirectionValue.Forward);
         
-        teleopFire = new CustomFireAnimation(0, Constants.kLEDTotal - 1)
+        teleopFire = new CustomFireAnimation(0, stripLen() - 1)
             .withFrameRate(LEDConstants.kFireFrameRate)
             .withSparking(0.7).withCooling(0.5)
             .withBrightness(1.0)
@@ -187,13 +195,13 @@ public class LED extends SubsystemBase {
         }
     }
     
-    private void allOff() { candleGroup.setLEDs(0, 0, 0, 0, Constants.kLEDTotal); }
-    private void allSolid(int r, int g, int b) { candleGroup.setLEDs(r, g, b, 0, Constants.kLEDTotal); }
+    private void allOff() { candleGroup.setLEDs(0, 0, 0, 0, stripLen()); }
+    private void allSolid(int r, int g, int b) { candleGroup.setLEDs(r, g, b, 0, stripLen()); }
     
     private void progressBar(double pct, int r, int g, int b) {
-        int lit = (int) Math.round(Constants.kLEDTotal * pct);
+        int lit = (int) Math.round(stripLen() * pct);
         if (lit > 0) candleGroup.setLEDs(r, g, b, 0, lit);
-        int unlit = Constants.kLEDTotal - lit;
+        int unlit = stripLen() - lit;
         if (unlit > 0) candleGroup.setLEDs(0, 0, 0, lit, unlit);
     }
 }

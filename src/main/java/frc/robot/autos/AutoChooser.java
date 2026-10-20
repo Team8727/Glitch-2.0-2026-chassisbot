@@ -1,6 +1,5 @@
 package frc.robot.autos;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -14,29 +13,30 @@ import frc.robot.subsystems.shooter.Shooter;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 /**
- * Auto selector — two independent methods:
+ * Auto selector — controller cycling while disabled.
  *
- * <ol>
- *   <li><b>SendableChooser</b> published as {@code "Auto Chooser"} for Elastic.
- *       Use the <i>Split Button Chooser</i> or drag the subtable onto your grid.
- *   <li><b>Controller cycling</b> while DISABLED: Left Bumper = previous,
- *       Right Bumper = next auto. Shows on dashboard as text.
- * </ol>
+ * <p>While the robot is DISABLED:
+ * <ul>
+ *   <li><b>Right Bumper</b> — next auto
+ *   <li><b>Left Bumper</b> — previous auto
+ * </ul>
+ *
+ * <p>The current selection shows on the dashboard as a text label.
+ * No Elastic widgets needed. Also publishes a raw string key for Glass/Shuffleboard.
  */
 public class AutoChooser {
   private final AutoRoutines routines;
-  private final SendableChooser<Integer> chooser = new SendableChooser<>();
-
-  private int selection = 1; // default: Depot-Center
+  private int selection = 1; // default Depot-Center
   private Command lastCmd = Commands.none();
-  private int lastIndex = -1;
 
+  // Labels for human readability
   private static final String[] LABELS = {
     "Depot L", "Depot C", "Depot R",
     "Sweep L", "Sweep C", "Sweep R",
     "Leave L", "Leave C", "Leave R",
     "In L",    "In C",    "In R"
   };
+  // Raw keys for Glass/Shuffleboard
   private static final String[] KEYS = {
     "Depot-Left", "Depot-Center", "Depot-Right",
     "Sweep-Left", "Sweep-Center", "Sweep-Right",
@@ -47,12 +47,7 @@ public class AutoChooser {
   public AutoChooser(Drivetrain dt, Shooter s, Intake i, Indexer ix, CommandXboxController controller) {
     this.routines = new AutoRoutines(dt, s, i, ix);
 
-    // --- Method 1: SendableChooser for Elastic ---
-    chooser.setDefaultOption("2-Cycle Depot Rush C", 1);
-    for (int n = 0; n < 12; n++) if (n != 1) chooser.addOption(LABELS[n], n);
-    SmartDashboard.putData("Auto Chooser", chooser);
-
-    // --- Method 2: Controller cycling while disabled (no dashboard needed) ---
+    // Controller cycling while disabled — works without any dashboard
     if (controller != null) {
       controller.rightBumper().and(RobotModeTriggers.disabled())
         .onTrue(runOnce(() -> cycle(1)).ignoringDisable(true));
@@ -60,30 +55,23 @@ public class AutoChooser {
         .onTrue(runOnce(() -> cycle(-1)).ignoringDisable(true));
     }
 
-    publish();
+    // Publish to dashboard
+    SmartDashboard.putString("Auto Label", LABELS[selection]);
+    SmartDashboard.putString("Auto Key", KEYS[selection]);
+    SmartDashboard.putString("Auto Options",
+      "0=DepotL 1=DepotC 2=DepotR 3=SweepL 4=SweepC 5=SweepR "
+      + "6=LeaveL 7=LeaveC 8=LeaveR 9=InL 10=InC 11=InR");
   }
 
   private void cycle(int delta) {
     selection = (selection + delta + 12) % 12;
-    publish();
-  }
-
-  private void publish() {
     SmartDashboard.putString("Auto Label", LABELS[selection]);
-    SmartDashboard.putNumber("Auto Index", selection);
+    SmartDashboard.putString("Auto Key", KEYS[selection]);
   }
 
+  /** Returns the currently selected autonomous command. */
   public Command getSelected() {
-    // Read from chooser (primary)
-    Integer fromChooser = chooser.getSelected();
-    if (fromChooser != null) selection = Math.max(0, Math.min(11, fromChooser));
-
-    if (lastCmd == null || selection != lastIndex) {
-      lastIndex = selection;
-      lastCmd = build(selection);
-      publish();
-    }
-    return lastCmd;
+    return build(selection);
   }
 
   private Command build(int idx) {
