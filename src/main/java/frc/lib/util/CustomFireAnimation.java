@@ -226,17 +226,22 @@ public class CustomFireAnimation {
                 break;
 
             case WHITE:
-                // Pure white fire: Black -> Dim White -> White -> Bright White
+                // White fire: Black -> Warm White -> Bright White -> Cool White
                 if ((t192 & 0x80) != 0) {
-                    r = 255;
-                    g = 255;
-                    b = 255;
+                    // 128-191: bright white, variation via heatramp
+                    int v = 192 + heatramp;
+                    if (v > 255) v = 255;
+                    r = v; g = v; b = 255;
                 } else if ((t192 & 0x40) != 0) {
-                    int v = 128 + heatramp;
-                    r = v; g = v; b = v;
+                    // 64-127: warm white
+                    r = 255;
+                    g = 200 + heatramp;
+                    b = 128 + heatramp;
                 } else {
-                    int v = Math.min(heatramp * 2, 128);
-                    r = v; g = v; b = v;
+                    // 0-63: black -> dim white
+                    r = heatramp;
+                    g = heatramp;
+                    b = heatramp;
                 }
                 break;
 

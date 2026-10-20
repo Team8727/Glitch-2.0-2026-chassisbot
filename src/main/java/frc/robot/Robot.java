@@ -178,9 +178,6 @@ public class Robot extends TimedRobot {
 
     logger.logPose3d("shooter/target", new Pose3d(target, new Rotation3d()));
 
-    logger.logChassisSpeeds("shooter/worldVelocity", new ChassisSpeeds(
-        firing.worldVel.getX(), firing.worldVel.getY(), 0));
-
     // ========== Vision confidence ==========
 
     int measurementCount = drivetrain.getLastVisionMeasurementCount();

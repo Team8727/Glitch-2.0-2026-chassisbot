@@ -46,6 +46,9 @@ public class LED extends SubsystemBase {
     private LED() {
         CANdle candle = new CANdle(Constants.kCANdleId);
         candleGroup = new CANdleGroup(candle);
+
+        // Send an initial full-strip command so the CANdle learns we have 88 LEDs
+        candleGroup.setLEDs(0, 0, 0, 0, Constants.kLEDTotal);
         
         disabledFire = new CustomFireAnimation(0, Constants.kLEDTotal - 1)
             .withFrameRate(LEDConstants.kFireFrameRate)
