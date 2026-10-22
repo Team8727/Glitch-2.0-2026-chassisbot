@@ -1875,42 +1875,6 @@
             }
           },
           {
-            "title": "USB FrontLeft",
-            "x": 1408,
-            "y": 0,
-            "width": 320,
-            "height": 240,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/USB_FrontLeft/Stream",
-              "period": 0.06,
-              "rotation_turns": 0,
-              "fps": 10,
-              "resolution": [
-                160.0,
-                120.0
-              ]
-            }
-          },
-          {
-            "title": "USB FrontRight",
-            "x": 1408,
-            "y": 240,
-            "width": 320,
-            "height": 240,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/USB_FrontRight/Stream",
-              "period": 0.06,
-              "rotation_turns": 0,
-              "fps": 10,
-              "resolution": [
-                160.0,
-                120.0
-              ]
-            }
-          },
-          {
             "title": "Vision Count Bar",
             "x": 1024,
             "y": 384,
