@@ -71,6 +71,8 @@ dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
+    // DogLog is installed via vendordeps/DogLog.json (not a direct maven dep).
+
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 

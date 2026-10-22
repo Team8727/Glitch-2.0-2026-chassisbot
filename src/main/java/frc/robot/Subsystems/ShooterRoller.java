@@ -36,7 +36,7 @@ public class ShooterRoller extends Roller {
                 .inverted(false)
                 .disableFollowerMode()
                 .closedLoop
-                .pid(0.03, 0, 0); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.07, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M0config
@@ -51,7 +51,7 @@ public class ShooterRoller extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .follow(M0CANID, false)
                 .closedLoop
-                .pid(0.03, 0, 0); // Tuned using SysID. Previous a  rb P was 0.07
+                .pid(0.07, 0, 0); // Tuned using SysID. Previous a  rb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M1config
@@ -66,7 +66,7 @@ public class ShooterRoller extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .follow(M0CANID, true) // DO NOT CHANGE, TO INVERT THE SPINNING OF THE ROLLERS CHANGE THE LEADER MOTOR ONLY
                 .closedLoop
-                .pid(0.03, 0, 0); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.07, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M2config
@@ -81,7 +81,7 @@ public class ShooterRoller extends Roller {
                 .idleMode(SparkMaxConfig.IdleMode.kCoast)
                 .follow(M0CANID, true)
                 .closedLoop
-                .pid(0.03, 0, 0); // Tuned using SysID. Previous arb P was 0.07
+                .pid(0.07, 0, 0); // Tuned using SysID. Previous arb P was 0.07
 //                .feedForward // Doesn't work, is a known REV issue, use SimpleMotorFeedforward *or* FF incorporated into state space
 //                .sva(0.35091, 0.12701, 0.052063, ClosedLoopSlot.kSlot0); // Found using sysID
         M3config
@@ -184,7 +184,7 @@ public class ShooterRoller extends Roller {
     /**
      * Sets the voltage of the motor by using the SimpleMotorFeedForward for the flywheel to compute the required voltage for the desired velocity
      *
-     * @param speed the speed to set the motor to, in RPM
+     * @param speed the speed to set the motor to, in RPS (revolutions per second) — must be consistent with the feedforward kV units
      * @Note: This method is not used for the Flywheel LinearSystem (state-space).
      * To use FF there, a LinearSystem must be instantiated using LinearSystemId.identifyVelocitySystem(double kV, double kA) </p>
      * */
@@ -199,6 +199,11 @@ public class ShooterRoller extends Roller {
      */
     @Override
     public void setVelocity(double speed, ControlMode mode) {
+        // NOTE: The old 0.5x "speed governor" was removed because it prevented the
+        // flywheel from reaching launch speed — balls could not be shot. If the motors
+        // run too fast, the REAL cause is the unverified encoder conversion factor
+        // (1.0/60, see Issue 5), not a need to scale the command down.
+
         if (mode == ControlMode.PID) {
             this.getSparkMaxMotor().setVelocity(speed);
         } else if (mode == ControlMode.FEEDFORWARD) {

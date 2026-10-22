@@ -5,20 +5,19 @@
 package frc.robot;
 
 import Glitch.Lib.Controller.Controller;
-import Glitch.Lib.LEDs.GlitchLEDPatterns;
 import Glitch.Lib.NetworkTableLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
+import dev.doglog.DogLog;
+import dev.doglog.DogLogOptions;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain.CTRESwerveDrivetrain;
@@ -38,22 +37,74 @@ import org.littletonrobotics.urcl.URCL;
  */
 public class Robot extends TimedRobot {
 
-  private static final double SHOOTER_ANGLE_DEGREES = 60.0;
-  private static final double SHOOTER_HEIGHT_METERS = 0.3;
+  /**
+   * Shooter launch pitch angle (degrees above horizontal). The shooter is mechanically fixed,
+   * so software adjusts only flywheel speed.
+   */
+  public static final double SHOOTER_ANGLE_DEGREES = 60.0;
+
+  /** Shooter centerline height (meters above carpet). */
+  public static final double SHOOTER_HEIGHT_METERS = 0.3;
   public static final double SHOOTER_FLYWHEEL_DIAMETER_METERS = 0.0889;
-  private static final Translation3d BLUE_ALLIANCE_TARGET_3D = new Translation3d(4.626, 4.035, 1.8);
-  private static final Translation3d RED_ALLIANCE_TARGET_3D = new Translation3d(11.915, 4.035, 1.8);
+
+  // --- Field geometry (Game Manual TU22, 2026 REBUILT) ---
+  // FIELD is 317.7in (~8.07m) wide by 651.2in (~16.54m) long. Manual line 409.
+  // Only the length is needed: each HUB is centered laterally, so its Y is the field centerline.
+  private static final double FIELD_LENGTH_METERS = 16.54;
+
+  /** Each HUB is 158.6in (~4.03m) from its ALLIANCE WALL. Manual line 465. */
+  private static final double HUB_FROM_ALLIANCE_WALL_METERS = 4.03;
+
+  /**
+   * HUB opening front edge is 72in (~1.83m) off the carpet. Manual line 469.
+   * This is the height the projectile solver aims at.
+   */
+  public static final double HUB_Z_METERS = 1.83;
+
+  /**
+   * HUB center X in the standard WPILib field frame.
+   *
+   * <p>WPILib field frame: origin at the center of the field, +X toward the RED ALLIANCE.
+   * So the BLUE wall sits at X = -8.27 and the RED wall at X = +8.27. Each HUB is
+   * {@value #HUB_FROM_ALLIANCE_WALL_METERS} m in from its own wall, giving
+   * +/-({@value #FIELD_LENGTH_METERS}/2 - 4.03) = +/-4.24 m.
+   *
+   * <p>Each HUB is centered between two BUMPS, so Y is the field centerline (0.0).
+   *
+   * <p>NOTE: the previous values (4.626 / 11.915) were 2020 Infinite Recharge constants
+   * expressed in a CORNER-ORIGIN frame (origin on the blue wall). Mixing that frame with the
+   * drivetrain pose -- which is always center-origin -- inflated the computed range by ~3x and
+   * saturated the flywheel, making power appear constant at every distance.
+   */
+  private static final double HUB_X_METERS = FIELD_LENGTH_METERS / 2.0 - HUB_FROM_ALLIANCE_WALL_METERS;
+
+  /** Blue HUB target: {@code (-4.24, 0.0, 1.83)} in the WPILib center-origin field frame. */
+  private static final Translation3d BLUE_ALLIANCE_TARGET_3D =
+          new Translation3d(-HUB_X_METERS, 0.0, HUB_Z_METERS);
+
+  /** Red HUB target: {@code (4.24, 0.0, 1.83)} in the WPILib center-origin field frame. */
+  private static final Translation3d RED_ALLIANCE_TARGET_3D =
+          new Translation3d(HUB_X_METERS, 0.0, HUB_Z_METERS);
+
+  /** Exposed for testing. @return the blue HUB target in the WPILib center-origin field frame. */
+  static Translation3d getBlueTarget() { return BLUE_ALLIANCE_TARGET_3D; }
+
+  /** Exposed for testing. @return the red HUB target in the WPILib center-origin field frame. */
+  static Translation3d getRedTarget() { return RED_ALLIANCE_TARGET_3D; }
+  /**
+   * Legacy loss-compensation multiplier for the OLD flywheel setpoint log.
+   * Kept to avoid breaking the dashboard. The NEW log uses the correct formula
+   * ({@link #SHOOTER_FLYWHEEL_DIAMETER_METERS}) and should be used instead.
+   */
   public static final double SHOOTER_LOSS_COMPENSATION = 2;
-  public static boolean SHOOT_POWER_OVERRIDE = false;
 
   private Translation3d target;
 
-  public static ProjectileSolver.FiringSolution firing;
-  private double lastTime = Timer.getFPGATimestamp();
-  private double deltaTime;
+  /** Pre-filled so commands/controls are null-safe before the first robotPeriodic(). */
+  public static ProjectileSolver.FiringSolution firing = ProjectileSolver.emptySolution();
 
   // Used for drivetrain oscillation command (wiggling)
-  public static Rotation2d referenceRotation = new  Rotation2d();
+  public static Rotation2d referenceRotation = new Rotation2d();
 
   private final ShooterRoller shooterRoller = new ShooterRoller();
 
@@ -86,22 +137,23 @@ public class Robot extends TimedRobot {
     // Start the URCL logger (logs REV SparkMaxes and SparkFlexes automatically on networkTables)
     URCL.start();
 
+    // Initialize DogLog for file-based logging (WPILOG) + NetworkTables mirror
+    // Download the .wpilog file from roboRIO after matches and open in AdvantageScope
+    DogLog.setOptions(
+        new DogLogOptions()
+            .withCaptureConsole(true)
+            .withCaptureDs(true)
+            .withCaptureNt(true)
+            .withLogEntryQueueCapacity(1000)
+            .withLogExtras(true)
+            .withNtPublish(true));
+    DogLog.setEnabled(true);
+    DogLog.log("Misc/RIO Serial Number", RobotController.getSerialNumber());
+
     SmartDashboard.putNumber("Shooter power", 0);
 
     // Used by oscillation command
     addPeriodic(() -> referenceRotation = CTREDrivetrain.getState().Pose.getRotation().minus(Rotation2d.fromDegrees(180)), 0.04); // Update period should be a multiple of the loop time: 0.02 seconds
-
-    addPeriodic(() -> {
-      if (measurementCount == 1) {
-        confidenceNow = lowConfidence;
-      }
-      if (measurementCount == 2) {
-        confidenceNow = reasonableConfidence;
-      }
-      if (measurementCount > 2) {
-        confidenceNow = highConfidence;
-      }},
-      0.5);
 
     // Setup zones
 //    new ZoneController(
@@ -109,7 +161,8 @@ public class Robot extends TimedRobot {
 //            new Rectangle(1,1,1,1),
 //            Commands.runOnce(() -> intakePivot.setPosition(IntakePivot.IntakePosition.MID.getDegrees())));
 
-    leds.initializeLEDS(0);
+    // LEDs initialized in LEDSubsystem constructor (CANdle-backed)
+
     pinServo = new Servo(1);
     pinServo.setAngle(0);
   }
@@ -122,20 +175,10 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
 
-  int measurementCount; // Number of vision measurements of each tag per camera
-  LEDPattern lowConfidence = GlitchLEDPatterns.ripple(LEDPattern.solid(Color.kYellow), 10, 20);
-  LEDPattern reasonableConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.ace, 10, 20);
-  LEDPattern highConfidence = GlitchLEDPatterns.ripple(GlitchLEDPatterns.funGradient, 20, 30);
-  LEDPattern confidenceNow;
-  double ledRefreshTime = 0.5; // Time in seconds to refresh the LED pattern
-
   @Override
   public void robotPeriodic() {
     target = isRedAlliance() ? RED_ALLIANCE_TARGET_3D : BLUE_ALLIANCE_TARGET_3D;
     logger.logDouble("voltage", RobotController.getInputVoltage());
-    double now = Timer.getFPGATimestamp();
-    deltaTime = now - lastTime;
-    lastTime = now;
     vision.logCameraPoses(CTREDrivetrain.getState().Pose);
 
 
@@ -146,7 +189,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     // Vision fusion is done in drivetrain.periodic(); read the most recent fused count here.
-    measurementCount = CTREDrivetrain.getLastVisionMeasurementCount();
+    int measurementCount = CTREDrivetrain.getLastVisionMeasurementCount();
+    leds.updateVisionConfidence(measurementCount);
 
     Translation3d shooterFieldPosition = new Translation3d(
             CTREDrivetrain.getState().Pose.getX(),
@@ -213,11 +257,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-    leds.leftSide.setBase(confidenceNow);
-    leds.pip.setBase(confidenceNow);
-    leds.rightSide.setBase(confidenceNow);
-  }
+  public void autonomousPeriodic() {}
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -225,18 +265,18 @@ public class Robot extends TimedRobot {
     // This makes sure that autonomous stops running when teleop starts running.
     CommandScheduler.getInstance().cancelAll();
 
-    shooterRoller.m_loop.reset(VecBuilder.fill(Units.rotationsPerMinuteToRadiansPerSecond(shooterRoller.getVelocity())));
+    // The state-space loop (ShooterRoller) is fed RPS everywhere: setNextR() and correct()
+    // both use RPS values, and the plant was identified in the same units. Reset with the
+    // raw RPS velocity — the old code used rotationsPerMinuteToRadiansPerSecond(), a 60×
+    // mismatch that threw the observer's initial state way off.
+    shooterRoller.m_loop.reset(VecBuilder.fill(shooterRoller.getVelocity()));
 
     leds.teleopInit();
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    leds.leftSide.setBase(confidenceNow);
-    leds.pip.setBase(confidenceNow);
-    leds.rightSide.setBase(confidenceNow);
-  }
+  public void teleopPeriodic() {}
 
   /** This function is called once when test mode is enabled. */
   @Override
