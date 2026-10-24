@@ -14,8 +14,8 @@ public final class LEDConstants {
     public static final double kFireSparking = 0.8;
     public static final double kFireCooling = 0.65;
     
-    // Custom palettes for white-green theme
+    // Custom palettes — each mode gets a distinct look
     public static final CustomFireAnimation.Palette kDisabledPalette = CustomFireAnimation.Palette.WHITE_GREEN;
-    public static final CustomFireAnimation.Palette kAutoPalette = CustomFireAnimation.Palette.WHITE_GREEN;
+    public static final CustomFireAnimation.Palette kAutoPalette = CustomFireAnimation.Palette.WHITE;
     public static final CustomFireAnimation.Palette kTeleopPalette = CustomFireAnimation.Palette.TEAL_GREEN;
 }

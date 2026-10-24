@@ -38,8 +38,8 @@ public final class Constants {
   /** Encoder conversion factor for RPS output. */
   public static final double kShooterEncoderConversion = 1.0 / 60.0;
 
-  /** Gear ratio between motor and flywheel (output/input). */
-  public static final double kFlywheelGearing = 0.5;
+  /** Gear ratio between motor and flywheel (output/input). 24:15 = 1.6 (motor faster). */
+  public static final double kFlywheelGearing = 24.0 / 15.0;
 
   /** Flywheel moment of inertia (kg·m²). */
   public static final double kFlywheelMomentOfInertia = 0.0012112355;
@@ -97,24 +97,45 @@ public final class Constants {
   public static final double kVisionMaxAmbiguity = 0.2;
   public static final double kVisionMaxDistanceMeters = 3.5;
 
-  // ========== Field Geometry (2026 REBUILT, center-origin WPILib frame) ==========
+  // ========== Field Geometry (2026 REBUILT, corner-origin frame) ==========
+  // These match the PathPlanner .path files, the AprilTag field layout JSON,
+  // and the chassisbot codebase (which shoots correctly).
+  //
+  // Corner-origin: (0,0) = blue alliance wall / left long wall.
+  // X increases toward red alliance wall.  Y increases across the field width.
+  // field-length = 16.518 m, field-width = 8.043 m
+  // Blue HUB tags (IDs 25, 26) are at x ≈ 4.008, y ≈ 4.021 (image coords).
 
-  public static final double kFieldLengthMeters = 16.54;
-  public static final double kFieldWidthMeters = 8.07;
-  public static final double kHubFromAllianceWallMeters = 4.03;
+  public static final double kFieldLengthMeters = 16.518;
+  public static final double kFieldWidthMeters = 8.043;
+
+  /** HUB note-scoring center height above carpet. */
   public static final double kHubZMeters = 1.83;
 
-  /** HUB X magnitude (same for both alliances, sign differs). */
-  public static final double kHubXMeters =
-      kFieldLengthMeters / 2.0 - kHubFromAllianceWallMeters;
-
-  /** Blue HUB target in center-origin frame. */
+  /** Blue HUB target — from chassisbot field-tested values. */
   public static final Translation3d kBlueHubTarget =
-      new Translation3d(-kHubXMeters, 0.0, kHubZMeters);
-
-  /** Red HUB target in center-origin frame. */
+      new Translation3d(4.626, 4.035, kHubZMeters);
+  /** Red HUB target. */
   public static final Translation3d kRedHubTarget =
-      new Translation3d(kHubXMeters, 0.0, kHubZMeters);
+      new Translation3d(11.915, 4.035, kHubZMeters);
+
+  // ========================================================================
+  // Passing & aim positions (selected by the right bumper) — corner-origin
+  // ========================================================================
+
+  /** Neutral-zone passing target (Blue). */
+  public static final Translation3d kBlueNeutralPass =
+      new Translation3d(8.259, 5.235, kHubZMeters);  // field center + slight Y offset
+  /** Neutral-zone passing target (Red). */
+  public static final Translation3d kRedNeutralPass =
+      new Translation3d(8.259, 2.835, kHubZMeters);  // field center, opposite strafe
+
+  /** Alliance-area target (Blue) — short-range pass. */
+  public static final Translation3d kBlueAllianceTarget =
+      new Translation3d(5.759, 4.835, kHubZMeters);
+  /** Alliance-area target (Red). */
+  public static final Translation3d kRedAllianceTarget =
+      new Translation3d(10.759, 3.235, kHubZMeters);
 
   // ========== Shooter Physical ==========
 

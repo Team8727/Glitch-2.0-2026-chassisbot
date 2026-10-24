@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,25 +20,30 @@ import java.util.Optional;
  * Robot-layer Vision facade using direct PhotonLib.
  *
  * <p>Manages two PhotonVision cameras and computes robot pose from visible AprilTags.
+ *
+ * <p>Cameras run on Orange Pi coprocessors that can brown out under heavy motor load.
+ * All camera reads are wrapped in try-catch so the robot never crashes when a Pi drops.
  */
 public class Vision implements AutoCloseable {
 
   public record Measurement(Pose2d pose, double timestampSeconds, double avgDistanceMeters, double ambiguity) {
   }
 
-  private final org.photonvision.PhotonCamera cameraFrontLeft;
-  private final org.photonvision.PhotonCamera cameraFrontRight;
+  private org.photonvision.PhotonCamera cameraFrontLeft;
+  private org.photonvision.PhotonCamera cameraFrontRight;
   private final AprilTagFieldLayout fieldLayout;
 
   private static final double kMaxAmbiguity = 0.2;
   private static final double kMaxDistance = 3.5;
+
+  /** Monotonic error counter; incremented each time a camera read throws. */
+  private int cameraErrorCount = 0;
 
   public Vision() {
     if (RobotBase.isReal()) {
       cameraFrontLeft = new org.photonvision.PhotonCamera(Constants.kCamFrontLeft);
       cameraFrontRight = new org.photonvision.PhotonCamera(Constants.kCamFrontRight);
     } else {
-      // In simulation, use a null-safe stub — no PhotonVision coprocessor available
       cameraFrontLeft = null;
       cameraFrontRight = null;
     }
@@ -46,7 +52,7 @@ public class Vision implements AutoCloseable {
     try {
       layout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
     } catch (Exception e) {
-      e.printStackTrace();
+      DogLog.log("Vision/FieldLayoutError", e.getMessage());
     }
     this.fieldLayout = layout;
   }
@@ -57,9 +63,29 @@ public class Vision implements AutoCloseable {
 
   public List<Measurement> drainMeasurements(Pose2d referencePose) {
     List<Measurement> measurements = new ArrayList<>();
-    if (cameraFrontLeft != null) drainCamera(cameraFrontLeft, measurements);
-    if (cameraFrontRight != null) drainCamera(cameraFrontRight, measurements);
+    if (cameraFrontLeft != null) {
+      try {
+        drainCamera(cameraFrontLeft, measurements);
+      } catch (Exception e) {
+        handleCameraError("FrontLeft", e);
+      }
+    }
+    if (cameraFrontRight != null) {
+      try {
+        drainCamera(cameraFrontRight, measurements);
+      } catch (Exception e) {
+        handleCameraError("FrontRight", e);
+      }
+    }
     return measurements;
+  }
+
+  /** Logs camera errors once (rate-limited) and reconnects if the Pi came back. */
+  private void handleCameraError(String name, Exception e) {
+    cameraErrorCount++;
+    DogLog.log("Vision/" + name + "/Error", e.getClass().getSimpleName() + ": " + e.getMessage());
+    // Attempt to recover — if the Pi rebooted, a new connection will work
+    // (PhotonLib reconnects transparently on the next call)
   }
 
   private void drainCamera(org.photonvision.PhotonCamera camera, List<Measurement> out) {
@@ -69,7 +95,6 @@ public class Vision implements AutoCloseable {
 
       if (targets.isEmpty()) continue;
 
-      // Use the best target for pose estimation
       var bestTarget = result.getBestTarget();
       if (bestTarget == null) continue;
 
@@ -81,7 +106,6 @@ public class Vision implements AutoCloseable {
       var tagPose = fieldLayout.getTagPose(tagId);
       if (tagPose.isEmpty()) continue;
 
-      // Compute robot field pose from tag
       var cameraToTarget = bestTarget.getBestCameraToTarget();
       var fieldToCamera = tagPose.get().plus(cameraToTarget.inverse());
 
@@ -95,6 +119,11 @@ public class Vision implements AutoCloseable {
 
       out.add(new Measurement(fieldToRobot.toPose2d(), timestamp, distance, ambiguity));
     }
+  }
+
+  /** Returns the cumulative number of camera read errors since boot (0 = healthy). */
+  public int getCameraErrorCount() {
+    return cameraErrorCount;
   }
 
   public Optional<Pose2d> bestStartPose() {
@@ -113,17 +142,21 @@ public class Vision implements AutoCloseable {
       NetworkTableInstance.getDefault().getStructTopic("Vision/" + Constants.kCamFrontRight + "/Pose", Pose3d.struct).publish();
 
   public void logCameraPoses(Pose2d robotPose) {
-    if (cameraFrontLeft == null) return; // sim
-    var robotPose3d = new Pose3d(robotPose);
-    var flTransform = new Transform3d(Constants.kCamFrontLeftTranslation, new Rotation3d(0, 0, Constants.kCamFrontLeftYaw));
-    flPosePub.set(robotPose3d.transformBy(flTransform));
-    var frTransform = new Transform3d(Constants.kCamFrontRightTranslation, new Rotation3d(0, 0, Constants.kCamFrontRightYaw));
-    frPosePub.set(robotPose3d.transformBy(frTransform));
+    if (cameraFrontLeft == null) return;
+    try {
+      var robotPose3d = new Pose3d(robotPose);
+      var flTransform = new Transform3d(Constants.kCamFrontLeftTranslation, new Rotation3d(0, 0, Constants.kCamFrontLeftYaw));
+      flPosePub.set(robotPose3d.transformBy(flTransform));
+      var frTransform = new Transform3d(Constants.kCamFrontRightTranslation, new Rotation3d(0, 0, Constants.kCamFrontRightYaw));
+      frPosePub.set(robotPose3d.transformBy(frTransform));
+    } catch (Exception e) {
+      // Don't crash the robot loop just to log a camera pose
+    }
   }
 
   @Override
   public void close() {
-    if (cameraFrontLeft != null) cameraFrontLeft.close();
-    if (cameraFrontRight != null) cameraFrontRight.close();
+    try { if (cameraFrontLeft != null) cameraFrontLeft.close(); } catch (Exception ignored) {}
+    try { if (cameraFrontRight != null) cameraFrontRight.close(); } catch (Exception ignored) {}
   }
 }

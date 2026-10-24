@@ -42,7 +42,7 @@ public class LED extends SubsystemBase {
     
     public enum LEDState {
         STARTUP, DISABLED, AUTONOMOUS, TELEOP, SHOOTING, INTAKING,
-        ERROR, WARNING, INFO, VISION_LOST;
+        ERROR(true, 0.1), WARNING(true, 0.1), INFO, VISION_LOST;
         
         public final boolean blink;
         public final double blinkRate;
@@ -97,6 +97,7 @@ public class LED extends SubsystemBase {
     
     public void endCommand() { shooting = false; }
     public void intakePatterns() { intaking = !intaking; }
+    public void setIntaking(boolean v) { intaking = v; }
     
     public void triggerError() { tempStateTimer.restart(); state = LEDState.ERROR; }
     public void triggerWarning() { tempStateTimer.restart(); state = LEDState.WARNING; }
@@ -121,7 +122,7 @@ public class LED extends SubsystemBase {
             state = LEDState.SHOOTING;
         } else if (intaking) {
             state = LEDState.INTAKING;
-        } else if (visionMeasurementCount == 0 && state == LEDState.TELEOP) {
+        } else if (visionMeasurementCount == 0) {
             state = LEDState.VISION_LOST;
         } else {
             state = DriverStation.isAutonomous() ? LEDState.AUTONOMOUS : LEDState.TELEOP;

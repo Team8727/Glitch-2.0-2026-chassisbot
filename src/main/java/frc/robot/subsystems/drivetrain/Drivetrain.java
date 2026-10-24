@@ -178,7 +178,7 @@ public class Drivetrain extends TunerConstants.TunerSwerveDrivetrain implements 
             speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
         Pose2d fallbackPose = m_visionFallback.update(
             m_lastVisionMeasurementCount, chassisSpeeds, getState().Pose);
-        logger.logString("vision/fallbackStatus", m_visionFallback.getConfidence().name());
+        logger.logString("vision/fallbackStatus", m_visionFallback.getStatusString());
 
         // Update Field2d for sim GUI and dashboard
         m_field.setRobotPose(getState().Pose);

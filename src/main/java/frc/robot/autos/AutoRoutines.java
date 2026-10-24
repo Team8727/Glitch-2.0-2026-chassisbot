@@ -31,34 +31,33 @@ public class AutoRoutines {
       Constants.kAutoMaxAngularAcceleration);
 
   // ========================================================================
-  // Blue-alliance positions (WPILib center-origin frame)
+  // Blue-alliance positions (corner-origin frame — matches .path files)
   // ========================================================================
 
   // Starting positions (must match .path file start waypoints)
-  // Converted from PathPlanner frame: PP_X - 8.27, PP_Y - 4.035
-  // J-Left to Shoot starts at PP(1.8, 6.0)   -> WPILib(-6.47, 1.97)
-  // J-Center to Shoot starts at PP(1.8, 4.035) -> WPILib(-6.47, 0.0)
-  // J-Right to Shoot starts at PP(1.8, 2.0)   -> WPILib(-6.47, -2.04)
-  private static final Pose2d kBlueStartLeft    = new Pose2d(-6.5,  2.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueStartCenter  = new Pose2d(-6.5,  0.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueStartRight   = new Pose2d(-6.5, -2.0, Rotation2d.fromDegrees(180));
+  // J-Left to Shoot starts at PP(1.8, 6.0)
+  // J-Center to Shoot starts at PP(1.8, 4.035)
+  // J-Right to Shoot starts at PP(1.8, 2.0)
+  private static final Pose2d kBlueStartLeft    = new Pose2d(1.8,  6.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueStartCenter  = new Pose2d(1.8,  4.035, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueStartRight   = new Pose2d(1.8,  2.0, Rotation2d.fromDegrees(180));
 
-  // Shoot positions
-  private static final Pose2d kBlueShootLeft    = new Pose2d(-5.8,  2.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueShootCenter  = new Pose2d(-5.8,  0.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueShootRight   = new Pose2d(-5.8, -2.0, Rotation2d.fromDegrees(180));
+  // Shoot positions — about 1m forward from start (toward red wall)
+  private static final Pose2d kBlueShootLeft    = new Pose2d(2.5,  6.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueShootCenter  = new Pose2d(2.5,  4.035, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueShootRight   = new Pose2d(2.5,  2.0, Rotation2d.fromDegrees(180));
 
   // Intake positions
-  private static final Pose2d kBlueDepot        = new Pose2d(-7.8,  2.5, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueOutpost      = new Pose2d(-7.8, -2.5, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueSweepLeft    = new Pose2d( 1.5,  2.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueSweepCenter  = new Pose2d( 1.5,  0.0, Rotation2d.fromDegrees(180));
-  private static final Pose2d kBlueSweepRight   = new Pose2d( 1.5, -2.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueDepot        = new Pose2d(0.5,  6.5, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueOutpost      = new Pose2d(0.5,  1.5, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueSweepLeft    = new Pose2d(9.8,  6.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueSweepCenter  = new Pose2d(9.8,  4.0, Rotation2d.fromDegrees(180));
+  private static final Pose2d kBlueSweepRight   = new Pose2d(9.8,  2.0, Rotation2d.fromDegrees(180));
 
   // Mobility positions
-  private static final Pose2d kBlueMobilityLeft    = new Pose2d(-1.0,  2.0, Rotation2d.fromDegrees(0));
-  private static final Pose2d kBlueMobilityCenter  = new Pose2d(-1.0,  0.0, Rotation2d.fromDegrees(0));
-  private static final Pose2d kBlueMobilityRight   = new Pose2d(-1.0, -2.0, Rotation2d.fromDegrees(0));
+  private static final Pose2d kBlueMobilityLeft    = new Pose2d(7.3,  6.0, Rotation2d.fromDegrees(0));
+  private static final Pose2d kBlueMobilityCenter  = new Pose2d(7.3,  4.0, Rotation2d.fromDegrees(0));
+  private static final Pose2d kBlueMobilityRight   = new Pose2d(7.3,  2.0, Rotation2d.fromDegrees(0));
 
   // Path file names
   private static final String kPathLeftToShoot     = "J-Left to Shoot";
@@ -92,8 +91,11 @@ public class AutoRoutines {
   // Helpers
   // ========================================================================
 
+  /** Mirror a blue-alliance pose for the red alliance (corner-origin frame). */
   private static Pose2d mirror(Pose2d p) {
-    return new Pose2d(-p.getX(), p.getY(), p.getRotation().rotateBy(Rotation2d.k180deg));
+    return new Pose2d(Constants.kFieldLengthMeters - p.getX(),
+                      Constants.kFieldWidthMeters - p.getY(),
+                      p.getRotation().rotateBy(Rotation2d.k180deg));
   }
   private Pose2d ap(Pose2d bluePose) {
     return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? mirror(bluePose) : bluePose;
@@ -136,6 +138,18 @@ public class AutoRoutines {
   // ========================================================================
   // Auto Routines — each resets pose first so autos work without vision
   // ========================================================================
+
+  // --- 2-Cycle Mid Sweep (go to center → intake → shoot, repeat) ---
+
+  public Command twoCycleMidSweepCenter() {
+    return sequence(resetPose(kBlueStartCenter),
+        // Cycle 1: go to center, intake, return to shoot
+        go(kPathShootToSweep, kBlueSweepCenter), runIntakeSec(2.0),
+        go(kPathSweepToShoot, kBlueShootCenter), shoot(),
+        // Cycle 2: go to center again, intake, return to shoot
+        go(kPathShootToSweep, kBlueSweepCenter), runIntakeSec(2.0),
+        go(kPathSweepToShoot, kBlueShootCenter), shoot());
+  }
 
   // --- 2-Cycle Depot Rush ---
 

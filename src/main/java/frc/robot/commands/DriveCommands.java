@@ -77,7 +77,7 @@ public class DriveCommands {
         return drivetrain.applyRequest(
                 () -> {
                     Pose2d robotPose = drivetrain.getState().Pose;
-                    Rotation2d targetYaw = Targeting.computeYaw(robotPose);
+                    Rotation2d targetYaw = Targeting.computeHubYaw(robotPose);
                     return faceTarget
                             .withTargetDirection(targetYaw)
                             .withVelocityX(controller.getLeftY() * kMaxSpeed * invertX())
@@ -97,7 +97,7 @@ public class DriveCommands {
         return drivetrain.applyRequest(
                 () -> {
                     Pose2d robotPose = drivetrain.getState().Pose;
-                    Rotation2d baseYaw = Targeting.computeYaw(robotPose);
+                    Rotation2d baseYaw = Targeting.computeHubYaw(robotPose);
                     double oscDeg = computeOscillation(2, 5);
                     return faceTarget
                             .withTargetDirection(

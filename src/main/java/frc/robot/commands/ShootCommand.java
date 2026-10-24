@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.shooting.ShootingRegressions;
 import frc.robot.shooting.Targeting;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -18,7 +19,7 @@ import frc.robot.subsystems.shooter.Shooter.ShooterControlMode;
  * Shoot command with at-speed gating, power budgeting, and auto-unjam.
  *
  * <ol>
- *   <li>Spins up flywheel to target RPM
+ *   <li>Spins up flywheel to target RPM (computed from projectile solver)
  *   <li>Waits until at speed (dashboard-tunable tolerance)
  *   <li>Feeds balls while monitoring total amperage — if shooter+indexer
  *       exceeds the limit, indexer duty cycle is reduced (slowing feed rate
@@ -32,16 +33,11 @@ public class ShootCommand extends SequentialCommandGroup {
     public ShootCommand(Shooter shooter, Indexer indexer, Drivetrain drivetrain) {
         SmartDashboard.putNumber("Shooter RPM Tolerance", 50.0);
         SmartDashboard.putNumber("Shooter Current Limit", 120.0);
+        SmartDashboard.putNumber("Shooter Slip Comp", 0.15); // tune this if note overshoots/undershoots
 
         addCommands(
                 sequence(
-                        shooter.run(() -> {
-                            var pose = drivetrain.getState().Pose;
-                            double distance = Targeting.getHorizontalDistance(pose);
-                            double motorRPS = ShootingRegressions.getMotorRPS(distance);
-                            shooter.setVelocity(motorRPS, ShooterControlMode.FF_AND_PID);
-                        }),
-
+                        // Velocity is set in WaitForFlywheelSpeed.initialize() with a locked distance
                         new WaitForFlywheelSpeed(shooter, drivetrain),
 
                         // Feed with power management + auto-unjam
@@ -55,31 +51,74 @@ public class ShootCommand extends SequentialCommandGroup {
     }
 }
 
-/** Waits until flywheel reaches target RPM within tolerance, or times out. */
+/**
+ * Waits until flywheel reaches target RPM within tolerance, or times out.
+ *
+ * <p>Target RPM comes from the projectile solver (physics-based muzzle velocity)
+ * converted through flywheel diameter and gear ratio, with slip compensation.
+ * Requirements are declared so the shooter's default command doesn't override us.
+ *
+ * <p>The velocity command is re-issued every cycle (execute) so the SparkMax
+ * built-in PID keeps tracking even if something else touches the controller.
+ */
 class WaitForFlywheelSpeed extends Command {
     private final Shooter shooter;
     private final Drivetrain drivetrain;
     private double startTime;
-    private static final double kMaxWait = Constants.kShooterSpinupTime + 2.0;
+    private double lockedMotorRPS;
+    private double lockedFlywheelRPM;
+    private static final double kMaxWait = Constants.kShooterSpinupTime + 3.0;
 
     public WaitForFlywheelSpeed(Shooter shooter, Drivetrain drivetrain) {
         this.shooter = shooter; this.drivetrain = drivetrain;
+        addRequirements(shooter);
     }
 
-    @Override public void initialize() { startTime = Timer.getFPGATimestamp(); }
+    @Override public void initialize() {
+        startTime = Timer.getFPGATimestamp();
+
+        double muzzleVelocity;
+        if (Robot.firing.isValid) {
+            // Primary: projectile solver (physics-based, accounts for target position & motion)
+            muzzleVelocity = Robot.firing.power;
+        } else {
+            // Fallback: regression table (empirical distance→RPM, then back to muzzle velocity)
+            double dist = Targeting.getHorizontalDistance(drivetrain.getState().Pose);
+            double flywheelRPM = ShootingRegressions.getRPM(dist);
+            double flywheelRPS = flywheelRPM / 60.0;
+            muzzleVelocity = flywheelRPS * Math.PI * Constants.kShooterFlywheelDiameterMeters;
+        }
+        muzzleVelocity = Math.max(muzzleVelocity, 6.0); // never go below 6 m/s
+
+        // Convert muzzle velocity (m/s) → flywheel RPS via circumference
+        double flywheelRPS = muzzleVelocity / (Math.PI * Constants.kShooterFlywheelDiameterMeters);
+        // Read slip compensation from dashboard (tunable at the field — decrease if overshooting)
+        double slipComp = SmartDashboard.getNumber("Shooter Slip Comp", 0.15);
+        if (slipComp < 0.0) slipComp = 0.0;
+        if (slipComp > 0.5) slipComp = 0.5;
+        double targetFlywheelRPS = flywheelRPS / (1.0 - slipComp);
+        // Convert flywheel RPS → motor RPS via gear ratio (1.6×)
+        lockedMotorRPS = targetFlywheelRPS * Constants.kFlywheelGearing;
+        lockedFlywheelRPM = targetFlywheelRPS * 60.0;
+
+        shooter.setVelocity(lockedMotorRPS, ShooterControlMode.FF_AND_PID);
+    }
+
+    @Override public void execute() {
+        // Re-issue the velocity command every cycle so the SparkMax PID doesn't
+        // get silently overridden by the default duty-cycle command.
+        shooter.setVelocity(lockedMotorRPS, ShooterControlMode.FF_AND_PID);
+    }
 
     @Override public boolean isFinished() {
         double tol = SmartDashboard.getNumber("Shooter RPM Tolerance", 50.0);
         if (tol <= 1.0) tol = 50.0;
-        var pose = drivetrain.getState().Pose;
-        double dist = Targeting.getHorizontalDistance(pose);
-        double target = ShootingRegressions.getRPM(dist);
-        double actual = shooter.getFlywheelVelocity() * 60.0;
-        boolean atSpeed = Math.abs(actual - target) <= tol;
+        double actualRPM = shooter.getFlywheelVelocity() * 60.0;
+        boolean atSpeed = Math.abs(actualRPM - lockedFlywheelRPM) <= tol;
         boolean timedOut = (Timer.getFPGATimestamp() - startTime) > kMaxWait;
         if (atSpeed || timedOut) {
-            SmartDashboard.putNumber("Shooter RPM Target", target);
-            SmartDashboard.putNumber("Shooter RPM Actual", actual);
+            SmartDashboard.putNumber("Shooter RPM Target", lockedFlywheelRPM);
+            SmartDashboard.putNumber("Shooter RPM Actual", actualRPM);
             return true;
         }
         return false;
@@ -112,6 +151,7 @@ class PowerManagedIndexerFeed extends Command {
 
     public PowerManagedIndexerFeed(Shooter shooter, Indexer indexer) {
         this.shooter = shooter; this.indexer = indexer;
+        addRequirements(indexer);
     }
 
     @Override

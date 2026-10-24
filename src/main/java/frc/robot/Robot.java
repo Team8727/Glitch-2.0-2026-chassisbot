@@ -129,6 +129,15 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    try {
+      robotPeriodicInner();
+    } catch (Exception e) {
+      logger.logString("lastError", e.getClass().getSimpleName() + ": " + e.getMessage());
+      DogLog.log("Robot/PeriodicError", e.toString());
+    }
+  }
+
+  private void robotPeriodicInner() {
     // Log battery voltage
     logger.logDouble("voltage", RobotController.getInputVoltage());
 
@@ -138,11 +147,21 @@ public class Robot extends TimedRobot {
     // Run command scheduler (polls buttons, runs commands, runs subsystem periodic)
     CommandScheduler.getInstance().run();
 
-    // ========== Compute firing solution every cycle ==========
+    // ========== Odometry diagnostics ==========
 
-    Translation3d target = isRedAlliance()
-        ? Constants.kRedHubTarget
-        : Constants.kBlueHubTarget;
+    logger.logBoolean("odometry/valid", drivetrain.isOdometryValid());
+    try {
+      logger.logDouble("odometry/frequency", drivetrain.getOdometryFrequency());
+      logger.logDouble("odometry/timestamp", drivetrain.getState().Timestamp);
+      logger.logInt("odometry/successfulDaqs", drivetrain.getState().SuccessfulDaqs);
+    } catch (Exception e) {
+      logger.logString("odometry/error", e.getMessage());
+    }
+
+    // ========== Compute firing solution every cycle ==========
+    // Always target the HUB — ZR shoots for the hub, and A aligns to it.
+
+    Translation3d target = Targeting.getHubTargetTranslation();
 
     Translation3d shooterPosition = new Translation3d(
         drivetrain.getState().Pose.getX(),
@@ -176,7 +195,7 @@ public class Robot extends TimedRobot {
         shooterPosition,
         new Rotation3d(0, Math.toRadians(firing.pitch), Math.toRadians(firing.yaw))));
 
-    logger.logPose3d("shooter/target", new Pose3d(target, new Rotation3d()));
+    logger.logPose3d("shooter/targetPose", new Pose3d(target, new Rotation3d()));
 
     // ========== Vision confidence ==========
 
@@ -184,13 +203,46 @@ public class Robot extends TimedRobot {
     leds.updateVisionConfidence(measurementCount);
     logger.logInt("vision/measurementCount", measurementCount);
 
+    // ========== LED updates ==========
+
+    // Shooting progress bar — live RPM from the shooter, real target from projectile solver
+    double solverSlipComp = Math.max(0.0, Math.min(0.5, SmartDashboard.getNumber("Shooter Slip Comp", 0.15)));
+    double shooterRPS = shooter.getFlywheelVelocity();
+    double targetFlywheelRPS = Robot.firing.power / (Math.PI * Constants.kShooterFlywheelDiameterMeters) / (1.0 - solverSlipComp);
+    if (shooterRPS > 1.0) {
+        leds.shootPatterns(shooterRPS, targetFlywheelRPS);
+    } else {
+        leds.endCommand();
+    }
+
+    // Intake LED — track from actual motor current (handles toggle-off correctly)
+    leds.setIntaking(intake.getOutputCurrent() > 0.5);
+
     // Publish zone awareness
     var zone = Targeting.getZone(drivetrain.getState().Pose);
     logger.logString("zone", zone.name());
 
+    // Publish vision processing status (true if cameras report tags this cycle)
+    logger.logBoolean("vision/processing", measurementCount > 0);
+    // Camera read-error counter — spikes when a Pi browns out
+    logger.logInt("vision/cameraErrors", vision.getCameraErrorCount());
+
     // Publish look-ahead distance (for dashboard display)
     var chassisSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
     logger.logDouble("shooter/lookaheadDistance", Targeting.getLookaheadDistance(drivetrain.getState().Pose, chassisSpeeds));
+
+    // Publish the currently selected aim target for the dashboard
+    logger.logString("shooter/targetName", Targeting.getCurrentTargetName());
+
+    // ========== Continuous dashboard telemetry (even when not shooting) ==========
+
+    // Target RPM from the projectile solver (matches what WaitForFlywheelSpeed uses)
+    double solverFlywheelRPS = Robot.firing.power / (Math.PI * Constants.kShooterFlywheelDiameterMeters);
+    double solverTargetRPM = solverFlywheelRPS / (1.0 - solverSlipComp) * 60.0; // slip comp + convert RPS→RPM
+    SmartDashboard.putNumber("Shooter RPM Target", solverTargetRPM);
+    SmartDashboard.putNumber("Shooter Amps", shooter.getOutputCurrent());
+    SmartDashboard.putNumber("Indexer Amps", indexer.getOutputCurrent());
+    SmartDashboard.putNumber("Total Amps", shooter.getOutputCurrent() + indexer.getOutputCurrent() + intake.getOutputCurrent());
   }
 
   // ========== Mode lifecycle ==========
@@ -199,6 +251,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     leds.start();
     pinServo.setAngle(0);
+    Targeting.resetTarget(); // Reset aim target to HUB each match
   }
 
   @Override

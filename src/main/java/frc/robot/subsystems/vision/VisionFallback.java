@@ -4,8 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 
@@ -43,14 +41,6 @@ public class VisionFallback {
   private double lastUpdateTime = Timer.getFPGATimestamp();
   private Confidence confidence = Confidence.STARTUP;
 
-  private final StringPublisher statusPub;
-
-  public VisionFallback() {
-    statusPub = NetworkTableInstance.getDefault()
-        .getStringTopic("VisionFallback/status").publish();
-    statusPub.set("STARTUP");
-  }
-
   /**
    * Call every cycle from Drivetrain.periodic().
    *
@@ -69,7 +59,6 @@ public class VisionFallback {
       lastKnownPose = currentPose;
       lastVisionTimestamp = now;
       confidence = Confidence.VISION_OK;
-      publishStatus("VISION_OK");
       return currentPose;
     }
 
@@ -77,13 +66,11 @@ public class VisionFallback {
     if (now - lastVisionTimestamp < VISION_TIMEOUT) {
       // Within grace period, keep using fused pose (it's still recent)
       confidence = Confidence.VISION_OK;
-      publishStatus("VISION_OK");
       return currentPose;
     }
 
     // Vision is stale — dead-reckon from last known pose
     confidence = Confidence.DEAD_RECKONING;
-    publishStatus("DEAD_RECKONING (" + String.format("%.1f", now - lastVisionTimestamp) + "s ago)");
 
     // Integrate robot-relative velocity into last known pose
     Twist2d twist = new Twist2d(
@@ -103,7 +90,6 @@ public class VisionFallback {
     lastKnownPose = knownPose;
     lastVisionTimestamp = Timer.getFPGATimestamp();
     confidence = Confidence.VISION_OK;
-    publishStatus("VISION_OK (reset)");
   }
 
   /** Returns the current confidence level. */
@@ -116,7 +102,12 @@ public class VisionFallback {
     return confidence == Confidence.VISION_OK;
   }
 
-  private void publishStatus(String msg) {
-    statusPub.set(msg);
+  /** Returns a human-readable status string for the dashboard. */
+  public String getStatusString() {
+    return switch (confidence) {
+      case VISION_OK -> "VISION_OK";
+      case STARTUP -> "STARTUP (no pose yet)";
+      case DEAD_RECKONING -> "DEAD_RECKONING (" + String.format("%.1f", Timer.getFPGATimestamp() - lastVisionTimestamp) + "s ago)";
+    };
   }
 }

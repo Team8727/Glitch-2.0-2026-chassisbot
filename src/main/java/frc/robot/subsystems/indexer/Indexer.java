@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.NetworkTableLogger;
 import frc.robot.Constants;
 
 public class Indexer extends SubsystemBase {
@@ -17,6 +18,7 @@ public class Indexer extends SubsystemBase {
     @SuppressWarnings("unused")
     private final SparkMax followerMotor;
     private final RelativeEncoder encoder;
+    private final NetworkTableLogger logger = new NetworkTableLogger("Indexer");
 
     public Indexer() {
         // -- Leader config (CAN 4) --
@@ -62,6 +64,8 @@ public class Indexer extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // No-op for now
+        // Publish indexer health for the dashboard every cycle.
+        logger.logDouble("velocity", getVelocity());
+        logger.logDouble("current", getOutputCurrent());
     }
 }

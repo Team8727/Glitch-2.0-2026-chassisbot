@@ -1,5 +1,6 @@
 package frc.robot.autos;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -13,41 +14,48 @@ import frc.robot.subsystems.shooter.Shooter;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 /**
- * Auto selector — controller cycling while disabled.
+ * Auto selector — two independent methods:
  *
- * <p>While the robot is DISABLED:
- * <ul>
- *   <li><b>Right Bumper</b> — next auto
- *   <li><b>Left Bumper</b> — previous auto
- * </ul>
- *
- * <p>The current selection shows on the dashboard as a text label.
- * No Elastic widgets needed. Also publishes a raw string key for Glass/Shuffleboard.
+ * <ol>
+ *   <li><b>SendableChooser</b> published as {@code "Auto Chooser"} for Elastic.
+ *       Use the <i>Split Button Chooser</i> or drag the subtable onto your grid.
+ *   <li><b>Controller cycling</b> while DISABLED: Left Bumper = previous,
+ *       Right Bumper = next auto. Shows on dashboard as text.
+ * </ol>
  */
 public class AutoChooser {
   private final AutoRoutines routines;
-  private int selection = 1; // default Depot-Center
-  private Command lastCmd = Commands.none();
+  private final SendableChooser<Integer> chooser = new SendableChooser<>();
 
-  // Labels for human readability
+  private int selection = 1; // default: Depot-Center
+  private Command lastCmd = Commands.none();
+  private int lastIndex = -1;
+
   private static final String[] LABELS = {
     "Depot L", "Depot C", "Depot R",
     "Sweep L", "Sweep C", "Sweep R",
     "Leave L", "Leave C", "Leave R",
-    "In L",    "In C",    "In R"
+    "In L",    "In C",    "In R",
+    "Mid C"
   };
-  // Raw keys for Glass/Shuffleboard
   private static final String[] KEYS = {
     "Depot-Left", "Depot-Center", "Depot-Right",
     "Sweep-Left", "Sweep-Center", "Sweep-Right",
     "Leave-Left", "Leave-Center", "Leave-Right",
-    "InPlace-Left", "InPlace-Center", "InPlace-Right"
+    "InPlace-Left", "InPlace-Center", "InPlace-Right",
+    "MidSweep-Center"
   };
 
   public AutoChooser(Drivetrain dt, Shooter s, Intake i, Indexer ix, CommandXboxController controller) {
     this.routines = new AutoRoutines(dt, s, i, ix);
 
-    // Controller cycling while disabled — works without any dashboard
+    // --- Method 1: SendableChooser for Elastic ---
+    chooser.setDefaultOption("2-Cycle Depot Rush C", 1);
+    for (int n = 0; n < 12; n++) if (n != 1) chooser.addOption(LABELS[n], n);
+    chooser.addOption(LABELS[12], 12);
+    SmartDashboard.putData("Auto Chooser", chooser);
+
+    // --- Method 2: Controller cycling while disabled (no dashboard needed) ---
     if (controller != null) {
       controller.rightBumper().and(RobotModeTriggers.disabled())
         .onTrue(runOnce(() -> cycle(1)).ignoringDisable(true));
@@ -55,23 +63,37 @@ public class AutoChooser {
         .onTrue(runOnce(() -> cycle(-1)).ignoringDisable(true));
     }
 
-    // Publish to dashboard
-    SmartDashboard.putString("Auto Label", LABELS[selection]);
-    SmartDashboard.putString("Auto Key", KEYS[selection]);
-    SmartDashboard.putString("Auto Options",
-      "0=DepotL 1=DepotC 2=DepotR 3=SweepL 4=SweepC 5=SweepR "
-      + "6=LeaveL 7=LeaveC 8=LeaveR 9=InL 10=InC 11=InR");
+    publish();
   }
 
   private void cycle(int delta) {
-    selection = (selection + delta + 12) % 12;
-    SmartDashboard.putString("Auto Label", LABELS[selection]);
-    SmartDashboard.putString("Auto Key", KEYS[selection]);
+    selection = (selection + delta + 13) % 13;
+    publish();
   }
 
-  /** Returns the currently selected autonomous command. */
+  private void publish() {
+    SmartDashboard.putString("Auto Label", LABELS[selection]);
+    SmartDashboard.putNumber("Auto Index", selection);
+
+    // Publish a human-readable options list for the dashboard Auto tab
+    StringBuilder sb = new StringBuilder("Keys: ");
+    for (int i = 0; i < KEYS.length; i++) {
+      sb.append(i).append("=").append(KEYS[i]).append("  ");
+    }
+    SmartDashboard.putString("Auto Options", "Selected: " + selection + " (" + KEYS[selection] + ")  |  " + sb);
+  }
+
   public Command getSelected() {
-    return build(selection);
+    // Read from chooser (primary)
+    Integer fromChooser = chooser.getSelected();
+    if (fromChooser != null) selection = Math.max(0, Math.min(12, fromChooser));
+
+    if (lastCmd == null || selection != lastIndex) {
+      lastIndex = selection;
+      lastCmd = build(selection);
+      publish();
+    }
+    return lastCmd;
   }
 
   private Command build(int idx) {
@@ -88,6 +110,7 @@ public class AutoChooser {
       case 9  -> routines.shootInPlaceLeft();
       case 10 -> routines.shootInPlaceCenter();
       case 11 -> routines.shootInPlaceRight();
+      case 12 -> routines.twoCycleMidSweepCenter();
       default -> routines.twoCycleDepotRushCenter();
     };
   }

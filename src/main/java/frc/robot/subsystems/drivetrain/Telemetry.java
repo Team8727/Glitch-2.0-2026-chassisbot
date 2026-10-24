@@ -64,7 +64,7 @@ public class Telemetry {
         driveModuleTargets.set(state.ModuleTargets);
         driveModulePositions.set(state.ModulePositions);
         driveTimestamp.set(state.Timestamp);
-        driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
+        driveOdometryFrequency.set(state.OdometryPeriod > 0 ? 1.0 / state.OdometryPeriod : 0.0);
 
         SignalLogger.writeStruct("DriveState/Pose", Pose2d.struct, state.Pose);
         SignalLogger.writeStruct("DriveState/Speeds", ChassisSpeeds.struct, state.Speeds);

@@ -22,8 +22,10 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.util.NetworkTableLogger;
 import frc.robot.Constants;
 
 import static edu.wpi.first.units.Units.Volts;
@@ -46,6 +48,8 @@ public class Shooter extends SubsystemBase {
     private final SparkMax followerMotor3;
     private final SparkClosedLoopController closedLoopController;
     private final RelativeEncoder encoder;
+
+    private final NetworkTableLogger logger = new NetworkTableLogger("Shooter");
 
     // ---- Feedforward ----
     private final SimpleMotorFeedforward feedforward =
@@ -203,6 +207,12 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // State-space loop is driven externally (e.g. from Robot.teleopInit)
+        // Publish flywheel health for the dashboard every cycle.
+        logger.logDouble("velocity", getVelocity());      // RPS
+        logger.logDouble("rpm", getVelocity() * 60.0);    // RPM
+        logger.logDouble("current", getOutputCurrent());  // Amps
+
+        // Keep the RPM Actual widget alive even when a shoot command is not running.
+        SmartDashboard.putNumber("Shooter RPM Actual", getVelocity() * 60.0);
     }
 }
